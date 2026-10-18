@@ -1,19 +1,15 @@
 main:
   - title: "About us"
     url: /AboutUs/
-  - title: "DIC 2025"
-    url: /DIC2025/
+  - title: "DIC 2026"
+    url: /DIC2026/
+  - title: "Past Events"
+    url: /PastEvents/
   - title: "Registration"
     url: /Registration/
-  # - title: "Warm-up Workshops"
-  #   url: /Warm-up Workshops/
-  # - title: "DIC 2024"
-  #   url: /DIC2024/
-  # - title: "2023 Recap"
-  #   url: /Challenge/
-  # - title: "Activities"
-  #   url: /Activities/
   - title: "Contact us"
     url: /ContactUs/
-  # - title: "test"
-  #   url: /Flip/
+  # Archived pages (linked from Past Events, not shown in the menu):
+  #   /DIC2025/  /DIC2025-awards/  /Warm-up Workshops/  /DIC2024/  /Challenge/
+  #   /PreviousChallenge/  /PreviousChallenge_eng/
+  # Unused: /Activities/  /Flip/ (countdown test page)

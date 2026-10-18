@@ -19,13 +19,11 @@
 # in the templates via {{ site.myvariable }}.
 
 title: NYUSHDIC
-email: your-email@example.com
+email: shanghai.dic@nyu.edu
 description: >- # this means to ignore newlines until "baseurl:"
   This is the official website of NYUSH DIC !!!
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "" # the base hostname & protocol for your site, e.g. http://example.com
-twitter_username: jekyllrb
-github_username:  jekyll
+url: "https://www.nyushdic.com" # the base hostname & protocol for your site, e.g. http://example.com
 logo: "/assets/images/NYUSHDIC.png"
 
 footer:
@@ -36,7 +34,7 @@ footer:
     - label: "WeChat"
       icon: "fa-brands fa-weixin"
       url: "/WeChat/"
-    - label: "linkdin"
+    - label: "LinkedIn"
       icon: "fa-brands fa-linkedin"
       url: "https://www.linkedin.com/company/nyushdic"
     - label: "Xiaohongshu"
@@ -44,8 +42,9 @@ footer:
       url: "https://www.xiaohongshu.com/user/profile/64a1341900000000100358af"
 
 # Build settings
-remote_theme: "mmistakes/minimal-mistakes@4.26.2"
-# theme: minimal-mistakes-jekyll
+# Theme: Minimal Mistakes 4.26.2, fully vendored in _layouts/_includes/_sass/assets
+# (no remote_theme download needed; customise those files directly).
+theme: null # stop github-pages from falling back to its default "primer" theme
 plugins:
   - jekyll-feed
   - jekyll-include-cache
@@ -61,14 +60,17 @@ atom_feed:
 # Excluded items can be processed by explicitly listing the directories or
 # their entries' file path in the `include:` list.
 #
-# exclude:
-#   - .sass-cache/
-#   - .jekyll-cache/
-#   - gemfiles/
-#   - Gemfile
-#   - Gemfile.lock
-#   - node_modules/
-#   - vendor/bundle/
-#   - vendor/cache/
-#   - vendor/gems/
-#   - vendor/ruby/
+exclude:
+  - README.md
+  - LICENSE
+  - Rakefile
+  - Gemfile
+  - Gemfile.lock
+  - package.json
+  - package-lock.json
+  - staticman.yml
+  - node_modules/
+  - vendor/
+  - .bundle/
+  - .jekyll-cache/
+  - .sass-cache/

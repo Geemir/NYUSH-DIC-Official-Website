@@ -5,14 +5,12 @@ layout: single
 classes: wide
 ---
 <br>
-<img src="../assets/images/AboutUs/cat.svg" alt="catt" style="width: 30%; height: auto; display: block; margin: 0 auto;" />
+<img src="/assets/images/AboutUs/cat.svg" alt="DIC cat mascot" style="width: 30%; height: auto; display: block; margin: 0 auto;" />
 <br>
-
 
 <p style="text-align: center; font-weight: bold;">You can contact us in the ways below!</p>
 <p style="text-align: center;">
+Official Email: <a href="mailto:shanghai.dic@nyu.edu">shanghai.dic@nyu.edu</a>
 <br>
-Offical Email: shanghai.dic@nyu.edu
-<br>
-  
-<a href="https://www.nyushdic.com/WeChat/">Contact us through WeChat</a>
+<a href="/WeChat/">Contact us through WeChat</a>
+</p>

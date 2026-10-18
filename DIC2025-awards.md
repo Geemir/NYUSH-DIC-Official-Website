@@ -5,6 +5,10 @@ layout: single
 classes: wide
 ---
 
+You're viewing an archived page from **DIC 2025**. [← Back to Past Events](/PastEvents/) · [See DIC 2026 →](/DIC2026/)
+{: .notice}
+
+
 ## INTRODUCTION
 
 The NYU Shanghai Digital Innovation Challenge (DIC) 2025 has successfully concluded, bringing together innovative teams from diverse backgrounds to showcase cutting-edge ideas under the theme of AI Agent Unlock Business Innovation. 

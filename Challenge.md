@@ -4,6 +4,10 @@ permalink: /Challenge/
 layout: single
 classes: wide
 ---
+
+You're viewing an archived page from **DIC 2023**. [← Back to Past Events](/PastEvents/) · [See DIC 2026 →](/DIC2026/)
+{: .notice}
+
 ![biggroupphoto](./assets/images/Challenge/BigGroupphoto.jpg)
 
 
