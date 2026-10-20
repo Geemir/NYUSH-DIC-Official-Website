@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#021a33" />
+    <title>DIC · NYU Shanghai Digital Innovation Community</title>
+    <!-- Static export has no server, so `/` is a plain redirect page.
+         Paths are relative so this works at the domain root and under a
+         sub-path (GitHub Pages). The meta refresh is the no-JS fallback;
+         the script picks Chinese for browsers that ask for it. -->
+    <meta http-equiv="refresh" content="0; url=en/" />
+    <script>
+      (function () {
+        var lang = (navigator.language || "en").toLowerCase();
+        location.replace(lang.indexOf("zh") === 0 ? "zh/" : "en/");
+      })();
+    </script>
+    <style>
+      body {
+        margin: 0;
+        display: grid;
+        place-items: center;
+        min-height: 100vh;
+        background: #032344;
+        color: #b9c9dc;
+        font: 14px/1.6 ui-monospace, Menlo, Consolas, monospace;
+        letter-spacing: 0.08em;
+      }
+      a {
+        color: #70d5e8;
+      }
+    </style>
+  </head>
+  <body>
+    <p>LOADING… <a href="en/">English</a> · <a href="zh/">中文</a></p>
+  </body>
+</html>
