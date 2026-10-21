@@ -1,0 +1,221 @@
+# DIC 2026 page content (/DIC2026/).
+#
+# Source: the official 2026 WeChat article copy (公众号), word for word.
+# Every bilingual line is a pair: `zh` is shown in Chinese mode, `en` in
+# English mode, and both appear in bilingual mode. Do not paraphrase or
+# translate here; change the article first, then copy the change in.
+#
+# Dates for the timeline live in `start` / `end` (ISO, China time). The page
+# uses them to mark finished, current and next milestones and to drive the
+# countdown. `when` is only what gets printed.
+
+year: 2026
+status: "SYSTEM READY"
+
+# ---------------------------------------------------------------- FILE / 01
+theme_file:
+  file: "FILE / 01"
+  heading: { zh: "主题揭幕", en: "THEME UNVEILED" }
+
+  about:
+    label: { zh: "大赛简介", en: "ABOUT THE CHALLENGE" }
+    paragraphs:
+      - zh: "上海纽约大学数字创新挑战赛（NYUSHDIC）由学生组织 NYUSH Digital Innovation Community 主办，是一项以技术驱动为核心的创新竞赛。比赛面向上海纽约大学及其他高校的学生开放，鼓励跨学科团队携手合作，运用前沿数字技术，提出应对现实世界挑战的创新方案。"
+        en: "The NYU Shanghai Digital Innovation Challenge (NYUSHDIC) is a tech-driven innovation competition hosted by the student organization NYUSH Digital Innovation Community. It is open to students from NYU Shanghai and other universities, and encourages cross-disciplinary teams to use cutting-edge digital technology to tackle real-world challenges."
+      - zh: "在这个变革的时代，AI能力被放大的同时，新的问题也随之出现。当 AI 成为一个人唯一的队友，我们能否信任它？当智能走出屏幕、进入真实世界，它又将如何改变我们的生活、工作与健康？"
+        en: "In this revolutionary era, the amplified capability of AI brings new questions. When AI becomes a person's only teammate, can we trust it? And when intelligence leaves the screen and enters the physical world, how will it change the way we live, work, and stay well?"
+
+  theme:
+    lead: { zh: "今年，大赛的主题为：", en: "This year, the theme of the competition is:" }
+    short: "OPC"
+    expansion: "ONE PERSON COMPANY"
+    line_1: "Redefining the"
+    line_2: "Individual Business"
+    full: "OPC: Redefining the Individual Business"
+
+  invitation:
+    zh: "我们邀请参赛者围绕四大赛道，探索 AI 如何让个人具备团队级的能力，同时确保这种能力是可信、负责且以人为本的。"
+    en: "We invite participants to explore, across four tracks, how AI can give individuals team-level capabilities while keeping that power trustworthy, accountable, and human-centered."
+
+# ---------------------------------------------------------------- FILE / 02
+tracks_file:
+  file: "FILE / 02"
+  heading: { zh: "赛道揭幕", en: "TRACKS UNVEILED" }
+  lead:
+    zh: "今年的四条赛道围绕同一个问题展开：当 AI 让一个人拥有整支团队的能力，我们能创造什么？每个团队需选择一条赛道，分析其中的问题或改进空间，并运用 AI 工具设计创新方案。"
+    en: "This year's four tracks explore one question: when AI gives one person the power of an entire team, what can we create? Each team selects one track, identifies key problems or room for improvement, and designs an innovative solution using AI tools."
+
+  tracks:
+    - id: track-01
+      num: "01"
+      window: "TRACK_01.EXE"
+      icon: business
+      name: { zh: "AI 原生商业", en: "AI-Native Business" }
+      mission:
+        zh: "用 AI 赋能个人，使其具备整支团队的系统化能力。"
+        en: "Empower one person with AI to achieve the systematic capabilities of an entire team."
+      body:
+        zh: "市场调研、产品设计、营销推广、客户服务、财务管理……这些曾经需要不同岗位协作完成的工作，正在被 AI 智能体逐一接手。本赛道关注“一人公司”的可能性：如何设计一套 AI 工作流，让一个人也能高效、系统地运营一项业务？"
+        en: "Market research, product design, marketing, customer service, finance: work that once took a team of different roles is being taken on, piece by piece, by AI agents. This track explores the one-person company: how can an AI workflow let a single person run a business efficiently and systematically?"
+      example_label: { zh: "思考案例", en: "Example direction" }
+      example:
+        title: { zh: "Base44", en: "Base44" }
+        zh: "2025 年，独立创始人 Maor Shlomo 未融一分钱、单枪匹马打造的 AI 应用开发平台 Base44，在成立约半年后被 Wix 以 8000 万美元收购。"
+        en: "Bootstrapped solo by Maor Shlomo as a side project, AI app builder Base44 was acquired by Wix for $80 million just six months after its founding."
+
+    - id: track-02
+      num: "02"
+      window: "TRACK_02.EXE"
+      icon: shield
+      name: { zh: "AI 安全与对齐", en: "AI Safety & Alignment" }
+      mission:
+        zh: "当 AI 成为一个人唯一的队友，打造一个说真话、可问责的 AI 伙伴，或开发验证其可信度的方法。"
+        en: "When AI becomes a person's only teammate, build an AI partner that tells the truth and can be held accountable, or develop methods to verify its trustworthiness."
+      body:
+        zh: "团队中的同事可以互相核查、彼此提醒；但当 AI 成为唯一的队友，没有人替你检查它的答案。AI 可能出现幻觉、迎合用户，或在关键决策中给出无法追溯的建议。本赛道邀请参赛者思考：如何让 AI 诚实、透明、可问责，又如何证明它值得信任？"
+        en: "Teammates can check each other's work and catch each other's mistakes. When AI is your only teammate, no one double-checks its answers. AI can hallucinate, tell users what they want to hear, or give untraceable advice on critical decisions. This track asks: how do we make AI honest, transparent, and accountable, and how do we prove it deserves our trust?"
+      example_label: { zh: "思考案例", en: "Example directions" }
+      example:
+        title: { zh: "Agentic Misalignment", en: "Agentic Misalignment" }
+        zh: "Anthropic 在模拟公司环境中测试 16 个主流大模型时发现，当面临被替换的威胁或目标冲突时，许多模型会主动选择勒索、商业间谍等有害行为。"
+        en: "Anthropic’s tests of 16 leading models found that, when threatened with replacement or facing goal conflicts, many chose harmful actions like blackmail and corporate espionage, though only in controlled simulations."
+
+    - id: track-03
+      num: "03"
+      window: "TRACK_03.EXE"
+      icon: robot
+      name: { zh: "具身智能", en: "Embodied AI" }
+      mission:
+        zh: "让一个人就能创造过去需要整支硬件团队才能完成的 AI 实体产品，把智能交互带入现实世界。"
+        en: "Enable one person to create AI-powered physical products that once required an entire hardware team, bringing intelligent interaction into the real world."
+      body:
+        zh: "过去，做一件智能硬件需要机械、电子、嵌入式、交互设计等多个团队的协作。如今，借助 AI 辅助设计、开源硬件与大模型，一个人也可以完成从原型到产品的全过程。本赛道鼓励参赛者让 AI 走出屏幕，以实体形式与人和环境互动。"
+        en: "Building a smart device used to require mechanical, electrical, embedded, and interaction design teams working together. Today, with AI-assisted design, open-source hardware, and large models, one person can take a product from prototype to reality. This track invites participants to bring AI off the screen and into physical interaction with people and spaces."
+      example_label: { zh: "思考方向", en: "Example directions" }
+      example:
+        title: { zh: "Apple Vision Pro & Meta Quest 3", en: "Apple Vision Pro & Meta Quest 3" }
+        zh: "这两款混合现实设备借助 SLAM（同步定位与建图）和 AI 手部追踪实时理解物理空间，所用的感知技术与机器人导航一脉相承。"
+        en: "These mixed-reality headsets use SLAM and AI hand tracking to understand physical space in real time, the same perception technology robots rely on to navigate."
+
+    - id: track-04
+      num: "04"
+      window: "TRACK_04.EXE"
+      icon: heart
+      name: { zh: "AI × 医疗健康", en: "AI × Healthcare" }
+      mission:
+        zh: "用 AI 为个人提供过去需要整个照护团队才能提供的医疗健康支持，让医疗更可及、更精准、更有温度。"
+        en: "Empower individuals with AI-driven healthcare support that once required an entire care team, making healthcare more accessible, precise, and compassionate."
+      body:
+        zh: "一次完整的照护往往需要医生、护士、药师、营养师与康复师的共同参与，但并非每个人都能获得这样的支持。本赛道关注 AI 如何为个人和家庭补上这块空缺：让健康支持随时可得、因人而异，同时保持对隐私、安全与人文关怀的重视。"
+        en: "Complete care often involves doctors, nurses, pharmacists, dietitians, and therapists working together, but not everyone has access to that support. This track explores how AI can fill that gap for individuals and families: health support that is always available and personalized, while respecting privacy, safety, and human care."
+      example_label: { zh: "思考方向", en: "Example directions" }
+      example:
+        title: { zh: "蚂蚁阿福", en: "Ant Afu" }
+        zh: "蚂蚁集团的 AI 健康应用“蚂蚁阿福”月活超 1500 万、每天回答 500 多万个健康问题，像“家庭医生”一样帮助用户管理自己和家人的健康。"
+        en: "Ant Group’s AI health app Ant Afu has over 15 million monthly users and answers more than 5 million health questions a day, acting like a family doctor for users and their families."
+
+# ---------------------------------------------------------------- FILE / 03
+timeline_file:
+  file: "FILE / 03"
+  heading: { zh: "时间线揭幕", en: "TIMELINE UNVEILED" }
+
+  overview:
+    label: { zh: "概述", en: "OVERVIEW" }
+    paragraphs:
+      - zh: "2026 年上海纽约大学数字创新挑战赛的主题为“OPC: Redefining the Individual Business”。比赛设有 AI 原生商业、AI 安全与对齐、具身智能、AI × 医疗健康四条赛道。每个团队需选择一条赛道，分析其中的问题或改进空间，并运用 AI 工具设计创新方案。"
+        en: "The 2026 NYU Shanghai Digital Innovation Challenge centers on the theme \"OPC: Redefining the Individual Business\" It features four tracks: AI-Native Business, AI Safety & Alignment, Embodied AI, and AI × Healthcare. Each team selects one track, identifies key problems or room for improvement, and designs an innovative solution using AI tools."
+      - zh: "大赛面向所有人开放，无需特定专业或技术背景，欢迎来自不同学校、专业、行业及背景的参与者，鼓励多元参与及跨领域合作。"
+        en: "The competition is open to everyone, with no specific major or technical background required. We welcome participants from diverse schools, disciplines, industries, and backgrounds, and highly encourage diverse participation and cross-disciplinary collaboration."
+
+  phases:
+    label: { zh: "比赛阶段", en: "PHASES" }
+    items:
+      - num: "01"
+        name: { zh: "第一阶段", en: "Stage 1" }
+        body:
+          zh: "参赛者可通过个人报名、组队报名组队或kick-off day现场组队，每队1 - 3 名成员，选择一条赛道并发展提案。欢迎跨校、跨专业组队。提交截止日期为开幕式后一个月，提交内容包括："
+          en: "Participants can register individually, as a pre-formed team, or form a team on-site during the kick-off day. Each team must consist of 1 to 3 members, choose a single track, and develop their proposal. Cross-school and cross-disciplinary teams are highly welcome. The submission deadline is one month after the opening ceremony, and the submission package must include:"
+        deliverables:
+          - zh: "演示视频（3 - 5 分钟）"
+            en: "Presentation video (3 - 5 minutes)"
+          - zh: "一份精心设计的提案，展示团队对赛道问题的理解、独特的解决方案及可行性"
+            en: "A well-designed proposal showing the team's understanding of the track's core problem, their unique solution, and its feasibility"
+          - zh: "初步原型或概念验证材料"
+            en: "Preliminary prototype or Proof of Concept (PoC) materials"
+      - num: "02"
+        name: { zh: "第二阶段", en: "Stage 2" }
+        body:
+          zh: "每条赛道排名靠前的队伍将晋级，可以拓展队伍，并有机会深度接入企业赛题、和Track Mentor进行直接交流。晋级团队将在寒假及春季学期继续完善方案，开发结构完整的产品。团队需完成开发计划提交、中期进度检查及最终成果提交，并在 Innovation Day 进行现场展示与评委问答。"
+          en: "Top-ranked teams in each track advance to work closely with real problems from real business, and have deep conversation with track mentors. These teams may expand their members. Over winter break and the spring semester, they refine their solutions into well-structured products. Teams are required to submit a development plan, complete a mid-term progress check, and deliver their final results, followed by an on-site presentation and a Q&A session with the judges on Innovation Day."
+
+  stages:
+    - label: { zh: "第一阶段时间线", en: "Timeline for Stage 1" }
+      events:
+        - when: "2026.11.9"
+          start: "2026-11-09"
+          title: { zh: "开幕式", en: "Kick-off Day" }
+          items:
+            - { zh: "第一阶段开始", en: "Start of Phase I" }
+            - { zh: "赛道与项目说明", en: "Track and project briefing" }
+            - { zh: "行业分享与工作坊", en: "Industry talks and workshop" }
+            - { zh: "交流茶歇", en: "Networking tea break" }
+        - when: "2026.11 - 2026.12"
+          start: "2026-11-09"  # workshops run inside Stage 1, which begins at kick-off
+          end: "2026-12-31"
+          title: { zh: "工作坊", en: "Workshop Sessions" }
+          items:
+            - { zh: "AI Agent 及 AI 产品开发基础工作坊", en: "AI Agent and AI products development workshops" }
+        - when: "2026.12.4"
+          start: "2026-12-04"
+          title: { zh: "第一阶段截止提交", en: "Phase I Submission Deadline" }
+        - when: "During Winter Holiday"
+          title: { zh: "晋级公告发布", en: "Announcement of Advancing Teams" }
+          items:
+            - { zh: "第二阶段开始", en: "Start of Phase II" }
+            - { zh: "晋级团队获得Track Mentor及相关专家的指导与支持", en: "Advancing teams receive mentorship and support from track mentors" }
+
+    - label: { zh: "第二阶段时间线", en: "Timeline for Stage 2" }
+      events:
+        - when: "2026.12 - 2027.1.15"
+          start: "2026-12-01"
+          end: "2027-01-15"
+          title: { zh: "项目准备期", en: "Project Preparation" }
+          items:
+            - { zh: "团队筹备后续开发", en: "Teams prepare for later development" }
+        - when: "2027.1.16"
+          start: "2027-01-16"
+          title: { zh: "晋级团队说明会", en: "Finalist Orientation" }
+        - when: "2027.1.23"
+          start: "2027-01-23"
+          title: { zh: "开发方案提交", en: "Project Plan Submission" }
+          items:
+            - { zh: "提交开发计划、技术方案、预期成果及关键里程碑", en: "Submission of development plan, technical proposal, expected outcomes, and key milestones" }
+        - when: "2027.3.6"
+          start: "2027-03-06"
+          title: { zh: "MVP自查", en: "Progress Check" }
+        - when: "2027.3.21"
+          start: "2027-03-21"
+          title: { zh: "最终作品提交", en: "Final Project Submission" }
+          items:
+            - { zh: "提交最终产品、演示视频、文档及其他赛道要求的材料", en: "Submission of the final product, demonstration video, documentation, and any other materials required by the specific track" }
+        - when: "2027.3.28"
+          start: "2027-03-28"
+          title: { zh: "决赛暨闭幕式", en: "Finals & Closing Ceremony: Innovation Day" }
+          items:
+            - { zh: "现场产品演示、评委提问、评分与颁奖；宣布各赛道奖项及超级个体奖", en: "On-site product demonstrations, judge questioning, scoring, and the award ceremony; announcement of track awards and special awards." }
+
+  note: { zh: "时间线可能会发生变动", en: "The timeline is subject to change." }
+
+# ---------------------------------------------------------------- FILE / 04
+signup_file:
+  file: "FILE / 04"
+  heading: { zh: "报名", en: "SIGN UP" }
+  body:
+    zh: "报名链接将在后续发布，请持续关注NYUSH DIC公众号及各平台官方账号。"
+    en: "The sign up link will be published later, please subscribe to NYUSH DIC official accounts."
+  closing: "SEE YOU VERY SOON!"
+  # Paste the registration link here when it is published. The sign-up
+  # section turns into a "Register" button automatically.
+  register_url: ""
+
+footer_line: "DIGITAL INNOVATION CHALLENGE / 2026"

@@ -1,5 +1,26 @@
 <!-- start custom head snippets -->
 
-<!-- insert favicons. use https://realfavicongenerator.net/ -->
+{% if page.layout == "dic2026" %}
+  {%- comment -%}
+    DIC 2026 page: its stylesheet and fonts, and the reader's language choice,
+    applied before first paint so the page never flashes the other language.
+    No stored choice: Chinese browsers get Chinese, everyone else English.
+    Without JavaScript nothing is set and both languages show.
+  {%- endcomment %}
+  <link rel="preload" href="{{ '/assets/fonts/montserrat-latin-800-normal.woff2' | relative_url }}" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="{{ '/assets/fonts/jetbrains-mono-latin-500-normal.woff2' | relative_url }}" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="{{ '/assets/css/dic2026.css' | relative_url }}">
+  <meta name="theme-color" content="#021a33">
+  <script>
+    (function () {
+      var lang;
+      try { lang = localStorage.getItem("dic26-lang"); } catch (e) {}
+      if (lang !== "zh" && lang !== "en" && lang !== "both") {
+        lang = (navigator.language || "").toLowerCase().indexOf("zh") === 0 ? "zh" : "en";
+      }
+      if (lang !== "both") document.documentElement.setAttribute("data-dic-lang", lang);
+    })();
+  </script>
+{% endif %}
 
 <!-- end custom head snippets -->
