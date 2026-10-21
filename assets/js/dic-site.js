@@ -10,6 +10,7 @@
   /* ------------------------------------------------------- current page */
   var here = decodeURI(location.pathname).replace(/\/?$/, "/");
   document.querySelectorAll(".greedy-nav .visible-links a").forEach(function (a) {
+    if (a.hash) return; // in-page links (e.g. Registration → #signup) are not pages
     var path = decodeURI(new URL(a.href, location.href).pathname).replace(/\/?$/, "/");
     if (path === here) a.setAttribute("aria-current", "page");
   });

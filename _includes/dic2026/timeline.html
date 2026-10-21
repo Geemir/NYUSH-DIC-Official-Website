@@ -1,0 +1,90 @@
+{%- comment -%}
+  Interactive timeline ("TIMELINE.EXE"). Every milestone is a node on one rail;
+  picking a node opens its details below. The rail draws itself when it scrolls
+  into view, fills up to today, and can play through the season on its own.
+
+  Rendered hidden: assets/js/dic2026.js reveals it and hides the plain list
+  (_layouts/dic2026.html), which stays the no-JavaScript fallback and the
+  "LIST" view. Nodes and list items come from the same data in the same order;
+  the script reads dates from the list.
+{%- endcomment -%}
+{%- assign lf = site.data.dic2026.timeline_file -%}
+{%- assign total = 0 -%}
+{%- for st in lf.stages -%}{%- assign total = total | plus: st.events.size -%}{%- endfor -%}
+
+<div class="d-win d-tlx" data-tlx hidden style="--n: {{ total }}">
+  <div class="d-win__bar"><span>TIMELINE.EXE</span><span class="d-win__ctl" aria-hidden="true"><i></i><i></i><i></i></span></div>
+  <div class="d-tlx__body">
+
+    <div class="d-tlx__toolbar">
+      <span class="d-mono d-tlx__today" data-tlx-today></span>
+      <div class="d-tlx__tools">
+        <button type="button" class="d-tlx__play" data-tlx-play aria-pressed="false">
+          <span class="d-tlx__play-icon" aria-hidden="true"></span><span data-tlx-play-label>PLAY</span>
+          <i class="d-tlx__play-progress" aria-hidden="true"></i>
+        </button>
+        <div class="d-tlx__views" role="group" aria-label="Timeline view">
+          <button type="button" data-tlx-view="rail" aria-pressed="true">TIMELINE</button>
+          <button type="button" data-tlx-view="list" aria-pressed="false">LIST</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-tlx__scroller" data-tlx-scroller>
+      <div class="d-tlx__rail">
+        <div class="d-tlx__stages" aria-hidden="true">
+          {%- assign col = 1 -%}
+          {%- for st in lf.stages %}
+          <span class="d-tlx__stage d-tlx__stage--{{ forloop.index }}" style="--from: {{ col }}; --span: {{ st.events.size }}">{% include dic2026/t.html v=st.short %}</span>
+          {%- assign col = col | plus: st.events.size -%}
+          {%- endfor %}
+        </div>
+
+        <div class="d-tlx__track">
+          <div class="d-tlx__line" aria-hidden="true">
+            <i class="d-tlx__fill" data-tlx-fill></i>
+            <b class="d-tlx__now" data-tlx-now><span>TODAY</span></b>
+          </div>
+          <div class="d-tlx__nodes" role="tablist" aria-label="Milestones">
+            {%- assign i = 0 -%}
+            {%- for st in lf.stages -%}{%- for e in st.events %}
+            <button type="button" role="tab" class="d-tlx__node d-tlx__node--s{{ forloop.parentloop.index }}" id="tlx-tab-{{ i }}" aria-controls="tlx-panel-{{ i }}" aria-selected="false" tabindex="-1" data-tlx-node="{{ i }}" style="--i: {{ i }}">
+              <span class="d-tlx__dot" aria-hidden="true"></span>
+              <span class="d-tlx__short">{% include dic2026/v.html v=e.short %}</span>
+              <span class="d-tlx__name">{% include dic2026/t.html v=e.title %}</span>
+            </button>
+            {%- assign i = i | plus: 1 -%}
+            {%- endfor -%}{%- endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-tlx__panels">
+      {%- assign i = 0 -%}
+      {%- for st in lf.stages -%}{%- for e in st.events %}
+      <section class="d-tlx__panel" role="tabpanel" id="tlx-panel-{{ i }}" aria-labelledby="tlx-tab-{{ i }}" hidden>
+        <div class="d-tlx__panel-meta">
+          <span class="d-mono d-tlx__panel-stage d-tlx__panel-stage--{{ forloop.parentloop.index }}">{% include dic2026/t.html v=st.short %} · {{ i | plus: 1 }}/{{ total }}</span>
+          <span class="d-mono d-tlx__state" data-tlx-state></span>
+        </div>
+        <div class="d-tlx__panel-grid">
+          <div>
+            <p class="d-tlx__when">{% include dic2026/v.html v=e.when %}</p>
+            <h4 class="d-tlx__title">{% include dic2026/t.html v=e.title %}</h4>
+            <p class="d-mono d-tlx__eta" data-tlx-eta></p>
+          </div>
+          {%- if e.items %}
+          <ul class="d-tlx__items">
+            {%- for item in e.items %}
+            <li>{% include dic2026/t.html v=item %}</li>
+            {%- endfor %}
+          </ul>
+          {%- endif %}
+        </div>
+      </section>
+      {%- assign i = i | plus: 1 -%}
+      {%- endfor -%}{%- endfor %}
+    </div>
+  </div>
+</div>

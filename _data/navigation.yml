@@ -1,17 +1,29 @@
+# Top menu. Pages pick a menu with `navigation:` in their front matter;
+# pages without one use `main`.
+
+# The main site. DIC 2026 comes first: on a phone only the first item fits
+# in the top bar, and most visitors arrive from WeChat looking for it.
 main:
-  # DIC 2026 comes first: on a phone only the first item fits in the top bar,
-  # and most visitors arrive from WeChat looking for this year's challenge.
   - title: "DIC 2026"
     url: /DIC2026/
   - title: "About us"
     url: /AboutUs/
   - title: "Past Events"
     url: /PastEvents/
-  - title: "Registration"
-    url: /Registration/
   - title: "Contact us"
     url: /ContactUs/
   # Archived pages (linked from Past Events, not shown in the menu):
   #   /DIC2025/  /DIC2025-awards/  /Warm-up Workshops/  /DIC2024/  /Challenge/
   #   /PreviousChallenge/  /PreviousChallenge_eng/
+  # Off the menu for now: /Registration/ still holds the 2025 process (see
+  # issue #3); registration for 2026 lives on the DIC 2026 page.
   # Unused: /Activities/  /Flip/ (countdown test page)
+
+# The DIC 2026 page: this year's challenge only. The logo leads back home.
+dic2026:
+  - title: "DIC 2026"
+    url: /DIC2026/
+  - title: "Registration"
+    url: /DIC2026/#signup
+  - title: "Contact us"
+    url: /ContactUs/

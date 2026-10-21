@@ -1,0 +1,10 @@
+{%- comment -%}
+  A value that may be a plain string (same in both languages) or a
+  { zh, en } pair. Pairs go through t.html so the language switch applies.
+    {% include dic2026/v.html v=event.when %}
+{%- endcomment -%}
+{%- if include.v.zh or include.v.en -%}
+{%- include dic2026/t.html v=include.v class=include.class -%}
+{%- else -%}
+{{ include.v | escape }}
+{%- endif -%}

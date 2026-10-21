@@ -5,6 +5,12 @@ search: false
 
 @charset "utf-8";
 
+// The theme's Latin stack, followed by Chinese: Apple's PingFang SC where it
+// exists, otherwise the open-source Noto Sans SC (installed or self-hosted).
+$sans-serif: -apple-system, BlinkMacSystemFont, "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", Arial,
+  "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Noto Sans SC", "Source Han Sans SC", "DIC Noto Sans SC",
+  "Microsoft YaHei", sans-serif;
+
 @import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}"; // skin
 @import "minimal-mistakes"; // main partials
 
