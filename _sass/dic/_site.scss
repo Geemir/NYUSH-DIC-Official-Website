@@ -220,6 +220,44 @@ $dic-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", m
   }
 }
 
+/* Dean's quote, below the home hero. */
+.dic-quote {
+  max-width: 46rem;
+  margin: 1rem auto 4rem;
+  padding: 0 1rem;
+
+  blockquote {
+    margin: 0;
+    padding: 0 0 0 1.25rem;
+    border-left: 4px solid var(--dic-accent);
+    font-style: normal;
+
+    p {
+      margin: 0;
+      font-size: 1.15rem;
+      line-height: 1.6;
+      color: $text-color;
+    }
+  }
+
+  &__zh {
+    margin-top: 0.75rem !important;
+    font-size: 0.95rem !important;
+    color: $muted-text-color !important;
+  }
+
+  figcaption {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1rem;
+    padding-left: 1.5rem;
+    font-size: 0.85rem;
+    color: $muted-text-color;
+
+    strong { font-size: 1rem; color: var(--dic-accent); }
+  }
+}
+
 /* --------------------------------------------------------------------------
    Buttons and cards
    -------------------------------------------------------------------------- */

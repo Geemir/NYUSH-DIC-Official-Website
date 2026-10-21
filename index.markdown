@@ -30,8 +30,20 @@ layout: home
       <span class="dic-teaser__line">{{ d26.theme_file.theme.line_1 }} {{ d26.theme_file.theme.line_2 }}</span>
       <span class="dic-teaser__meta">
         <span>Kick-off Day &middot; 2026.11.9</span>
-        <span class="dic-teaser__count" data-teaser-countdown="2026-11-09T00:00:00+08:00" hidden></span>
+        <span class="dic-teaser__count" data-teaser-countdown="2026-11-09T17:00:00+08:00" hidden></span>
       </span>
     </span>
   </a>
 </section>
+
+<figure class="dic-quote">
+  <blockquote>
+    <p>&ldquo;This competition has grown beyond our campus into a platform with real international reach &mdash; bringing together young innovators from different disciplines and cultures to test ideas in real settings and refine them through teamwork.&rdquo;</p>
+    <p class="dic-quote__zh" lang="zh-Hans">「这一赛事已经从校内走向校外，正成为更具国际影响力的创新平台——持续汇聚拥有不同学科与文化背景的创新青年，在现实情境中检验创意，在团队合作中完善方案。」</p>
+  </blockquote>
+  <figcaption>
+    <strong>Nasir Memon</strong>
+    <span>Former Dean of Computer Science, Data Science and Engineering, NYU Shanghai</span>
+    <span lang="zh-Hans">上海纽约大学 计算机科学、数据科学与工程学部 前主任</span>
+  </figcaption>
+</figure>
