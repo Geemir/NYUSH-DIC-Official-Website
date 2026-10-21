@@ -42,6 +42,18 @@
       if (!ok[lang]) lang = "en";
       if (lang !== "both") document.documentElement.setAttribute("data-dic-lang", lang);
     })();
+
+    /* Opening animation (assets/js/dic2026-intro.js): first visit only, not
+       when the link points into the page, not with reduced motion. Covers the
+       page in navy until it starts; released after 6 s whatever happens. */
+    (function () {
+      var root = document.documentElement, seen;
+      try { seen = localStorage.getItem("dic26-intro-seen"); } catch (e) { seen = "1"; }
+      var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (seen || location.hash || still) return;
+      root.classList.add("d-intro-pending");
+      setTimeout(function () { root.classList.remove("d-intro-pending"); }, 6000);
+    })();
   </script>
 {% endif %}
 
