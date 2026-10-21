@@ -16,12 +16,19 @@
       <li><a href="{% if site.atom_feed.path %}{{ site.atom_feed.path }}{% else %}{{ '/feed.xml' | relative_url }}{% endif %}"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> {{ site.data.ui-text[site.locale].feed_label | default: "Feed" }}</a></li>    {% endunless %}
   </ul>
 </div>
+{%- comment -%}
+  Two versions of each logo: the original for the light footer, a reversed
+  white one (torch knocked out) for the navy footer on the DIC 2026 page.
+  CSS shows one; the hidden one is lazy and never downloads.
+{%- endcomment %}
 <div class="dic-footer-logos">
   <a href="./">
-      <img src="{{ '/assets/images/CSDSE1.png' | relative_url }}" alt="NYUSHCSDSE1" width="300" height="100">
+    <img class="is-light" src="{{ '/assets/images/CSDSE1.png' | relative_url }}" alt="NYU Shanghai Computer Science, Data Science and Engineering" width="300" height="43" loading="lazy">
+    <img class="is-dark" src="{{ '/assets/images/CSDSE1-white.png' | relative_url }}" alt="NYU Shanghai Computer Science, Data Science and Engineering" width="300" height="43" loading="lazy">
   </a>
   <a href="https://dail.shanghai.nyu.edu/">
-      <img src="{{ '/assets/images/SFSCAIDL1.png' | relative_url }}" alt="SFSCAIDL1" width="300" height="100">
+    <img class="is-light" src="{{ '/assets/images/SFSCAIDL1.png' | relative_url }}" alt="Shanghai Frontiers Science Center of Artificial Intelligence and Deep Learning" width="300" height="40" loading="lazy">
+    <img class="is-dark" src="{{ '/assets/images/SFSCAIDL1-white.png' | relative_url }}" alt="Shanghai Frontiers Science Center of Artificial Intelligence and Deep Learning" width="300" height="40" loading="lazy">
   </a>
 </div>
 <div class="page__footer-copyright">&copy; {{ site.time | date: '%Y' }} <a href="{{ site.copyright_url | default: site.url }}">{{ site.copyright | default: site.title }}</a></div>
