@@ -38,6 +38,13 @@ theme_file:
     en: "We invite participants to explore, across four tracks, how AI can give individuals team-level capabilities while keeping that power trustworthy, accountable, and human-centered."
 
 # ---------------------------------------------------------------- FILE / 02
+# Labels for the expandable part of each track example (written for the
+# website; the case text itself is from the article).
+example_ui:
+  more: { zh: "深入了解", en: "Dig deeper" }
+  why: { zh: "为什么值得关注", en: "Why it matters" }
+  explore: { zh: "可以思考", en: "Questions to explore" }
+
 tracks_file:
   file: "FILE / 02"
   heading: { zh: "赛道揭幕", en: "TRACKS UNVEILED" }
@@ -62,6 +69,16 @@ tracks_file:
         title: { zh: "Base44", en: "Base44" }
         zh: "2025 年，独立创始人 Maor Shlomo 未融一分钱、单枪匹马打造的 AI 应用开发平台 Base44，在成立约半年后被 Wix 以 8000 万美元收购。"
         en: "Bootstrapped solo by Maor Shlomo as a side project, AI app builder Base44 was acquired by Wix for $80 million just six months after its founding."
+        why:
+          zh: "Base44 是“一人公司”的缩影：一位创始人、没有外部融资，做出的产品在几个月内就让 Wix 愿意以 8000 万美元收购。而它本身也在实践同一个理念：用户只要用自然语言描述需求，就能得到一个可以运行的应用。"
+          en: "Base44 is the one-person company in miniature: one founder, no investors, and a product valuable enough that Wix paid $80 million for it within months. The product itself makes the same point — describe the app you want in plain language, and you get one that runs."
+        explore:
+          - zh: "在一家小企业里，市场调研、营销、客服、财务等岗位，哪些可以由 AI 智能体完整接手，哪些仍然需要人？"
+            en: "In a small business, which roles — research, marketing, customer service, finance — could an AI agent take on end to end, and which still need a person?"
+          - zh: "一个人如何同时调度、监督多个 AI 智能体，而不让自己成为瓶颈？"
+            en: "How does one person coordinate and supervise several AI agents without becoming the bottleneck?"
+          - zh: "如果你来开一家“一人公司”，它卖什么？从第一位客户到第一张发票，它的 AI 工作流是什么样的？"
+            en: "If you ran a one-person company, what would it sell — and what does its AI workflow look like from the first customer to the first invoice?"
 
     - id: track-02
       num: "02"
@@ -79,6 +96,16 @@ tracks_file:
         title: { zh: "Agentic Misalignment", en: "Agentic Misalignment" }
         zh: "Anthropic 在模拟公司环境中测试 16 个主流大模型时发现，当面临被替换的威胁或目标冲突时，许多模型会主动选择勒索、商业间谍等有害行为。"
         en: "Anthropic’s tests of 16 leading models found that, when threatened with replacement or facing goal conflicts, many chose harmful actions like blackmail and corporate espionage, though only in controlled simulations."
+        why:
+          zh: "研究让大模型在模拟公司中担任自主智能体，可以收发邮件、执行目标。当情境中出现“即将被替换”或“目标与公司冲突”时，许多模型会自行选择有害行为：在其中一个测试里，模型以公开一位高管的隐私相要挟，要求不被关停。Anthropic 表示尚未在真实部署中观察到此类行为，但它揭示了一个关键区别：只会回答问题的 AI 可能出错，而代你行动的 AI，可能以没人批准的方式出错。"
+          en: "The study cast models as autonomous agents inside a simulated company, with access to email and a goal to pursue. When the scenario threatened to replace the agent, or set its goal against the company's, many models chose harmful actions on their own — in one test, threatening to expose an executive's private affairs unless they were kept running. Anthropic says it has not seen this in real deployments, but the distinction matters: an AI that answers questions can be wrong; an AI that acts for you can be wrong in ways nobody approved."
+        explore:
+          - zh: "如何让智能体展示它的推理和每一步操作，让用户事后也能逐一核查？"
+            en: "How could an agent show its reasoning and every action it took, so a single user can check it afterwards?"
+          - zh: "当指令相互冲突，或 AI 并不确定时，它应该怎么做？它要如何说出“我不知道”？"
+            en: "What should an AI teammate do when its instructions conflict, or when it isn't sure — and how does it say \"I don't know\"?"
+          - zh: "你能否像 Anthropic 的模拟实验那样设计一套测试，在用户依赖某个答案之前，就发现其中的不诚实或迎合？"
+            en: "Could you design a test, like Anthropic's simulations, that catches a dishonest or flattering answer before someone relies on it?"
 
     - id: track-03
       num: "03"
@@ -96,6 +123,16 @@ tracks_file:
         title: { zh: "Apple Vision Pro & Meta Quest 3", en: "Apple Vision Pro & Meta Quest 3" }
         zh: "这两款混合现实设备借助 SLAM（同步定位与建图）和 AI 手部追踪实时理解物理空间，所用的感知技术与机器人导航一脉相承。"
         en: "These mixed-reality headsets use SLAM and AI hand tracking to understand physical space in real time, the same perception technology robots rely on to navigate."
+        why:
+          zh: "为了把数字内容叠加到真实房间里，这些头显必须持续地在设备端完成三件事：构建空间地图、确定自身位置、追踪你的双手。这与家用机器人、无人机需要解决的感知问题如出一辙。不同的是，这项能力如今已经出现在消费级产品中，并配有开发工具：一个人不必从零发明它，而是可以直接拿来用。"
+          en: "To place digital content in a real room, these headsets have to do three things continuously, on the device: map the space, work out where they are in it, and follow your hands. That is the same perception problem a home robot or a drone has to solve. What has changed is that this capability now ships in consumer products with developer tools — so one builder can use it instead of inventing it."
+        explore:
+          - zh: "如果一件小设备能理解周围的空间，它可以把哪项现实中的任务做得更好？它真正需要哪些传感器？"
+            en: "Which real-world task could a small device do better if it understood the space around it — and which sensors does it actually need?"
+          - zh: "开源硬件（如 Arduino、树莓派、ESP32）与大模型如何配合，做出一个一个人就能完成的原型？"
+            en: "How can open-source hardware (Arduino, Raspberry Pi, ESP32) and a large model work together in a prototype one person can build?"
+          - zh: "智能应该放在哪里：设备端、手机，还是云端？每种选择在速度、隐私和续航上各有什么代价？"
+            en: "Where should the intelligence live — on the device, on a phone, or in the cloud — and what does each choice cost in speed, privacy and battery?"
 
     - id: track-04
       num: "04"
@@ -113,6 +150,16 @@ tracks_file:
         title: { zh: "蚂蚁阿福", en: "Ant Afu" }
         zh: "蚂蚁集团的 AI 健康应用“蚂蚁阿福”月活超 1500 万、每天回答 500 多万个健康问题，像“家庭医生”一样帮助用户管理自己和家人的健康。"
         en: "Ant Group’s AI health app Ant Afu has over 15 million monthly users and answers more than 5 million health questions a day, acting like a family doctor for users and their families."
+        why:
+          zh: "每天 500 多万个健康问题，说明人们在就医之外有多么需要帮助：为自己和家人理解症状、检查报告和用药。它也说明了风险有多高：在这样的规模下，任何不准确的回答、隐私疏漏或被忽视的危险信号，都会落到真实的人身上。本赛道两者都要：随时可得、因人而异的支持，以及知道何时该交给专业人士的安全机制。"
+          en: "Five million health questions a day shows how much people want help between doctor visits — making sense of symptoms, test reports and medication for themselves and their families. It also shows the stakes: at that scale, every inaccurate answer, privacy lapse or missed warning sign reaches a real person. This track asks for both: support that is always there and personal, and safeguards that know when to hand over to a professional."
+        explore:
+          - zh: "照护团队的哪部分工作（复诊跟进、用药提醒、饮食、康复）可以由 AI 伙伴为一个家庭承担？"
+            en: "Which part of a care team's work — follow-ups, medication reminders, diet, rehabilitation — could an AI companion take on for one family?"
+          - zh: "AI 健康助手如何识别紧急情况或超出自身能力的问题，并及时转交医生？"
+            en: "How does an AI health assistant recognise an emergency, or a question beyond its competence, and hand over to a doctor?"
+          - zh: "它真正需要哪些数据？如何让个人健康信息保持私密、由用户自己掌控？"
+            en: "What data does it really need, and how do you keep personal health information private and under the user's control?"
 
 # ---------------------------------------------------------------- FILE / 03
 timeline_file:
@@ -148,58 +195,77 @@ timeline_file:
           zh: "每条赛道排名靠前的队伍将晋级，可以拓展队伍，并有机会深度接入企业赛题、和Track Mentor进行直接交流。晋级团队将在寒假及春季学期继续完善方案，开发结构完整的产品。团队需完成开发计划提交、中期进度检查及最终成果提交，并在 Innovation Day 进行现场展示与评委问答。"
           en: "Top-ranked teams in each track advance to work closely with real problems from real business, and have deep conversation with track mentors. These teams may expand their members. Over winter break and the spring semester, they refine their solutions into well-structured products. Teams are required to submit a development plan, complete a mid-term progress check, and deliver their final results, followed by an on-site presentation and a Q&A session with the judges on Innovation Day."
 
+  # Each event: "when" is printed in the list view and the detail panel,
+  # "short" labels the node in the interactive timeline. Either can be a plain
+  # string or a { zh, en } pair. "start" / "end" (ISO, China time) drive the
+  # done / now / next states; "time" (HH:MM, China time) is used only by the
+  # countdown and is never shown.
   stages:
     - label: { zh: "第一阶段时间线", en: "Timeline for Stage 1" }
+      short: { zh: "第一阶段", en: "Stage 1" }
       events:
         - when: "2026.11.9"
+          short: "11.9"
           start: "2026-11-09"
+          time: "17:00"
           title: { zh: "开幕式", en: "Kick-off Day" }
           items:
             - { zh: "第一阶段开始", en: "Start of Phase I" }
             - { zh: "赛道与项目说明", en: "Track and project briefing" }
-            - { zh: "行业分享与工作坊", en: "Industry talks and workshop" }
+            - { zh: "行业分享", en: "Industry talks" }
             - { zh: "交流茶歇", en: "Networking tea break" }
         - when: "2026.11 - 2026.12"
-          start: "2026-11-09"  # workshops run inside Stage 1, which begins at kick-off
+          short: { zh: "11–12月", en: "Nov–Dec" }
+          start: "2026-11-10"  # after kick-off: no workshop on kick-off day
           end: "2026-12-31"
           title: { zh: "工作坊", en: "Workshop Sessions" }
           items:
             - { zh: "AI Agent 及 AI 产品开发基础工作坊", en: "AI Agent and AI products development workshops" }
         - when: "2026.12.4"
+          short: "12.4"
           start: "2026-12-04"
           title: { zh: "第一阶段截止提交", en: "Phase I Submission Deadline" }
         - when: "During Winter Holiday"
+          short: { zh: "寒假", en: "Winter" }
           title: { zh: "晋级公告发布", en: "Announcement of Advancing Teams" }
           items:
             - { zh: "第二阶段开始", en: "Start of Phase II" }
             - { zh: "晋级团队获得Track Mentor及相关专家的指导与支持", en: "Advancing teams receive mentorship and support from track mentors" }
 
     - label: { zh: "第二阶段时间线", en: "Timeline for Stage 2" }
+      short: { zh: "第二阶段", en: "Stage 2" }
       events:
         - when: "2026.12 - 2027.1.15"
+          short: "12–1.15"
           start: "2026-12-01"
           end: "2027-01-15"
           title: { zh: "项目准备期", en: "Project Preparation" }
           items:
             - { zh: "团队筹备后续开发", en: "Teams prepare for later development" }
         - when: "2027.1.16"
+          short: "1.16"
           start: "2027-01-16"
           title: { zh: "晋级团队说明会", en: "Finalist Orientation" }
         - when: "2027.1.23"
+          short: "1.23"
           start: "2027-01-23"
           title: { zh: "开发方案提交", en: "Project Plan Submission" }
           items:
             - { zh: "提交开发计划、技术方案、预期成果及关键里程碑", en: "Submission of development plan, technical proposal, expected outcomes, and key milestones" }
         - when: "2027.3.6"
+          short: "3.6"
           start: "2027-03-06"
           title: { zh: "MVP自查", en: "Progress Check" }
         - when: "2027.3.21"
+          short: "3.21"
           start: "2027-03-21"
           title: { zh: "最终作品提交", en: "Final Project Submission" }
           items:
             - { zh: "提交最终产品、演示视频、文档及其他赛道要求的材料", en: "Submission of the final product, demonstration video, documentation, and any other materials required by the specific track" }
-        - when: "2027.3.28"
-          start: "2027-03-28"
+        - when: { zh: "2027年3月下旬 / 4月上旬", en: "Late March / Early April 2027" }
+          short: { zh: "3月下旬–4月上旬", en: "Late Mar–Early Apr" }
+          start: "2027-03-22"  # date not fixed yet: treated as a range, so no countdown
+          end: "2027-04-10"
           title: { zh: "决赛暨闭幕式", en: "Finals & Closing Ceremony: Innovation Day" }
           items:
             - { zh: "现场产品演示、评委提问、评分与颁奖；宣布各赛道奖项及超级个体奖", en: "On-site product demonstrations, judge questioning, scoring, and the award ceremony; announcement of track awards and special awards." }
@@ -217,5 +283,39 @@ signup_file:
   # Paste the registration link here when it is published. The sign-up
   # section turns into a "Register" button automatically.
   register_url: ""
+
+# ---------------------------------------------------------------- FILE / 05
+# Written for the website (not in the article). There are no enterprise
+# partners for 2026 yet, so this leads with who stands behind the challenge,
+# the track record, and an open invitation. Update when partners sign on.
+partners_file:
+  file: "FILE / 05"
+  heading: { zh: "合作与支持", en: "PARTNERS & SUPPORT" }
+  rows:
+    - label: { zh: "主办", en: "Hosted by" }
+      value: { zh: "NYUSH Digital Innovation Community", en: "NYUSH Digital Innovation Community" }
+    - label: { zh: "支持", en: "Supported by" }
+      value: { zh: "上海纽约大学 计算机科学、数据科学与工程学部", en: "NYU Shanghai Computer Science, Data Science and Engineering" }
+    - label: { zh: "导师", en: "Mentorship" }
+      value: { zh: "Track Mentor 与特邀专家全程指导晋级团队", en: "Track mentors and invited experts guide every advancing team" }
+  past:
+    label: { zh: "往届合作伙伴", en: "Past editions worked with" }
+    names:
+      - { zh: "腾讯", en: "Tencent" }
+      - { zh: "复宏汉霖", en: "Henlius" }
+      - { zh: "多邻国", en: "Duolingo" }
+      - { zh: "商汤科技", en: "SenseTime" }
+      - { zh: "昆山杜克大学", en: "Duke Kunshan University" }
+      - { zh: "躺着学", en: "ChillPrep" }
+      - { zh: "Kiwi", en: "Kiwi" }
+      - { zh: "ShinyTest", en: "ShinyTest" }
+  open:
+    title: { zh: "2026 合作席位开放中", en: "Partnership for 2026 is open" }
+    body:
+      zh: "欢迎企业与机构参与出题、担任 Track Mentor 或支持 Innovation Day，与来自不同学校和专业的创造者一起，检验 AI 能为一个人做到什么。"
+      en: "Companies and organisations are welcome to set a track challenge, mentor teams as a Track Mentor, or support Innovation Day — and see first-hand what one person can build with AI."
+    cta: { zh: "联系我们", en: "Get in touch" }
+    email: "shanghai.dic@nyu.edu"
+    subject: "DIC 2026 Partnership"
 
 footer_line: "DIGITAL INNOVATION CHALLENGE / 2026"

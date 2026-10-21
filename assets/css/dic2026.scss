@@ -20,8 +20,12 @@
 @font-face { font-family: "JetBrains Mono"; font-weight: 500; font-display: swap; src: url("../fonts/jetbrains-mono-latin-500-normal.woff2") format("woff2"); }
 @font-face { font-family: "JetBrains Mono"; font-weight: 700; font-display: swap; src: url("../fonts/jetbrains-mono-latin-700-normal.woff2") format("woff2"); }
 
-$sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
-$display: "Montserrat", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+// Chinese: Apple's PingFang SC wherever it exists (iPhone, iPad, Mac). It can't
+// legally be served as a web font, so elsewhere the closest open match takes
+// over — Noto Sans SC, installed (Android) or self-hosted (Windows).
+$cjk: "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Noto Sans SC", "Source Han Sans SC", "DIC Noto Sans SC", "Microsoft YaHei", sans-serif;
+$sans: -apple-system, BlinkMacSystemFont, "Segoe UI", $cjk;
+$display: "Montserrat", $cjk;
 $mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 $ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 
@@ -48,9 +52,6 @@ $both: 'html:not([data-dic-lang="en"]):not([data-dic-lang="zh"])';
     a:hover, .site-title:hover { color: var(--d-paper); }
     .visible-links a::before { background: var(--d-cyan); }
   }
-  // The site logo PNG has a white background; swap in the light mark on navy.
-  // (Browsers that ignore `content` on images keep the original.)
-  .site-logo img { content: url("../images/DIC2026/dic-mark-light.png"); object-fit: contain; }
   .greedy-nav__toggle .navicon,
   .greedy-nav__toggle .navicon::before,
   .greedy-nav__toggle .navicon::after { background: var(--d-paper); }
@@ -95,6 +96,9 @@ $both: 'html:not([data-dic-lang="en"]):not([data-dic-lang="zh"])';
   a { color: inherit; text-decoration: none; }
   img { display: block; max-width: 100%; height: auto; }
   figure { display: block; margin: 0; }
+  // The theme's normalize.css sets display on <section> etc., which would
+  // override the browser's [hidden] rule. Hidden must always win.
+  [hidden] { display: none !important; }
   button { font: inherit; color: inherit; cursor: pointer; }
   :focus-visible { outline: 2px solid var(--d-cyan); outline-offset: 3px; }
   ::selection { background: var(--d-cyan); color: var(--d-navy); }
@@ -186,6 +190,7 @@ html[data-dic-lang="en"] .d26 .l-zh { display: none !important; }
   #{$both} & span.l-zh + span.l-en::before { content: " · "; color: inherit; opacity: 0.6; }
 
   &--primary { background: var(--d-lav); color: var(--d-navy) !important; box-shadow: 4px 4px 0 var(--d-indigo); &:hover { box-shadow: 6px 6px 0 var(--d-indigo); } }
+  &--inverse { background: var(--d-navy); color: var(--d-lav) !important; box-shadow: 4px 4px 0 var(--d-indigo); &:hover { box-shadow: 6px 6px 0 var(--d-indigo); } }
   &--ghost { border: 1px solid var(--d-cyan); color: var(--d-cyan) !important; box-shadow: 4px 4px 0 var(--d-navy-950); &:hover { background: rgba(112, 213, 232, 0.1); box-shadow: 6px 6px 0 var(--d-navy-950); } }
 }
 
@@ -275,7 +280,7 @@ html[data-dic-lang="en"] .d26 .l-zh { display: none !important; }
     border: 1px solid var(--d-navy-600); box-shadow: 4px 4px 0 var(--d-plum);
   }
   &__corebar { flex-shrink: 0; height: 20px; padding: 0 6px; background: var(--d-lav); color: var(--d-navy); font-family: $mono; font-size: 8px; line-height: 20px; letter-spacing: 0.04em; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-  &__corebody { flex: 1; display: flex; align-items: center; justify-content: center; padding: 12%; background: var(--d-lav-50); img { width: auto; height: 100%; max-height: 100%; } }
+  &__corebody { flex: 1; display: flex; align-items: center; justify-content: center; padding: 12%; background: var(--d-navy-800); img { width: auto; height: 100%; max-height: 100%; filter: drop-shadow(0 0 18px rgba(202, 125, 221, 0.35)); } }
 
   &__node { position: absolute; width: 14%; transform: translate(-50%, -50%); color: var(--d-mist);
     &--1 { left: 15.33%; top: 16.8%; } &--2 { left: 84.67%; top: 16.8%; }
@@ -398,14 +403,6 @@ html[data-dic-lang="en"] .d26 .l-zh { display: none !important; }
     #{$both} & span.l-zh + span.l-en { display: block; color: var(--d-mist); font-size: 14px; &::before { content: none; } } }
 }
 
-.d-season {
-  margin: 64px 0 8px;
-  &__labels { display: flex; justify-content: space-between; gap: 12px; color: var(--d-mist); font-size: 10px; }
-  &__track { position: relative; height: 10px; margin: 10px 0; border: 1px solid var(--d-navy-600); background: var(--d-navy-950); }
-  i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: var(--d-cyan); transition: width 900ms $ease; }
-  b { position: absolute; top: 50%; width: 14px; height: 14px; margin: -7px 0 0 -7px; background: var(--d-orchid); box-shadow: 0 0 0 3px var(--d-navy); }
-}
-
 .d-stages { display: grid; gap: 40px; margin-top: 40px; @media (min-width: $md) { grid-template-columns: 1fr 1fr; gap: 48px; } }
 .d-stage__title { margin-bottom: 24px !important; font-size: 18px; font-weight: 700; color: var(--d-lav);
   #{$both} & span.l-zh + span.l-en { display: block; font-family: $mono; font-size: 11px; font-weight: 500; letter-spacing: 0.12em; color: var(--d-mist-400); &::before { content: none; } } }
@@ -415,7 +412,8 @@ html[data-dic-lang="en"] .d26 .l-zh { display: none !important; }
   position: relative; padding-bottom: 28px;
   &:last-child { padding-bottom: 4px; }
   &__node { position: absolute; left: -31px; top: 7px; width: 11px; height: 11px; background: var(--d-cyan); box-shadow: 0 0 0 4px var(--d-navy); }
-  &__when { font-family: $mono; font-size: 16px; font-weight: 700; color: var(--d-lav); font-variant-numeric: tabular-nums; }
+  &__when { font-family: $mono; font-size: 16px; font-weight: 700; color: var(--d-lav); font-variant-numeric: tabular-nums;
+    #{$both} & .d-event__date span.l-zh + span.l-en::before { content: " / "; } }
   &__state { margin-left: 8px; font-size: 10px; }
   &__title { margin-top: 4px !important; font-size: 16px; font-weight: 700; line-height: 1.45;
     #{$both} & span.l-zh + span.l-en { display: block; font-family: $sans; font-weight: 600; font-size: 14px; color: var(--d-paper); opacity: 0.85; &::before { content: none; } } }
@@ -444,6 +442,8 @@ html[data-dic-lang="en"] .d26 .l-zh { display: none !important; }
 }
 .d-endline { margin-top: 64px !important; text-align: center; color: var(--d-lav); font-size: 13px; letter-spacing: 0.3em; }
 
+@import "dic/dic2026-timeline";
+
 // =============================================================================
 // Scroll reveal — only once the page script confirms it is running
 // =============================================================================
@@ -452,5 +452,5 @@ html[data-dic-lang="en"] .d26 .l-zh { display: none !important; }
 
 @media (prefers-reduced-motion: reduce) {
   .d26 *, .d26 *::before, .d26 *::after { animation: none !important; transition: none !important; }
-  .d-pulses { display: none; }
+  .d-pulses, .d-tlx__fill::after { display: none; }
 }

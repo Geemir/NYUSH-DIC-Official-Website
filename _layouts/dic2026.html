@@ -18,6 +18,7 @@ layout: default
 {%- assign kf = d.tracks_file -%}
 {%- assign lf = d.timeline_file -%}
 {%- assign sf = d.signup_file -%}
+{%- assign pf = d.partners_file -%}
 
 <div class="d26" id="d26">
 
@@ -42,6 +43,7 @@ layout: default
       <a href="#tracks" data-dock="tracks"><span class="d-mono">02</span> {% include dic2026/t.html v=kf.heading %}</a>
       <a href="#timeline" data-dock="timeline"><span class="d-mono">03</span> {% include dic2026/t.html v=lf.heading %}</a>
       <a href="#signup" data-dock="signup"><span class="d-mono">04</span> {% include dic2026/t.html v=sf.heading %}</a>
+      <a href="#partners" data-dock="partners"><span class="d-mono">05</span> {% include dic2026/t.html v=pf.heading %}</a>
     </div>
   </nav>
 
@@ -148,6 +150,21 @@ layout: default
               <p class="d-example__label">{% include dic2026/t.html v=t.example_label %}</p>
               <p class="d-example__title">{% include dic2026/t.html v=t.example.title %}</p>
               <div class="d-pair">{% include dic2026/t.html v=t.example tag="p" %}</div>
+              {%- if t.example.why %}
+              <details class="d-dig">
+                <summary><span>{% include dic2026/t.html v=d.example_ui.more %}</span><span class="d-dig__sign" aria-hidden="true">+</span></summary>
+                <div class="d-dig__body">
+                  <p class="d-dig__label">{% include dic2026/t.html v=d.example_ui.why %}</p>
+                  <div class="d-pair">{% include dic2026/t.html v=t.example.why tag="p" %}</div>
+                  <p class="d-dig__label">{% include dic2026/t.html v=d.example_ui.explore %}</p>
+                  <ol class="d-dig__list">
+                    {%- for q in t.example.explore %}
+                    <li><div class="d-pair">{% include dic2026/t.html v=q tag="p" %}</div></li>
+                    {%- endfor %}
+                  </ol>
+                </div>
+              </details>
+              {%- endif %}
             </div>
           </div>
         </article>
@@ -188,22 +205,18 @@ layout: default
         {%- endfor %}
       </div>
 
-      {%- comment -%} Season progress: filled in by the script. {%- endcomment -%}
-      <div class="d-season" data-season data-from="2026-11-09" data-to="2027-03-28" hidden>
-        <div class="d-season__labels d-mono"><span>2026.11.9 · KICK-OFF</span><span>INNOVATION DAY · 2027.3.28</span></div>
-        <div class="d-season__track"><i data-season-fill></i><b data-season-marker></b></div>
-        <p class="d-mono d-mist" data-season-caption></p>
-      </div>
+      {% include dic2026/timeline.html %}
 
-      <div class="d-stages">
+      {%- comment -%} The plain list: shown without JavaScript, and as the "LIST" view. {%- endcomment -%}
+      <div class="d-stages" data-tlx-list>
         {%- for stage in lf.stages %}
         <div class="d-stage d-reveal">
           <h3 class="d-stage__title">{% include dic2026/t.html v=stage.label %} <span class="d-mono d-mist">(*)</span></h3>
           <ol class="d-timeline">
             {%- for e in stage.events %}
-            <li class="d-event" {% if e.start %}data-start="{{ e.start }}"{% endif %} {% if e.end %}data-end="{{ e.end }}"{% endif %}>
+            <li class="d-event"{% if e.start %} data-start="{{ e.start }}"{% endif %}{% if e.end %} data-end="{{ e.end }}"{% endif %}{% if e.time %} data-time="{{ e.time }}"{% endif %}>
               <span class="d-event__node" aria-hidden="true"></span>
-              <p class="d-event__when">{{ e.when }} <span class="d-event__state d-mono" data-state></span></p>
+              <p class="d-event__when"><span class="d-event__date">{% include dic2026/v.html v=e.when %}</span> <span class="d-event__state d-mono" data-state></span></p>
               <h4 class="d-event__title">{% include dic2026/t.html v=e.title %}</h4>
               {%- if e.items %}
               <ul class="d-event__items">
@@ -249,6 +262,47 @@ layout: default
                    alt="DIC 2026 Kick-off Day poster: Nov 9 (Mon), registration and team formation">
             </picture>
           </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  {%- comment -%} ---- FILE / 05 · Partners & support ---- {%- endcomment -%}
+  <section class="d-section" id="partners" aria-labelledby="partners-title">
+    <div class="d-wrap">
+      {% include dic2026/file-header.html f=pf id="partners-title" %}
+
+      <div class="d-partners">
+        <div class="d-win d-reveal">
+          <div class="d-win__bar"><span>SUPPORT.SYS</span><span class="d-win__ctl" aria-hidden="true"><i></i><i></i><i></i></span></div>
+          <div class="d-win__body">
+            <dl class="d-support">
+              {%- for row in pf.rows %}
+              <div class="d-support__row">
+                <dt class="d-mono">{% include dic2026/t.html v=row.label %}</dt>
+                <dd>{% include dic2026/t.html v=row.value %}</dd>
+              </div>
+              {%- endfor %}
+            </dl>
+            <p class="d-mono d-mist d-past__label">{% include dic2026/t.html v=pf.past.label %}</p>
+            <ul class="d-past">
+              {%- for n in pf.past.names %}
+              <li>{% include dic2026/t.html v=n %}</li>
+              {%- endfor %}
+            </ul>
+          </div>
+        </div>
+
+        <div class="d-win d-open d-reveal">
+          <div class="d-win__bar"><span>PARTNER_WITH_US.EXE</span><span class="d-win__ctl" aria-hidden="true"><i></i><i></i><i></i></span></div>
+          <div class="d-win__body">
+            <p class="d-open__status d-mono"><i aria-hidden="true"></i>OPEN</p>
+            <h3 class="d-open__title">{% include dic2026/t.html v=pf.open.title %}</h3>
+            <div class="d-pair d-open__body">{% include dic2026/t.html v=pf.open.body tag="p" %}</div>
+            <a class="d-btn d-btn--inverse" href="mailto:{{ pf.open.email }}?subject={{ pf.open.subject | uri_escape }}">{% include dic2026/t.html v=pf.open.cta %} <span aria-hidden="true">→</span></a>
+            <p class="d-mono d-open__email">{{ pf.open.email }}</p>
+          </div>
         </div>
       </div>
 
