@@ -3,8 +3,10 @@
  *
  * Progressive enhancement: the page is complete without this script (both
  * languages, all four tracks, the full timeline as a list). This adds the
- * language switch, the Shanghai clock, the countdown, track tabs, the
- * interactive timeline, the file-dock highlight and scroll reveals.
+ * language switch (in the site header), the countdown clock, track tabs, the
+ * interactive timeline, the left progress rail and scroll reveals.
+ * anime.js (loaded before this file) animates the clock; everything still
+ * works without it.
  */
 (function () {
   "use strict";
@@ -38,7 +40,7 @@
   }
 
   /* ---------------------------------------------------------------- language */
-  var langSwitch = page.querySelector(".d-langswitch");
+  var langSwitch = document.querySelector(".d-langswitch");
 
   function setLang(lang, remember) {
     if (lang === "both") root.removeAttribute("data-dic-lang");
@@ -99,18 +101,13 @@
     });
   }
 
-  function countdownText(ms) {
-    return "T−" + Math.floor(ms / DAY) + "d " +
-      pad(Math.floor(ms / 3600000) % 24) + ":" +
-      pad(Math.floor(ms / 60000) % 60) + ":" +
-      pad(Math.floor(ms / 1000) % 60);
-  }
-
-  /* --------------------------------------------------------------- countdown */
+  /* -------------------------------------------------------- countdown clock */
+  /* A Shanghai-time dial whose hands keep moving, beside digit reels that roll
+     down to the next dated milestone. */
   var countdown = page.querySelector("[data-countdown]");
-  var countValue = countdown && countdown.querySelector("[data-countdown-value]");
-  var countLabel = countdown && countdown.querySelector("[data-countdown-label]");
-  var countTarget = null;
+  var hasAnime = typeof window.anime === "function";
+  var animate = hasAnime && !reduceMotion;
+  var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   /* The next single-day milestone whose day is not over. Ranges are skipped. */
   function pickTarget(now) {
@@ -121,33 +118,125 @@
     return null;
   }
 
-  function renderCountdown(now) {
-    if (!countdown) return;
-    var ev = pickTarget(now);
-    if (!ev) { countdown.hidden = true; return; }
-    countdown.hidden = false;
-
-    if (ev !== countTarget) {
-      countTarget = ev;
-      /* Reuse the event's own bilingual title so the language switch applies.
-         The printed date is the day only: the start time stays private. */
-      var title = ev.el.querySelector(".d-event__title").cloneNode(true);
-      countLabel.textContent = "→ ";
-      while (title.firstChild) countLabel.appendChild(title.firstChild);
-      countLabel.appendChild(document.createTextNode(" · " + stamp(ev.start)));
-    }
-
-    var diff = ev.target - now;
-    countValue.textContent = diff > 0 ? countdownText(diff) : "T−0 · TODAY";
+  /* Replace an element's content with a Chinese / English pair. */
+  function setPair(el, zh, en) {
+    el.textContent = "";
+    var z = document.createElement("span");
+    z.className = "l-zh"; z.lang = "zh-Hans"; z.textContent = zh;
+    var e = document.createElement("span");
+    e.className = "l-en"; e.lang = "en"; e.textContent = en;
+    el.appendChild(z);
+    el.appendChild(e);
   }
 
-  /* ------------------------------------------------------------------ clock */
-  var clock = page.querySelector("[data-clock]");
+  var clockApi = null;
+  if (countdown) {
+    clockApi = (function () {
+      var lead = countdown.querySelector("[data-countdown-lead]");
+      var dateEl = countdown.querySelector("[data-countdown-date]");
+      var srEl = countdown.querySelector("[data-countdown-sr]");
+      var hands = {};
+      ["h", "m", "s"].forEach(function (k) { hands[k] = countdown.querySelector("[data-hand=" + k + "]"); });
+      var units = {};
+      ["d", "h", "m", "s"].forEach(function (k) {
+        units[k] = { box: countdown.querySelector("[data-unit=" + k + "] .d-unit__reels"), strips: [], digits: [] };
+      });
+      var target = null, wasToday = null, firstSec = null, firstAngle = 0, lastMinute = -1;
 
-  function renderClock(now) {
-    if (!clock) return;
-    var sh = new Date(now + 8 * 3600000); // Shanghai has no daylight saving
-    clock.textContent = pad(sh.getUTCHours()) + ":" + pad(sh.getUTCMinutes());
+      /* Each digit is a reel: a strip of 0-9 that slides to the right number. */
+      function build(u, count) {
+        u.box.textContent = "";
+        u.strips = []; u.digits = [];
+        for (var i = 0; i < count; i++) {
+          var reel = document.createElement("span");
+          reel.className = "d-reel";
+          var strip = document.createElement("span");
+          strip.className = "d-reel__strip";
+          for (var k = 0; k < 10; k++) {
+            var digit = document.createElement("span");
+            digit.textContent = k;
+            strip.appendChild(digit);
+          }
+          reel.appendChild(strip);
+          u.box.appendChild(reel);
+          u.strips.push(strip);
+          u.digits.push(null);
+        }
+      }
+
+      function setUnit(key, value) {
+        var u = units[key];
+        var str = String(value);
+        if (str.length < 2) str = "0" + str;
+        if (u.strips.length !== str.length) build(u, str.length);
+        for (var i = 0; i < str.length; i++) {
+          var d = +str.charAt(i);
+          if (u.digits[i] === d) continue;
+          var first = u.digits[i] === null;
+          u.digits[i] = d;
+          var strip = u.strips[i];
+          if (animate && !first) {
+            window.anime.remove(strip);
+            window.anime({ targets: strip, translateY: -d + "em", duration: 800, easing: "easeOutElastic(1, .75)" });
+          } else {
+            strip.style.transform = "translateY(" + -d + "em)";
+          }
+        }
+      }
+
+      /* Shanghai time on the dial. The second hand ticks; its angle only ever
+         grows, so it never sweeps backwards at the top of the minute. */
+      function renderDial(now) {
+        var sec = Math.floor((now + 8 * 3600000) / 1000);
+        var s = sec % 60, m = Math.floor(sec / 60) % 60, h = Math.floor(sec / 3600) % 12;
+        if (firstSec === null) { firstSec = sec; firstAngle = s * 6; }
+        var angle = firstAngle + (sec - firstSec) * 6;
+        hands.h.style.transform = "rotate(" + (h * 30 + m * 0.5) + "deg)";
+        hands.m.style.transform = "rotate(" + (m * 6 + s * 0.1) + "deg)";
+        if (animate && sec !== firstSec) {
+          window.anime({ targets: hands.s, rotate: angle, duration: 500, easing: "easeOutElastic(1, .45)" });
+        } else {
+          hands.s.style.transform = "rotate(" + angle + "deg)";
+        }
+      }
+
+      return {
+        update: function (now) {
+          var ev = pickTarget(now);
+          if (!ev) { countdown.hidden = true; return; }
+          countdown.hidden = false;
+          renderDial(now);
+
+          var diff = Math.max(0, ev.target - now);
+          var today = diff === 0;
+          if (ev !== target || today !== wasToday) {
+            target = ev;
+            wasToday = today;
+            var tZh = ev.el.querySelector(".d-event__title .l-zh").textContent;
+            var tEn = ev.el.querySelector(".d-event__title .l-en").textContent;
+            if (today) setPair(lead, "今天：" + tZh, "Today: " + tEn);
+            else setPair(lead, "距" + tZh + "还有", "Until " + tEn);
+            /* The day only: the start time stays private. */
+            var day = new Date(ev.start + 8 * 3600000);
+            setPair(dateEl,
+              day.getUTCFullYear() + "年" + (day.getUTCMonth() + 1) + "月" + day.getUTCDate() + "日",
+              MONTHS[day.getUTCMonth()] + " " + day.getUTCDate() + ", " + day.getUTCFullYear());
+          }
+
+          var dd = Math.floor(diff / DAY), hh = Math.floor(diff / 3600000) % 24;
+          var mm = Math.floor(diff / 60000) % 60, ss = Math.floor(diff / 1000) % 60;
+          setUnit("d", dd); setUnit("h", hh); setUnit("m", mm); setUnit("s", ss);
+
+          var minute = Math.floor(now / 60000);
+          if (minute !== lastMinute) {
+            lastMinute = minute;
+            srEl.textContent = today
+              ? lead.textContent
+              : dd + " days, " + hh + " hours and " + mm + " minutes until " + ev.el.querySelector(".d-event__title .l-en").textContent;
+          }
+        }
+      };
+    })();
   }
 
   /* ----------------------------------------------------- interactive timeline */
@@ -228,7 +317,7 @@
           state.textContent = ev.state ? stateLabels[ev.state] : "";
           if (ev.start === null) eta.textContent = "";
           else if (ev.state === "done") eta.textContent = "COMPLETE";
-          else if (ev.state === "now") eta.textContent = ev.range ? "IN PROGRESS · " + daysUntil(ev.end, now) + " DAYS LEFT" : "TODAY";
+          else if (ev.state === "now") eta.textContent = ev.range ? "IN PROGRESS, " + daysUntil(ev.end, now) + " DAYS LEFT" : "TODAY";
           else eta.textContent = (ev.range ? "STARTS IN " : "IN ") + daysUntil(ev.start, now) + " DAYS";
         });
 
@@ -241,9 +330,9 @@
 
         var first = events[0];
         if (now < first.target) {
-          today.innerHTML = "TODAY " + stamp(now) + " · <b>" + daysUntil(first.start, now) + " DAYS TO KICK-OFF</b>";
+          today.innerHTML = "<span>TODAY " + stamp(now) + "</span><b>" + daysUntil(first.start, now) + " DAYS TO KICK-OFF</b>";
         } else {
-          today.textContent = "TODAY " + stamp(now) + " · DAY " + (Math.floor((now - first.start) / DAY) + 1) + " OF THE SEASON";
+          today.innerHTML = "<span>TODAY " + stamp(now) + "</span><b>DAY " + (Math.floor((now - first.start) / DAY) + 1) + " OF THE SEASON</b>";
         }
       }
 
@@ -369,15 +458,14 @@
   var lastMinute = -1;
   function tick() {
     var now = Date.now();
-    renderCountdown(now);
     var minute = Math.floor(now / 60000);
     if (minute !== lastMinute) {
       lastMinute = minute;
-      renderClock(now);
       computeStates(now);
       paintList();
       if (timeline) timeline.update(now);
     }
+    if (clockApi) clockApi.update(now);
   }
   tick();
   setInterval(tick, 1000);
@@ -440,30 +528,47 @@
     });
   }
 
-  /* ---------------------------------------------------------- dock highlight */
-  var dockLinks = page.querySelectorAll("[data-dock]");
-  if ("IntersectionObserver" in window && dockLinks.length) {
-    var byId = {};
-    each(dockLinks, function (a) { byId[a.getAttribute("data-dock")] = a; });
-    var dockObserver = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) return;
-        each(dockLinks, function (a) { a.classList.remove("is-active"); });
-        var active = byId[entry.target.id];
-        if (active) {
-          active.classList.add("is-active");
-          /* Keep the active item visible in the scrollable dock on phones. */
-          var dock = active.parentNode;
-          var left = active.offsetLeft - (dock.clientWidth - active.offsetWidth) / 2;
-          if (dock.scrollTo) dock.scrollTo({ left: left, behavior: reduceMotion ? "auto" : "smooth" });
-          else dock.scrollLeft = left;
-        }
+  /* ------------------------------------------------------------ progress rail */
+  /* The rail on the left follows the reader: the file whose top has passed
+     40% of the screen is active, earlier files are ticked off, and the fill
+     grows smoothly through each file. */
+  var rail = page.querySelector("[data-rail]");
+  if (rail) {
+    var railItems = Array.prototype.slice.call(rail.querySelectorAll("[data-rail-item]"));
+    var railSections = railItems.map(function (li) { return document.getElementById(li.getAttribute("data-rail-item")); });
+    var railFill = rail.querySelector("[data-rail-fill]");
+    var railPct = rail.querySelector("[data-rail-pct]");
+    var railQueued = false;
+
+    var updateRail = function () {
+      railQueued = false;
+      var line = window.innerHeight * 0.4;
+      var active = -1, frac = 0;
+      railSections.forEach(function (sec, k) {
+        if (!sec) return;
+        var r = sec.getBoundingClientRect();
+        if (r.top <= line) { active = k; frac = Math.min(1, Math.max(0, (line - r.top) / r.height)); }
       });
-    }, { rootMargin: "-40% 0px -55% 0px" });
-    Object.keys(byId).forEach(function (id) {
-      var section = document.getElementById(id);
-      if (section) dockObserver.observe(section);
-    });
+      var last = railItems.length - 1;
+      var fill = active < 0 ? 0 : Math.min(1, (active + frac) / last);
+      railFill.style.transform = "scaleY(" + fill.toFixed(4) + ")";
+      railItems.forEach(function (li, k) {
+        li.classList.toggle("is-active", k === active);
+        li.classList.toggle("is-passed", k < active);
+      });
+      var max = document.documentElement.scrollHeight - window.innerHeight;
+      railPct.textContent = String(Math.round(max > 0 ? Math.min(100, Math.max(0, window.scrollY / max * 100)) : 0));
+      rail.classList.toggle("is-engaged", active >= 0);
+    };
+    var queueRail = function () {
+      if (railQueued) return;
+      railQueued = true;
+      (window.requestAnimationFrame || setTimeout)(updateRail);
+    };
+    window.addEventListener("scroll", queueRail, { passive: true });
+    window.addEventListener("resize", queueRail);
+    updateRail();
+    rail.classList.add("is-ready");
   }
 
   /* ------------------------------------------------------------ scroll reveal */

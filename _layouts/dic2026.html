@@ -22,29 +22,28 @@ layout: default
 
 <div class="d26" id="d26">
 
-  {%- comment -%} ---- system bar: identity, language, Shanghai clock ---- {%- endcomment -%}
-  <div class="d-sysbar">
-    <div class="d-wrap d-sysbar__inner">
-      <span class="d-mono d-sysbar__id">NYUSHDIC_{{ d.year }}</span>
-      <span class="d-mono d-sysbar__status"><i aria-hidden="true"></i>{{ d.status }}</span>
-      <div class="d-langswitch" role="group" aria-label="Language / 语言" hidden>
-        <button type="button" data-lang="zh" lang="zh-Hans">中文</button>
-        <button type="button" data-lang="en" lang="en">EN</button>
-        <button type="button" data-lang="both">中 / EN</button>
-      </div>
-      <span class="d-mono d-sysbar__clock" title="Shanghai time · 上海时间"><b>SHA</b> <span data-clock>--:--</span></span>
-    </div>
-  </div>
-
-  {%- comment -%} ---- file dock: jump to each part of the article ---- {%- endcomment -%}
-  <nav class="d-dock" aria-label="DIC 2026">
-    <div class="d-wrap d-dock__inner">
-      <a href="#theme" data-dock="theme"><span class="d-mono">01</span> {% include dic2026/t.html v=tf.heading %}</a>
-      <a href="#tracks" data-dock="tracks"><span class="d-mono">02</span> {% include dic2026/t.html v=kf.heading %}</a>
-      <a href="#timeline" data-dock="timeline"><span class="d-mono">03</span> {% include dic2026/t.html v=lf.heading %}</a>
-      <a href="#signup" data-dock="signup"><span class="d-mono">04</span> {% include dic2026/t.html v=sf.heading %}</a>
-      <a href="#partners" data-dock="partners"><span class="d-mono">05</span> {% include dic2026/t.html v=pf.heading %}</a>
-    </div>
+  {%- comment -%}
+    ---- progress rail: the article's five files down the left edge ----
+    Labels on wide screens, numbers on tablets, dots on phones. The fill and
+    the active file follow the scroll (assets/js/dic2026.js).
+  {%- endcomment %}
+  <nav class="d-rail" aria-label="DIC 2026" data-rail>
+    <div class="d-rail__track" aria-hidden="true"><i class="d-rail__fill" data-rail-fill></i></div>
+    <ol class="d-rail__list">
+      {%- assign rail = "theme,tracks,timeline,signup,partners" | split: "," %}
+      {%- assign heads = "" | split: "" | push: tf.heading | push: kf.heading | push: lf.heading | push: sf.heading | push: pf.heading %}
+      {%- for id in rail %}
+      {%- assign head = heads[forloop.index0] %}
+      <li class="d-rail__item" data-rail-item="{{ id }}">
+        <a href="#{{ id }}">
+          <span class="d-rail__node" aria-hidden="true"></span>
+          <span class="d-rail__num">0{{ forloop.index }}</span>
+          <span class="d-rail__label">{% include dic2026/t.html v=head %}</span>
+        </a>
+      </li>
+      {%- endfor %}
+    </ol>
+    <p class="d-rail__pct" aria-hidden="true"><span data-rail-pct>0</span>%</p>
   </nav>
 
   {%- comment -%} ---- hero ---- {%- endcomment -%}
@@ -66,11 +65,34 @@ layout: default
           <a class="d-btn d-btn--ghost" href="#tracks">{% include dic2026/t.html v=kf.heading %}</a>
         </div>
 
-        {%- comment -%} Filled in by the script with the next dated milestone. {%- endcomment -%}
-        <div class="d-countdown" data-countdown hidden>
-          <span class="d-mono d-mist">countdown.log</span>
-          <span class="d-countdown__readout"><span data-countdown-value>T−--d --:--:--</span><i class="d-blockcursor" aria-hidden="true"></i></span>
-          <span class="d-mono d-cyan" data-countdown-label></span>
+        {%- comment -%}
+          Countdown to the next dated milestone: a Shanghai-time dial whose
+          hands keep moving, and rolling digit reels (anime.js). Filled in by
+          assets/js/dic2026.js; hidden without JavaScript.
+        {%- endcomment %}
+        <div class="d-clock" data-countdown hidden>
+          <svg class="d-clock__dial" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+            <circle class="d-clock__face" cx="60" cy="60" r="56" />
+            {%- for i in (0..59) %}
+            {%- assign major = i | modulo: 5 %}
+            <line class="d-clock__tick{% if major == 0 %} is-major{% endif %}" x1="60" y1="8" x2="60" y2="{% if major == 0 %}17{% else %}12{% endif %}" transform="rotate({{ i | times: 6 }} 60 60)" />
+            {%- endfor %}
+            <line class="d-clock__hand d-clock__hand--h" data-hand="h" x1="60" y1="66" x2="60" y2="34" />
+            <line class="d-clock__hand d-clock__hand--m" data-hand="m" x1="60" y1="68" x2="60" y2="18" />
+            <g class="d-clock__hand--s" data-hand="s"><line x1="60" y1="74" x2="60" y2="11" /><circle cx="60" cy="18" r="3" /></g>
+            <circle class="d-clock__pin" cx="60" cy="60" r="3.5" />
+          </svg>
+          <div class="d-clock__body">
+            <p class="d-clock__lead" data-countdown-lead></p>
+            <div class="d-clock__units" aria-hidden="true">
+              <div class="d-unit" data-unit="d"><span class="d-unit__reels"></span><span class="d-unit__label"><span class="l-en" lang="en">Days</span><span class="l-zh" lang="zh-Hans">天</span></span></div>
+              <div class="d-unit" data-unit="h"><span class="d-unit__reels"></span><span class="d-unit__label"><span class="l-en" lang="en">Hours</span><span class="l-zh" lang="zh-Hans">时</span></span></div>
+              <div class="d-unit" data-unit="m"><span class="d-unit__reels"></span><span class="d-unit__label"><span class="l-en" lang="en">Min</span><span class="l-zh" lang="zh-Hans">分</span></span></div>
+              <div class="d-unit" data-unit="s"><span class="d-unit__reels"></span><span class="d-unit__label"><span class="l-en" lang="en">Sec</span><span class="l-zh" lang="zh-Hans">秒</span></span></div>
+            </div>
+            <p class="d-clock__date" data-countdown-date></p>
+            <p class="d-visually-hidden" data-countdown-sr></p>
+          </div>
         </div>
       </div>
 
@@ -311,4 +333,7 @@ layout: default
   </section>
 </div>
 
+{%- comment -%} anime.js 3.2.2 (MIT), self-hosted: drives the opening animation and the clock. {%- endcomment %}
+<script src="{{ '/assets/js/lib/anime-3.2.2.min.js' | relative_url }}" defer></script>
+<script src="{{ '/assets/js/dic2026-intro.js' | relative_url }}" defer></script>
 <script src="{{ '/assets/js/dic2026.js' | relative_url }}" defer></script>

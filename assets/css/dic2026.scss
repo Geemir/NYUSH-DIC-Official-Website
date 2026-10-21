@@ -126,58 +126,6 @@ html[data-dic-lang="en"] .d26 .l-zh { display: none !important; }
 #{$both} .d26 .d-pair .l-en { margin-top: 8px; font-size: 14px; line-height: 1.75; color: var(--d-mist); }
 
 // =============================================================================
-// System bar and file dock
-// =============================================================================
-.d-sysbar {
-  background: var(--d-navy-950);
-  border-bottom: 1px solid var(--d-navy-700);
-
-  &__inner { display: flex; align-items: center; gap: 12px 18px; min-height: 40px; flex-wrap: wrap; padding-top: 6px; padding-bottom: 6px; }
-  &__id { display: none; color: var(--d-paper); @media (min-width: 420px) { display: inline; } }
-  &__status {
-    display: none; color: var(--d-mist);
-    i { display: inline-block; width: 7px; height: 7px; margin-right: 8px; background: var(--d-cyan); animation: d-blink 1.6s steps(1, end) infinite; }
-    @media (min-width: $sm) { display: inline-flex; align-items: center; }
-  }
-  &__clock { margin-left: auto; color: var(--d-paper); b { color: var(--d-cyan); font-weight: 500; } }
-}
-
-.d-langswitch {
-  display: flex;
-  border: 1px solid var(--d-navy-600);
-  button {
-    min-height: 30px; padding: 0 10px; border: 0; background: transparent;
-    font-family: $mono; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; color: var(--d-mist);
-    transition: background-color 150ms, color 150ms;
-    &:hover { color: var(--d-paper); }
-    &[aria-pressed="true"] { background: var(--d-lav); color: var(--d-navy); }
-    & + button { border-left: 1px solid var(--d-navy-600); }
-  }
-}
-
-.d-dock {
-  position: sticky; top: 0; z-index: 30;
-  background: rgba(2, 26, 51, 0.92);
-  border-bottom: 1px solid var(--d-navy-600);
-  -webkit-backdrop-filter: saturate(140%);
-  backdrop-filter: saturate(140%);
-
-  &__inner { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; &::-webkit-scrollbar { display: none; } }
-  a {
-    position: relative; display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0;
-    min-height: 46px; padding: 0 12px;
-    font-family: $display; font-size: 14px; font-weight: 700; color: var(--d-mist); white-space: nowrap;
-    transition: color 150ms;
-    .d-mono { color: var(--d-cyan); letter-spacing: 0.06em; }
-    &::after { content: ""; position: absolute; left: 12px; right: 12px; bottom: -1px; height: 2px; background: var(--d-cyan); transform: scaleX(0); transition: transform 200ms $ease; }
-    &:hover { color: var(--d-paper); }
-    &.is-active { color: var(--d-lav); &::after { transform: scaleX(1); } }
-  }
-  // Keep the dock compact in bilingual mode: Chinese only.
-  #{$both} & .l-en { display: none; }
-}
-
-// =============================================================================
 // Buttons — the hard shadow grows on hover and collapses on press
 // =============================================================================
 .d-btn {
@@ -187,7 +135,7 @@ html[data-dic-lang="en"] .d26 .l-zh { display: none !important; }
   transition: transform 160ms $ease, box-shadow 160ms $ease, background-color 160ms;
   &:hover { transform: translate(-2px, -2px); }
   &:active { transform: translate(4px, 4px); box-shadow: none !important; }
-  #{$both} & span.l-zh + span.l-en::before { content: " · "; color: inherit; opacity: 0.6; }
+  #{$both} & span.l-zh + span.l-en::before { content: " / "; color: inherit; opacity: 0.6; }
 
   &--primary { background: var(--d-lav); color: var(--d-navy) !important; box-shadow: 4px 4px 0 var(--d-indigo); &:hover { box-shadow: 6px 6px 0 var(--d-indigo); } }
   &--inverse { background: var(--d-navy); color: var(--d-lav) !important; box-shadow: 4px 4px 0 var(--d-indigo); &:hover { box-shadow: 6px 6px 0 var(--d-indigo); } }
@@ -254,14 +202,6 @@ html[data-dic-lang="en"] .d26 .l-zh { display: none !important; }
 
   &__actions { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 32px; }
 }
-
-.d-countdown {
-  display: inline-flex; flex-direction: column; margin-top: 36px;
-  padding: 12px 16px; border: 1px solid var(--d-navy-600); background: rgba(2, 26, 51, 0.7);
-  &__readout { display: flex; align-items: center; margin: 4px 0 6px; font-family: $mono; font-size: 26px; font-weight: 700; line-height: 1; color: var(--d-paper); font-variant-numeric: tabular-nums; @media (min-width: $sm) { font-size: 30px; } }
-  .d-mono[data-countdown-label] { #{$both} & span.l-zh + span.l-en::before { content: " · "; } }
-}
-.d-blockcursor { display: inline-block; width: 0.5em; height: 0.85em; margin-left: 6px; background: var(--d-cyan); animation: d-blink 1.1s steps(1, end) infinite; }
 
 // ---- Circuit ----------------------------------------------------------------
 .d-circuit {
@@ -384,7 +324,7 @@ html[data-dic-lang="en"] .d26 .l-zh { display: none !important; }
 .d-mission { margin-top: 22px; padding-left: 14px; border-left: 3px solid var(--d-cyan); font-weight: 600; color: var(--d-lav); font-size: 17px; }
 .d-example {
   margin-top: 24px; padding: 16px 18px; background: var(--d-navy-700); border-top: 2px solid var(--d-orchid);
-  &__label { font-size: 12px; color: var(--d-lav); #{$both} & span.l-zh + span.l-en::before { content: " · "; } }
+  &__label { font-size: 12px; color: var(--d-lav); #{$both} & span.l-zh + span.l-en::before { content: " / "; } }
   &__title { margin: 4px 0 10px !important; font-family: $display; font-size: 16px; font-weight: 700; #{$both} & .l-en { display: none; } }
   .d-pair { font-size: 15px; }
 }
@@ -443,6 +383,7 @@ html[data-dic-lang="en"] .d26 .l-zh { display: none !important; }
 .d-endline { margin-top: 64px !important; text-align: center; color: var(--d-lav); font-size: 13px; letter-spacing: 0.3em; }
 
 @import "dic/dic2026-timeline";
+@import "dic/dic2026-chrome";
 
 // =============================================================================
 // Scroll reveal — only once the page script confirms it is running

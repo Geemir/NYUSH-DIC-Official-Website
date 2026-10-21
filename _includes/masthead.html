@@ -2,6 +2,7 @@
   Parameters (passed from _layouts/default.html, so each combination is cached once):
     nav  = key in _data/navigation.yml (default: main)
     logo = logo image path (default: site.logo)
+    lang = true to show the 中文 / EN switch (DIC 2026 page)
 {%- endcomment -%}
 {% capture logo_path %}{{ include.logo | default: site.logo }}{% endcapture %}
 {% assign nav_links = site.data.navigation[include.nav] | default: site.data.navigation.main %}
@@ -41,5 +42,13 @@
         <ul class="hidden-links hidden"></ul>
       </nav>
     </div>
+    {%- if include.lang %}
+    {%- comment -%} Wired up by assets/js/dic2026.js; hidden until then. {%- endcomment %}
+    <div class="d-langswitch" role="group" aria-label="Language / 语言" hidden>
+      <button type="button" data-lang="en" lang="en">EN</button>
+      <button type="button" data-lang="zh" lang="zh-Hans">中文</button>
+      <button type="button" data-lang="both" title="Both languages / 双语">EN+中</button>
+    </div>
+    {%- endif %}
   </div>
 </div>
