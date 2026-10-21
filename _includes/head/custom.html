@@ -1,11 +1,30 @@
 <!-- start custom head snippets -->
 
+{%- comment -%}
+  Chinese text: Apple's PingFang SC on iPhone, iPad and Mac (it cannot legally
+  be served as a web font). Android phones keep their own modern system fonts.
+  Only Windows / Linux desktops, which would otherwise fall back to Microsoft
+  YaHei, load the open-source Noto Sans SC — split by unicode-range, so only
+  the characters on the page download (about 0.5–1.5 MB on a desktop line).
+  Inserted by script, so it never blocks the first paint.
+{%- endcomment %}
+<script>
+  (function () {
+    if (/Android|iPhone|iPad|iPod|Macintosh|Mac OS X|HarmonyOS/i.test(navigator.userAgent)) return;
+    var link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "{{ '/assets/fonts/noto-sans-sc/noto-sans-sc.css' | relative_url }}";
+    document.head.appendChild(link);
+  })();
+</script>
+
 {% if page.layout == "dic2026" %}
   {%- comment -%}
     DIC 2026 page: its stylesheet and fonts, and the reader's language choice,
     applied before first paint so the page never flashes the other language.
-    No stored choice: Chinese browsers get Chinese, everyone else English.
-    Without JavaScript nothing is set and both languages show.
+    Order: ?lang=zh|en|both in the link (e.g. from the WeChat article; it is
+    remembered), then the reader's earlier choice, then English. Without
+    JavaScript nothing is set and both languages show.
   {%- endcomment %}
   <link rel="preload" href="{{ '/assets/fonts/montserrat-latin-800-normal.woff2' | relative_url }}" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="{{ '/assets/fonts/jetbrains-mono-latin-500-normal.woff2' | relative_url }}" as="font" type="font/woff2" crossorigin>
@@ -13,11 +32,14 @@
   <meta name="theme-color" content="#021a33">
   <script>
     (function () {
-      var lang;
-      try { lang = localStorage.getItem("dic26-lang"); } catch (e) {}
-      if (lang !== "zh" && lang !== "en" && lang !== "both") {
-        lang = (navigator.language || "").toLowerCase().indexOf("zh") === 0 ? "zh" : "en";
+      var ok = { zh: 1, en: 1, both: 1 };
+      var lang = (location.search.match(/[?&]lang=(zh|en|both)(?:&|$)/) || [])[1];
+      if (lang) {
+        try { localStorage.setItem("dic26-lang", lang); } catch (e) {}
+      } else {
+        try { lang = localStorage.getItem("dic26-lang"); } catch (e) {}
       }
+      if (!ok[lang]) lang = "en";
       if (lang !== "both") document.documentElement.setAttribute("data-dic-lang", lang);
     })();
   </script>
