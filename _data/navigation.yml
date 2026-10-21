@@ -1,8 +1,10 @@
 main:
-  - title: "About us"
-    url: /AboutUs/
+  # DIC 2026 comes first: on a phone only the first item fits in the top bar,
+  # and most visitors arrive from WeChat looking for this year's challenge.
   - title: "DIC 2026"
     url: /DIC2026/
+  - title: "About us"
+    url: /AboutUs/
   - title: "Past Events"
     url: /PastEvents/
   - title: "Registration"

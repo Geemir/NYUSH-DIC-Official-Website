@@ -1,0 +1,29 @@
+/* ==========================================================================
+   DIC colour tokens, shared by the whole site.
+   The navy / cyan / orchid set is the 2026 campaign palette (the DIC 2026
+   page and the home-page teaser); --dic-accent is the original site accent.
+   ========================================================================== */
+
+:root {
+  --dic-accent: #386272;
+  --dic-accent-dark: #274854;
+
+  --d-navy-950: #021a33;
+  --d-navy: #032344;
+  --d-navy-800: #0b2c4d;
+  --d-navy-700: #143758;
+  --d-navy-600: #395672;
+  --d-navy-500: #5b7896;
+  --d-cyan: #70d5e8;
+  --d-cyan-300: #a6e6f2;
+  --d-orchid: #ca7ddd;
+  --d-orchid-300: #dda6ea;
+  --d-lav: #d8cbff;
+  --d-lav-100: #e7e0ff;
+  --d-lav-50: #f1eefd;
+  --d-paper: #f4f5ff;
+  --d-mist: #b9c9dc;
+  --d-mist-400: #8fa6bf;
+  --d-indigo: #3119dc;
+  --d-plum: #2a2260;
+}
