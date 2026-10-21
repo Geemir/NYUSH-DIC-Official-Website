@@ -1,0 +1,205 @@
+// Partial of assets/css/dic2026.scss (imported there; uses its variables).
+// Page chrome for DIC 2026: the language switch in the site header, the
+// progress rail on the left, the countdown clock, the opening animation, and
+// the footer logos on navy.
+
+// =============================================================================
+// Language switch, in the site header
+// =============================================================================
+.layout--dic2026 {
+  .masthead__inner-wrap { align-items: center; }
+  // Let the menu share the row with the switch; the theme's greedy menu
+  // measures its own width, so it adapts.
+  .masthead__menu { flex: 1 1 auto; min-width: 0; width: auto; }
+  @media (max-width: 479px) { .site-title { display: none; } }
+}
+
+.d-langswitch {
+  display: flex; flex-shrink: 0; margin-left: 12px;
+  border: 1px solid var(--d-navy-600);
+  button {
+    min-height: 32px; padding: 0 10px; border: 0; background: transparent; cursor: pointer;
+    font-family: $mono; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: var(--d-mist);
+    transition: background-color 150ms, color 150ms;
+    &:hover { color: var(--d-paper); }
+    &:focus-visible { outline: 2px solid var(--d-cyan); outline-offset: 2px; }
+    &[aria-pressed="true"] { background: var(--d-lav); color: var(--d-navy); }
+    & + button { border-left: 1px solid var(--d-navy-600); }
+  }
+}
+
+// =============================================================================
+// Progress rail — the article's five files down the left edge
+// Wide screens: node, number and label in a column beside the content.
+// Tablets: node and number. Phones: a slim line of nodes in the gutter.
+// =============================================================================
+$rail-step: 44px;
+
+.d26 {
+  @media (min-width: 760px) { padding-left: 56px; }
+  @media (min-width: 1100px) { padding-left: 244px; }
+}
+.layout--dic2026 .page__footer {
+  @media (min-width: 760px) { padding-left: 56px; }
+  @media (min-width: 1100px) { padding-left: 244px; }
+}
+
+.d-rail {
+  position: fixed; z-index: 20; top: 50%; left: 3px;
+  transform: translateY(-50%);
+  opacity: 0; transition: opacity 300ms;
+  &.is-ready { opacity: 0.55; }
+  &.is-engaged { opacity: 1; }
+  @media (min-width: 760px) { left: 18px; }
+  @media (min-width: 1100px) { left: 28px; width: 196px; }
+
+  &__track {
+    position: absolute; left: 3px; top: 11px; height: calc(22px * 4); width: 1px;
+    background: var(--d-navy-600);
+    @media (min-width: 760px) { left: 5px; top: $rail-step * 0.5; height: $rail-step * 4; width: 2px; }
+  }
+  &__fill {
+    position: absolute; inset: 0; background: var(--d-cyan);
+    box-shadow: 0 0 8px rgba(112, 213, 232, 0.6);
+    transform: scaleY(0); transform-origin: top;
+    transition: transform 160ms linear;
+  }
+
+  &__list { position: relative; }
+  &__item a {
+    display: flex; align-items: center; gap: 10px; height: 22px;
+    color: var(--d-mist);
+    @media (min-width: 760px) { height: $rail-step; }
+  }
+  &__node {
+    position: relative; flex-shrink: 0; width: 7px; height: 7px;
+    border: 1.5px solid var(--d-navy-500); background: var(--d-navy);
+    transition: transform 220ms $ease, background-color 220ms, border-color 220ms, box-shadow 220ms;
+    @media (min-width: 760px) { width: 12px; height: 12px; border-width: 2px; }
+  }
+  &__num { display: none; font-family: $mono; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: var(--d-mist-400); transition: color 200ms;
+    @media (min-width: 760px) { display: inline; } }
+  &__label { display: none; font-family: $display; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; white-space: nowrap; opacity: 0.7; transition: opacity 200ms, color 200ms, transform 220ms $ease;
+    @media (min-width: 1100px) { display: inline; }
+    #{$both} & .l-en { display: none; } }
+  &__pct { display: none; margin-top: 10px !important; font-family: $mono; font-size: 11px; letter-spacing: 0.1em; color: var(--d-cyan);
+    @media (min-width: 760px) { display: block; } }
+
+  &__item a:hover &__label, &__item a:focus-visible &__label { opacity: 1; color: var(--d-paper); }
+  &__item a:hover &__node { border-color: var(--d-cyan); }
+
+  &__item.is-passed &__node { background: var(--d-cyan); border-color: var(--d-cyan); }
+  &__item.is-active &__node {
+    background: var(--d-orchid); border-color: var(--d-orchid);
+    transform: scale(1.3);
+    @media (min-width: 760px) { box-shadow: 0 0 0 4px rgba(202, 125, 221, 0.22); }
+  }
+  &__item.is-active &__num { color: var(--d-cyan); }
+  &__item.is-active &__label { opacity: 1; color: var(--d-paper); transform: translateX(3px); }
+}
+
+// =============================================================================
+// Countdown clock — a running Shanghai-time dial and rolling digit reels
+// =============================================================================
+.d-clock {
+  display: inline-flex; align-items: center; gap: 16px; max-width: 100%;
+  margin-top: 36px; padding: 14px 18px 14px 14px;
+  border: 1px solid var(--d-navy-600); background: rgba(2, 26, 51, 0.7);
+  box-shadow: 4px 4px 0 var(--d-plum);
+  @media (min-width: $sm) { gap: 20px; padding: 16px 22px 16px 16px; }
+
+  &__dial { flex-shrink: 0; width: 72px; height: 72px; @media (min-width: $sm) { width: 92px; height: 92px; } }
+  &__face { fill: var(--d-navy-800); stroke: var(--d-navy-600); stroke-width: 2; }
+  &__tick { stroke: var(--d-navy-500); stroke-width: 1.5; &.is-major { stroke: var(--d-lav); stroke-width: 2.5; } }
+  [data-hand] { transform-origin: 60px 60px; transform-box: view-box; }
+  &__hand { stroke: var(--d-paper); stroke-linecap: round; }
+  &__hand--h { stroke-width: 5; }
+  &__hand--m { stroke-width: 3.5; }
+  &__hand--s { line { stroke: var(--d-orchid); stroke-width: 1.6; } circle { fill: var(--d-orchid); } }
+  &__pin { fill: var(--d-cyan); }
+
+  &__body { min-width: 0; }
+  &__lead { font-family: $display; font-size: 13px; font-weight: 700; color: var(--d-lav); }
+  &__units { display: flex; gap: 12px; margin: 6px 0 2px; @media (min-width: $sm) { gap: 16px; } }
+  &__date { font-family: $display; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; color: var(--d-cyan); }
+}
+
+.d-unit {
+  display: flex; flex-direction: column;
+  &__reels {
+    display: flex; height: 1em; overflow: hidden;
+    font-family: $display; font-size: 30px; font-weight: 800; line-height: 1; color: var(--d-paper);
+    font-variant-numeric: tabular-nums;
+    @media (min-width: $sm) { font-size: 40px; }
+  }
+  &__label {
+    margin-top: 6px; font-family: $display; font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--d-mist-400);
+  }
+  & + & { padding-left: 12px; border-left: 1px solid var(--d-navy-600); @media (min-width: $sm) { padding-left: 16px; } }
+}
+.d-reel { display: block; width: 0.66em; height: 1em; overflow: hidden; text-align: center; }
+.d-reel__strip { display: flex; flex-direction: column; will-change: transform;
+  span { display: block; height: 1em; line-height: 1; } }
+
+// =============================================================================
+// Opening animation (assets/js/dic2026-intro.js). The overlay is appended to
+// <body>, outside .d26, so it sets its own type.
+// =============================================================================
+html.d-intro-pending { overflow: hidden; }
+html.d-intro-pending body::after { content: ""; position: fixed; inset: 0; z-index: 9998; background: var(--d-navy-950); }
+
+.d-intro {
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+  background: var(--d-navy-950); cursor: pointer;
+  -webkit-font-smoothing: antialiased;
+
+  &__grid {
+    position: absolute; inset: -5%; opacity: 0;
+    background-image: radial-gradient(rgba(112, 213, 232, 0.2) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+  &__board { position: absolute; inset: 0; width: 100%; height: 100%; }
+  &__trace { fill: none; stroke: var(--d-cyan); stroke-width: 2; opacity: 0.75;
+    &:nth-child(3n) { stroke: var(--d-orchid); } }
+  &__node { fill: var(--d-navy); stroke: var(--d-cyan); stroke-width: 2; opacity: 0; transform-box: fill-box; transform-origin: center; }
+  &__scan {
+    position: absolute; left: 0; right: 0; top: 0; height: 2px; opacity: 0;
+    background: linear-gradient(90deg, transparent, var(--d-cyan), transparent);
+    box-shadow: 0 0 14px var(--d-cyan);
+  }
+
+  &__stage { position: relative; padding: 0 16px; text-align: center; }
+  &__kicker { margin: 0 0 18px; font-family: $mono; font-size: 12px; letter-spacing: 0.32em; color: var(--d-cyan); opacity: 0; }
+  &__title {
+    display: flex; justify-content: center; align-items: baseline; white-space: nowrap;
+    font-family: $display; font-size: clamp(20px, 5.2vw, 84px); font-weight: 800; line-height: 1.15; letter-spacing: -0.01em;
+    color: var(--d-paper);
+    i { display: inline-block; font-style: normal; opacity: 0; }
+  }
+  &__word { display: inline-flex; b { font-weight: 800; } }
+  &__rest { display: inline-flex; overflow: hidden; }
+  &__gap { display: inline-block; width: 0.28em; }
+  &.is-dic &__word b i { text-shadow: -3px 0 0 var(--d-cyan), 3px 0 0 var(--d-orchid); }
+  &__year {
+    display: inline-flex; overflow: hidden;
+    i { color: transparent; -webkit-text-stroke: 1px var(--d-cyan); @media (min-width: $sm) { -webkit-text-stroke-width: 2px; } }
+    i:first-child { margin-left: 0.3em; }
+  }
+
+  &__skip {
+    position: absolute; right: 20px; bottom: 20px; padding: 8px 12px;
+    border: 1px solid var(--d-navy-600); background: transparent; cursor: pointer;
+    font-family: $mono; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--d-mist);
+    &:hover { color: var(--d-paper); border-color: var(--d-cyan); }
+  }
+}
+
+// =============================================================================
+// Footer on navy: the school logos in white
+// =============================================================================
+.layout--dic2026 .dic-footer-logos {
+  .is-light { display: none !important; }
+  .is-dark { display: block !important; opacity: 0.92; }
+}

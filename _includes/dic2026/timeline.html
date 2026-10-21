@@ -65,7 +65,8 @@
       {%- for st in lf.stages -%}{%- for e in st.events %}
       <section class="d-tlx__panel" role="tabpanel" id="tlx-panel-{{ i }}" aria-labelledby="tlx-tab-{{ i }}" hidden>
         <div class="d-tlx__panel-meta">
-          <span class="d-mono d-tlx__panel-stage d-tlx__panel-stage--{{ forloop.parentloop.index }}">{% include dic2026/t.html v=st.short %} · {{ i | plus: 1 }}/{{ total }}</span>
+          <span class="d-mono d-tlx__panel-stage d-tlx__panel-stage--{{ forloop.parentloop.index }}">{% include dic2026/t.html v=st.short %}</span>
+          <span class="d-mono d-tlx__count">{{ i | plus: 1 }} / {{ total }}</span>
           <span class="d-mono d-tlx__state" data-tlx-state></span>
         </div>
         <div class="d-tlx__panel-grid">

@@ -149,6 +149,14 @@ $dic-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", m
   50% { transform: translateY(-6px); }
 }
 
+/* Glyph trail behind the mouse (assets/js/dic-site.js). */
+.dic-trail {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+}
+
 /* DIC 2026 doorway on the home page, in the campaign style. */
 .dic-teaser {
   display: block;
@@ -210,6 +218,11 @@ $dic-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", m
     font: 500 0.72rem/1.5 $dic-mono;
     letter-spacing: 0.08em;
     color: var(--d-cyan);
+  }
+
+  &__meta b {
+    margin-left: 0.4em;
+    color: var(--d-lav);
   }
 
   &__count {
@@ -367,6 +380,8 @@ $dic-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", m
   flex-wrap: wrap;
   gap: 0.75rem;
   margin: 1rem 0;
+
+  .is-dark { display: none !important; }
 
   img {
     display: block;

@@ -29,7 +29,7 @@ layout: home
       <span class="dic-teaser__opc">{{ d26.theme_file.theme.short }}_</span>
       <span class="dic-teaser__line">{{ d26.theme_file.theme.line_1 }} {{ d26.theme_file.theme.line_2 }}</span>
       <span class="dic-teaser__meta">
-        <span>Kick-off Day &middot; 2026.11.9</span>
+        <span>Kick-off Day <b>2026.11.9</b></span>
         <span class="dic-teaser__count" data-teaser-countdown="2026-11-09T17:00:00+08:00" hidden></span>
       </span>
     </span>

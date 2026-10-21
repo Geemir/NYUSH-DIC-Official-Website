@@ -16,7 +16,7 @@
     color: var(--d-cyan);
     &::-webkit-details-marker { display: none; }
     &:hover { color: var(--d-cyan-300); }
-    #{$both} & span.l-zh + span.l-en::before { content: " · "; }
+    #{$both} & span.l-zh + span.l-en::before { content: " / "; }
   }
   &__sign { font-size: 18px; line-height: 1; transition: transform 200ms $ease; }
   &[open] &__sign { transform: rotate(45deg); }
@@ -26,7 +26,7 @@
     margin-top: 16px !important;
     font-family: $mono; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
     color: var(--d-orchid-300);
-    #{$both} & span.l-zh + span.l-en::before { content: " · "; }
+    #{$both} & span.l-zh + span.l-en::before { content: " / "; }
   }
   &__body .d-pair { margin-top: 6px; }
 
@@ -60,7 +60,7 @@
 
   // ---- toolbar
   &__toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
-  &__today { color: var(--d-mist); b { color: var(--d-orchid-300); font-weight: 700; } }
+  &__today { display: flex; flex-wrap: wrap; gap: 4px 18px; color: var(--d-mist); b { color: var(--d-orchid-300); font-weight: 700; } }
   &__tools { display: flex; gap: 10px; }
   // "& &__x" doubles the class so these beat the base ".d26 button { font: inherit }".
   & &__play,
@@ -111,7 +111,7 @@
     border-top: 2px solid var(--d-cyan); color: var(--d-cyan);
     font-family: $mono; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
     &--2 { border-color: var(--d-orchid); color: var(--d-orchid-300); }
-    #{$both} & span.l-zh + span.l-en::before { content: " · "; }
+    #{$both} & span.l-zh + span.l-en::before { content: " / "; }
   }
 
   &__track { position: relative; padding-top: 34px; }
@@ -199,13 +199,14 @@
     &.is-from-right { animation: d-tlx-in-r 360ms $ease; }
     &.is-from-left { animation: d-tlx-in-l 360ms $ease; }
   }
-  &__panel-meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 12px; margin-bottom: 10px; }
+  &__panel-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; margin-bottom: 10px; }
+  &__count { color: var(--d-mist-400); }
   &__panel-stage {
     color: var(--d-cyan);
     &--2 { color: var(--d-orchid-300); }
-    #{$both} & span.l-zh + span.l-en::before { content: " · "; }
+    #{$both} & span.l-zh + span.l-en::before { content: " / "; }
   }
-  &__state { color: var(--d-orchid-300); }
+  &__state { margin-left: auto; color: var(--d-orchid-300); }
   &__panel-grid { display: grid; gap: 14px 36px; @media (min-width: $md) { grid-template-columns: 1fr 1.25fr; align-items: start; } }
   &__when {
     font-family: $mono; font-size: 20px; font-weight: 700; color: var(--d-lav);
@@ -247,7 +248,7 @@
     &:first-child { padding-top: 0; }
     @media (min-width: $sm) { grid-template-columns: 132px 1fr; }
   }
-  dt { padding-top: 3px; color: var(--d-cyan); #{$both} & span.l-zh + span.l-en::before { content: " · "; } }
+  dt { padding-top: 3px; color: var(--d-cyan); #{$both} & span.l-zh + span.l-en::before { content: " / "; } }
   dd {
     margin: 0; font-size: 16px; font-weight: 600; color: var(--d-paper);
     #{$both} & span.l-zh + span.l-en { display: block; font-size: 14px; font-weight: 400; color: var(--d-mist); &::before { content: none; } }
@@ -261,7 +262,7 @@
     padding: 4px 10px; border: 1px solid var(--d-navy-600); font-size: 13px; color: var(--d-mist);
     transition: border-color 150ms, color 150ms;
     &:hover { border-color: var(--d-cyan); color: var(--d-paper); }
-    #{$both} & span.l-zh + span.l-en::before { content: " · "; }
+    #{$both} & span.l-zh + span.l-en::before { content: " / "; }
   }
 }
 
