@@ -1,0 +1,260 @@
+---
+layout: default
+---
+{%- comment -%}
+  DIC 2026 page, in the campaign's visual language (navy / cyan / orchid,
+  retro-desktop windows). Content: _data/dic2026.yml. Styles:
+  assets/css/dic2026.scss. Behaviour: assets/js/dic2026.js.
+
+  Everything renders without JavaScript (both languages shown, all tracks
+  visible, static timeline). The script adds the language switch, clock,
+  countdown, track tabs, timeline status and scroll reveals.
+
+  srcset values use single quotes on purpose: the default layout rewrites
+  ="/… URLs for the site baseurl and would strip it from srcset.
+{%- endcomment -%}
+{%- assign d = site.data.dic2026 -%}
+{%- assign tf = d.theme_file -%}
+{%- assign kf = d.tracks_file -%}
+{%- assign lf = d.timeline_file -%}
+{%- assign sf = d.signup_file -%}
+
+<div class="d26" id="d26">
+
+  {%- comment -%} ---- system bar: identity, language, Shanghai clock ---- {%- endcomment -%}
+  <div class="d-sysbar">
+    <div class="d-wrap d-sysbar__inner">
+      <span class="d-mono d-sysbar__id">NYUSHDIC_{{ d.year }}</span>
+      <span class="d-mono d-sysbar__status"><i aria-hidden="true"></i>{{ d.status }}</span>
+      <div class="d-langswitch" role="group" aria-label="Language / 语言" hidden>
+        <button type="button" data-lang="zh" lang="zh-Hans">中文</button>
+        <button type="button" data-lang="en" lang="en">EN</button>
+        <button type="button" data-lang="both">中 / EN</button>
+      </div>
+      <span class="d-mono d-sysbar__clock" title="Shanghai time · 上海时间"><b>SHA</b> <span data-clock>--:--</span></span>
+    </div>
+  </div>
+
+  {%- comment -%} ---- file dock: jump to each part of the article ---- {%- endcomment -%}
+  <nav class="d-dock" aria-label="DIC 2026">
+    <div class="d-wrap d-dock__inner">
+      <a href="#theme" data-dock="theme"><span class="d-mono">01</span> {% include dic2026/t.html v=tf.heading %}</a>
+      <a href="#tracks" data-dock="tracks"><span class="d-mono">02</span> {% include dic2026/t.html v=kf.heading %}</a>
+      <a href="#timeline" data-dock="timeline"><span class="d-mono">03</span> {% include dic2026/t.html v=lf.heading %}</a>
+      <a href="#signup" data-dock="signup"><span class="d-mono">04</span> {% include dic2026/t.html v=sf.heading %}</a>
+    </div>
+  </nav>
+
+  {%- comment -%} ---- hero ---- {%- endcomment -%}
+  <header class="d-hero">
+    <div class="d-wrap d-hero__grid">
+      <div class="d-hero__copy">
+        <p class="d-mono d-cyan">NYUSHDIC {{ d.year }}</p>
+        <div class="d-hero__year" aria-hidden="true"><span class="d-hero__year-back">{{ d.year }}</span><span class="d-hero__year-front">{{ d.year }}</span></div>
+        <h1 class="d-hero__title">Digital Innovation Challenge <span class="d-visually-hidden">{{ d.year }}</span></h1>
+
+        <div class="d-hero__theme">
+          <p class="d-mono d-mist">{% include dic2026/t.html v=tf.theme.lead %}</p>
+          <p class="d-hero__opc"><span class="d-chroma">{{ tf.theme.short }}</span><span class="d-cursor" aria-hidden="true">_</span> <span class="d-hero__opc-exp">{{ tf.theme.expansion }}</span></p>
+          <p class="d-hero__line">{{ tf.theme.line_1 }} {{ tf.theme.line_2 }}</p>
+        </div>
+
+        <div class="d-hero__actions">
+          <a class="d-btn d-btn--primary" href="#signup">{% include dic2026/t.html v=sf.heading %}</a>
+          <a class="d-btn d-btn--ghost" href="#tracks">{% include dic2026/t.html v=kf.heading %}</a>
+        </div>
+
+        {%- comment -%} Filled in by the script with the next dated milestone. {%- endcomment -%}
+        <div class="d-countdown" data-countdown hidden>
+          <span class="d-mono d-mist">countdown.log</span>
+          <span class="d-countdown__readout"><span data-countdown-value>T−--d --:--:--</span><i class="d-blockcursor" aria-hidden="true"></i></span>
+          <span class="d-mono d-cyan" data-countdown-label></span>
+        </div>
+      </div>
+
+      <div class="d-hero__art">
+        {% include dic2026/circuit.html %}
+      </div>
+    </div>
+  </header>
+
+  {%- comment -%} ---- FILE / 01 · Theme ---- {%- endcomment -%}
+  <section class="d-section" id="theme" aria-labelledby="theme-title">
+    <div class="d-wrap">
+      {% include dic2026/file-header.html f=tf id="theme-title" %}
+
+      <div class="d-theme">
+        <div class="d-theme__text d-reveal">
+          <h3 class="d-sublabel">{% include dic2026/t.html v=tf.about.label %}</h3>
+          {%- for p in tf.about.paragraphs %}
+          <div class="d-pair">{% include dic2026/t.html v=p tag="p" %}</div>
+          {%- endfor %}
+        </div>
+
+        <div class="d-themebox d-reveal">
+          <p class="d-themebox__lead">{% include dic2026/t.html v=tf.theme.lead %}</p>
+          <p class="d-themebox__opc"><span class="d-chroma">{{ tf.theme.short }}</span><span class="d-cursor" aria-hidden="true">_</span></p>
+          <p class="d-mono d-cyan d-themebox__exp">{{ tf.theme.expansion }}</p>
+          <p class="d-themebox__line">{{ tf.theme.line_1 }}<br>{{ tf.theme.line_2 }}</p>
+        </div>
+      </div>
+
+      <figure class="d-win d-figure d-reveal">
+        <div class="d-win__bar"><span>OPC_WORLD.PNG</span><span class="d-win__ctl" aria-hidden="true"><i></i><i></i><i></i></span></div>
+        <picture>
+          <source type="image/webp" srcset='{{ "/assets/images/DIC2026/opc-world.webp" | relative_url }}'>
+          <img src="{{ '/assets/images/DIC2026/opc-world.jpg' | relative_url }}" width="1536" height="1024" loading="lazy" data-zoom
+               alt="Pixel illustration: one creator at a workstation, connected to four windows: a shop, a shield, a robot and a heart">
+        </picture>
+      </figure>
+
+      <div class="d-pair d-invite d-reveal">{% include dic2026/t.html v=tf.invitation tag="p" %}</div>
+    </div>
+  </section>
+
+  {%- comment -%} ---- FILE / 02 · Tracks ---- {%- endcomment -%}
+  <section class="d-section" id="tracks" aria-labelledby="tracks-title">
+    <div class="d-wrap">
+      {% include dic2026/file-header.html f=kf id="tracks-title" %}
+      <div class="d-pair d-lead d-reveal">{% include dic2026/t.html v=kf.lead tag="p" %}</div>
+
+      {%- comment -%} Tab strip. Hidden without JS, when all four windows show stacked. {%- endcomment -%}
+      <div class="d-tabs" role="tablist" aria-label="Tracks" hidden>
+        {%- for t in kf.tracks %}
+        <button type="button" role="tab" id="tab-{{ t.id }}" aria-controls="{{ t.id }}" data-tab="{{ t.id }}">
+          <span class="d-tabs__icon">{% include dic2026/icons/{{ t.icon }}.svg %}</span>
+          <span class="d-tabs__text"><span class="d-mono">TRACK {{ t.num }}</span>{% include dic2026/t.html v=t.name class="d-tabs__name" %}</span>
+        </button>
+        {%- endfor %}
+      </div>
+
+      <div class="d-trackset">
+        {%- for t in kf.tracks %}
+        <article class="d-win d-track" id="{{ t.id }}" role="tabpanel" aria-labelledby="{{ t.id }}-name" tabindex="-1">
+          <div class="d-win__bar"><span>{{ t.window }}</span><span class="d-win__ctl" aria-hidden="true"><i></i><i></i><i></i></span></div>
+          <div class="d-win__body">
+            <div class="d-track__head">
+              <span class="d-track__icon">{% include dic2026/icons/{{ t.icon }}.svg %}</span>
+              <div>
+                <p class="d-mono d-cyan"><span class="l-zh" lang="zh-Hans">赛道</span><span class="l-en" lang="en">TRACK</span> {{ t.num }}</p>
+                <h3 class="d-track__name" id="{{ t.id }}-name">{% include dic2026/t.html v=t.name %}</h3>
+              </div>
+            </div>
+
+            <div class="d-mission d-pair">{% include dic2026/t.html v=t.mission tag="p" %}</div>
+            <div class="d-pair d-track__body">{% include dic2026/t.html v=t.body tag="p" %}</div>
+
+            <div class="d-example">
+              <p class="d-example__label">{% include dic2026/t.html v=t.example_label %}</p>
+              <p class="d-example__title">{% include dic2026/t.html v=t.example.title %}</p>
+              <div class="d-pair">{% include dic2026/t.html v=t.example tag="p" %}</div>
+            </div>
+          </div>
+        </article>
+        {%- endfor %}
+      </div>
+    </div>
+  </section>
+
+  {%- comment -%} ---- FILE / 03 · Timeline ---- {%- endcomment -%}
+  <section class="d-section" id="timeline" aria-labelledby="timeline-title">
+    <div class="d-wrap">
+      {% include dic2026/file-header.html f=lf id="timeline-title" %}
+
+      <div class="d-overview d-reveal">
+        <h3 class="d-sublabel">{% include dic2026/t.html v=lf.overview.label %}</h3>
+        {%- for p in lf.overview.paragraphs %}
+        <div class="d-pair">{% include dic2026/t.html v=p tag="p" %}</div>
+        {%- endfor %}
+      </div>
+
+      <h3 class="d-sublabel">{% include dic2026/t.html v=lf.phases.label %}</h3>
+      <div class="d-phases">
+        {%- for ph in lf.phases.items %}
+        <article class="d-win d-phase d-reveal">
+          <div class="d-win__bar"><span>STAGE_{{ ph.num }}</span><span class="d-win__ctl" aria-hidden="true"><i></i><i></i><i></i></span></div>
+          <div class="d-win__body">
+            <div class="d-phase__head"><span class="d-phase__num d-chroma">{{ ph.num }}</span><h4>{% include dic2026/t.html v=ph.name %}</h4></div>
+            <div class="d-pair">{% include dic2026/t.html v=ph.body tag="p" %}</div>
+            {%- if ph.deliverables %}
+            <ul class="d-list">
+              {%- for item in ph.deliverables %}
+              <li>{% include dic2026/t.html v=item %}</li>
+              {%- endfor %}
+            </ul>
+            {%- endif %}
+          </div>
+        </article>
+        {%- endfor %}
+      </div>
+
+      {%- comment -%} Season progress: filled in by the script. {%- endcomment -%}
+      <div class="d-season" data-season data-from="2026-11-09" data-to="2027-03-28" hidden>
+        <div class="d-season__labels d-mono"><span>2026.11.9 · KICK-OFF</span><span>INNOVATION DAY · 2027.3.28</span></div>
+        <div class="d-season__track"><i data-season-fill></i><b data-season-marker></b></div>
+        <p class="d-mono d-mist" data-season-caption></p>
+      </div>
+
+      <div class="d-stages">
+        {%- for stage in lf.stages %}
+        <div class="d-stage d-reveal">
+          <h3 class="d-stage__title">{% include dic2026/t.html v=stage.label %} <span class="d-mono d-mist">(*)</span></h3>
+          <ol class="d-timeline">
+            {%- for e in stage.events %}
+            <li class="d-event" {% if e.start %}data-start="{{ e.start }}"{% endif %} {% if e.end %}data-end="{{ e.end }}"{% endif %}>
+              <span class="d-event__node" aria-hidden="true"></span>
+              <p class="d-event__when">{{ e.when }} <span class="d-event__state d-mono" data-state></span></p>
+              <h4 class="d-event__title">{% include dic2026/t.html v=e.title %}</h4>
+              {%- if e.items %}
+              <ul class="d-event__items">
+                {%- for item in e.items %}
+                <li>{% include dic2026/t.html v=item %}</li>
+                {%- endfor %}
+              </ul>
+              {%- endif %}
+            </li>
+            {%- endfor %}
+          </ol>
+        </div>
+        {%- endfor %}
+      </div>
+      <p class="d-note">* {% include dic2026/t.html v=lf.note %}</p>
+    </div>
+  </section>
+
+  {%- comment -%} ---- FILE / 04 · Sign up ---- {%- endcomment -%}
+  <section class="d-section" id="signup" aria-labelledby="signup-title">
+    <div class="d-wrap">
+      {% include dic2026/file-header.html f=sf id="signup-title" %}
+
+      <div class="d-win d-signup d-reveal">
+        <div class="d-win__bar"><span>SIGN_UP.APP</span><span class="d-win__ctl" aria-hidden="true"><i></i><i></i><i></i></span></div>
+        <div class="d-win__body d-signup__body">
+          <div>
+            <div class="d-pair d-signup__text">{% include dic2026/t.html v=sf.body tag="p" %}</div>
+            {%- if sf.register_url != "" %}
+            <a class="d-btn d-btn--primary" href="{{ sf.register_url }}" target="_blank" rel="noopener">{% include dic2026/t.html v=sf.heading %} ↗</a>
+            {%- endif %}
+            <p class="d-signup__closing">{{ sf.closing }}</p>
+            <ul class="d-signup__links">
+              {%- for link in site.footer.links %}
+              <li><a href="{{ link.url }}"{% if link.url contains "://" %} target="_blank" rel="noopener"{% endif %}>{% if link.icon contains "/" %}<img src="{{ link.icon }}" alt="" width="16" height="16">{% else %}<i class="{{ link.icon }}" aria-hidden="true"></i>{% endif %} {{ link.label }}</a></li>
+              {%- endfor %}
+            </ul>
+          </div>
+          <a class="d-signup__poster" href="{{ '/assets/images/DIC2026/kickoff-poster.jpg' | relative_url }}" data-zoom-link>
+            <picture>
+              <source type="image/webp" srcset='{{ "/assets/images/DIC2026/kickoff-poster.webp" | relative_url }}'>
+              <img src="{{ '/assets/images/DIC2026/kickoff-poster.jpg' | relative_url }}" width="1000" height="1414" loading="lazy"
+                   alt="DIC 2026 Kick-off Day poster: Nov 9 (Mon), registration and team formation">
+            </picture>
+          </a>
+        </div>
+      </div>
+
+      <p class="d-endline d-mono">{{ d.footer_line }}</p>
+    </div>
+  </section>
+</div>
+
+<script src="{{ '/assets/js/dic2026.js' | relative_url }}" defer></script>

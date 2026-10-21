@@ -1,0 +1,356 @@
+/* ==========================================================================
+   Site-wide improvements on top of the Minimal Mistakes theme.
+   Keeps the original look; adds motion, a clearer path to DIC 2026, and
+   fixes for phones (see GitHub issue #4). The DIC 2026 page itself is
+   styled separately in assets/css/dic2026.scss.
+   ========================================================================== */
+
+$dic-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+$dic-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+
+/* --------------------------------------------------------------------------
+   Navigation
+   -------------------------------------------------------------------------- */
+
+/* The current page keeps its underline (set by assets/js/dic-site.js). */
+.greedy-nav .visible-links a[aria-current="page"]::before {
+  transform: scaleX(1);
+}
+
+/* DIC 2026 stands out as a small navy "window" with a live cursor, so it is
+   findable at a glance, including when it is the only item that fits. */
+.greedy-nav .visible-links a[href$="/DIC2026/"] {
+  margin-inline: 0.5rem;
+  padding: 0.3rem 0.75rem;
+  background: var(--d-navy);
+  color: var(--d-paper);
+  box-shadow: 3px 3px 0 var(--d-indigo);
+  transition: transform 150ms $dic-ease, box-shadow 150ms $dic-ease;
+
+  &::before { display: none; }
+
+  &::after {
+    content: "";
+    display: inline-block;
+    width: 0.4em;
+    height: 0.4em;
+    margin-inline-start: 0.45em;
+    vertical-align: 0.1em;
+    background: var(--d-cyan);
+    animation: dic-blink 1.2s steps(1, end) infinite;
+  }
+
+  &:hover {
+    color: var(--d-paper);
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 var(--d-indigo);
+  }
+}
+
+.layout--dic2026 .greedy-nav .visible-links a[href$="/DIC2026/"] {
+  background: var(--d-lav);
+  color: var(--d-navy);
+}
+
+@keyframes dic-blink {
+  50% { opacity: 0; }
+}
+
+/* --------------------------------------------------------------------------
+   Home
+   -------------------------------------------------------------------------- */
+
+.layout--home {
+  #page-title { display: none; }
+
+  .archive {
+    float: none;
+    width: 100%;
+    padding-inline: 0;
+  }
+}
+
+.dic-home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 12rem);
+  min-height: calc(100svh - 12rem);
+  padding: 2.5rem 1rem 3rem;
+  text-align: center;
+  user-select: none;
+  /* A faint dot grid in the site accent: the same desktop surface the
+     DIC 2026 page uses, at a whisper. */
+  background-image: radial-gradient(rgba(56, 98, 114, 0.14) 1px, transparent 1px);
+  background-size: 22px 22px;
+  background-position: center;
+
+  &__mark {
+    width: 3.25rem;
+    height: auto;
+    margin-bottom: 1.25rem;
+    animation: dic-float 6s ease-in-out infinite;
+  }
+
+  &__l1 {
+    margin: 0;
+    font-size: clamp(2.25rem, 9vw, 4rem);
+    font-weight: bold;
+    line-height: 1.05;
+    letter-spacing: 0.01em;
+  }
+
+  &__l2 {
+    margin: 0.4em 0 0;
+    font-size: clamp(1.35rem, 5.4vw, 3rem);
+    font-weight: bold;
+    line-height: 1.15;
+    color: var(--dic-accent);
+  }
+
+  &__l3 {
+    margin: 1.4em 0 0;
+    font-size: clamp(1rem, 2.6vw, 1.5rem);
+    font-weight: lighter;
+    color: var(--dic-accent);
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  /* Staggered entrance. */
+  &__mark, &__l1, &__l2, &__l3, &__actions, .dic-teaser {
+    animation-name: dic-rise;
+    animation-duration: 700ms;
+    animation-timing-function: $dic-ease;
+    animation-fill-mode: both;
+  }
+  &__mark { animation-name: dic-rise, dic-float; animation-duration: 700ms, 6s; animation-iteration-count: 1, infinite; animation-delay: 0ms, 700ms; animation-timing-function: $dic-ease, ease-in-out; }
+  &__l1 { animation-delay: 80ms; }
+  &__l2 { animation-delay: 180ms; }
+  &__l3 { animation-delay: 280ms; }
+  &__actions { animation-delay: 380ms; }
+  .dic-teaser { animation-delay: 480ms; }
+}
+
+@keyframes dic-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes dic-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* DIC 2026 doorway on the home page, in the campaign style. */
+.dic-teaser {
+  display: block;
+  width: min(100%, 30rem);
+  margin-top: 2.5rem;
+  text-align: left;
+  text-decoration: none;
+  border: 1px solid var(--d-navy-600);
+  background: var(--d-navy);
+  color: var(--d-paper);
+  box-shadow: 5px 5px 0 var(--d-plum);
+  transition: transform 160ms $dic-ease, box-shadow 160ms $dic-ease;
+
+  &:hover, &:focus-visible {
+    color: var(--d-paper);
+    transform: translate(-2px, -2px);
+    box-shadow: 7px 7px 0 var(--d-plum);
+  }
+  &:active { transform: translate(3px, 3px); box-shadow: none; }
+
+  &__bar {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.35rem 0.75rem;
+    background: var(--d-lav);
+    color: var(--d-navy);
+    font: 500 0.7rem/1.4 $dic-mono;
+    letter-spacing: 0.06em;
+    transition: background-color 150ms;
+  }
+  &:hover &__bar, &:focus-visible &__bar { background: var(--d-cyan); }
+
+  &__body { display: block; padding: 1rem 1.1rem 1.1rem; }
+
+  &__opc {
+    display: block;
+    margin: 0;
+    font: 700 1.6rem/1.15 $dic-mono;
+    color: var(--d-lav);
+    text-shadow: -2px 0 0 var(--d-cyan), 2px 0 0 var(--d-orchid);
+  }
+
+  &__line {
+    display: block;
+    margin: 0.2rem 0 0;
+    font-size: 1rem;
+    font-weight: bold;
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+    margin-top: 0.85rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--d-navy-600);
+    font: 500 0.72rem/1.5 $dic-mono;
+    letter-spacing: 0.08em;
+    color: var(--d-cyan);
+  }
+
+  &__count {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--d-paper);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Buttons and cards
+   -------------------------------------------------------------------------- */
+
+.btn {
+  transition: background-color 160ms, transform 160ms $dic-ease, box-shadow 160ms $dic-ease;
+
+  &:hover { transform: translateY(-1px); }
+  &:active { transform: translateY(1px); }
+}
+
+.btn--primary {
+  background-color: var(--dic-accent);
+
+  &:hover { background-color: var(--dic-accent-dark); }
+}
+
+/* Past Events cards lift, and their photo eases in. */
+.feature__item .archive__item {
+  transition: transform 220ms $dic-ease, box-shadow 220ms $dic-ease;
+
+  .archive__item-teaser {
+    overflow: hidden;
+    border-radius: $border-radius;
+
+    img { transition: transform 600ms $dic-ease; }
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+
+    .archive__item-teaser img { transform: scale(1.04); }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Content images
+   -------------------------------------------------------------------------- */
+
+/* Pages size posters, logos and QR codes with inline percentages, which
+   shrink them to ~117px on a phone. Keep the layout, but never let them
+   fall below a legible width. */
+@media (max-width: #{$small - 1px}) {
+  .page__content img[style*="width"] {
+    min-width: min(240px, 100%);
+  }
+}
+
+/* Images that open full size on tap (assets/js/dic-site.js). */
+.dic-zoomable { cursor: zoom-in; }
+
+.dic-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(2, 26, 51, 0.9);
+  cursor: zoom-out;
+  animation: dic-fade 180ms ease-out;
+
+  img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    background: #fff;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
+    animation: dic-pop 220ms $dic-ease;
+  }
+
+  button {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: transparent;
+    color: #fff;
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+}
+
+@keyframes dic-fade { from { opacity: 0; } }
+@keyframes dic-pop { from { transform: scale(0.96); opacity: 0; } }
+
+/* --------------------------------------------------------------------------
+   Footer
+   -------------------------------------------------------------------------- */
+
+.page__footer-follow .social-icons {
+  img {
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.125em;
+  }
+
+  a { transition: color 150ms; }
+}
+
+.dic-footer-logos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1rem 0;
+
+  img {
+    display: block;
+    width: 300px;
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Reduced motion: keep everything, drop the movement.
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .dic-home *,
+  .dic-home,
+  .greedy-nav a[href$="/DIC2026/"]::after,
+  .feature__item .archive__item,
+  .feature__item .archive__item img,
+  .dic-lightbox,
+  .dic-lightbox img {
+    animation: none !important;
+    transition: none !important;
+  }
+}

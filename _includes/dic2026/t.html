@@ -1,0 +1,9 @@
+{%- comment -%}
+  Bilingual text. Renders the Chinese and English of a {zh, en} pair as two
+  sibling elements; the language switch on the page shows one or both.
+
+    {% include dic2026/t.html v=item.title %}                 → two <span>s
+    {% include dic2026/t.html v=item.body tag="p" class="x" %} → two <p>s
+{%- endcomment -%}
+{%- assign tag = include.tag | default: "span" -%}
+<{{ tag }} class="l-zh {{ include.class }}" lang="zh-Hans">{{ include.v.zh | escape }}</{{ tag }}><{{ tag }} class="l-en {{ include.class }}" lang="en">{{ include.v.en | escape }}</{{ tag }}>

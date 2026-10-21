@@ -1,0 +1,17 @@
+{%- comment -%}
+  Section header in the style of the WeChat article:
+    FILE / 02 ─────────────── NYUSHDIC 2026
+    赛道揭幕 / TRACKS UNVEILED
+  Usage: {% include dic2026/file-header.html f=site.data.dic2026.tracks_file id="tracks-title" %}
+{%- endcomment -%}
+<header class="d-filehead">
+  <div class="d-filehead__bar">
+    <span class="d-mono d-cyan">{{ include.f.file }}</span>
+    <span class="d-filehead__rule" aria-hidden="true"></span>
+    <span class="d-mono d-mist">NYUSHDIC {{ site.data.dic2026.year }}</span>
+  </div>
+  <h2 class="d-filehead__title" id="{{ include.id }}">
+    <span class="l-zh" lang="zh-Hans">{{ include.f.heading.zh }}</span><span class="l-en" lang="en">{{ include.f.heading.en }}</span>
+  </h2>
+  <div class="d-filehead__pixels" aria-hidden="true"><i></i><i></i><i></i><b></b></div>
+</header>

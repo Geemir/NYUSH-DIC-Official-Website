@@ -1,0 +1,46 @@
+{%- comment -%}
+  The theme as a diagram: one person (the DIC mark, centre) wired to four
+  capabilities (the tracks, corners). Small data pulses travel the traces.
+  The SVG and the HTML nodes share a 600×500 coordinate space inside a
+  fixed-aspect box, so percentage positions line the two layers up.
+{%- endcomment -%}
+{%- assign tracks = site.data.dic2026.tracks_file.tracks -%}
+<div class="d-circuit">
+  <svg class="d-circuit__wires" viewBox="0 0 600 500" aria-hidden="true" focusable="false">
+    <polygon points="65.4,57.0 36.0,74.0 6.6,57.0 6.6,23.0 36.0,6.0 65.4,23.0" class="d-wire-dim" />
+    <polygon points="586.0,485.0 560.0,500.0 534.0,485.0 534.0,455.0 560.0,440.0 586.0,455.0" class="d-wire-dim" />
+    <polygon points="601.6,309.0 586.0,318.0 570.4,309.0 570.4,291.0 586.0,282.0 601.6,291.0" class="d-wire-dim" />
+    <path d="M210 250 H120 V300 H40" class="d-wire-dim" />
+    <path d="M390 250 H480 V200 H568" class="d-wire-dim" />
+    <path d="M300 160 V120" class="d-wire-dim" />
+    <path d="M300 340 V380" class="d-wire-dim" />
+    <path d="M134 84 H250 V160" class="d-wire" />
+    <path d="M466 84 H350 V160" class="d-wire" />
+    <path d="M134 416 H250 V340" class="d-wire" />
+    <path d="M466 416 H350 V340" class="d-wire" />
+    <rect x="246" y="80" width="8" height="8" class="d-joint" /><rect x="346" y="80" width="8" height="8" class="d-joint" />
+    <rect x="246" y="412" width="8" height="8" class="d-joint" /><rect x="346" y="412" width="8" height="8" class="d-joint" />
+    <rect x="116" y="246" width="8" height="8" class="d-joint" /><rect x="476" y="246" width="8" height="8" class="d-joint" />
+    <rect x="116" y="296" width="8" height="8" class="d-joint" /><rect x="476" y="196" width="8" height="8" class="d-joint" />
+    <g class="d-pulses">
+      <rect x="-4" y="-4" width="8" height="8" class="d-pulse"><animateMotion dur="2.8s" begin="0s" repeatCount="indefinite" path="M134 84 H250 V160" /></rect>
+      <rect x="-4" y="-4" width="8" height="8" class="d-pulse d-pulse--alt"><animateMotion dur="2.8s" begin="0.7s" repeatCount="indefinite" path="M466 84 H350 V160" /></rect>
+      <rect x="-4" y="-4" width="8" height="8" class="d-pulse"><animateMotion dur="2.8s" begin="1.4s" repeatCount="indefinite" path="M134 416 H250 V340" /></rect>
+      <rect x="-4" y="-4" width="8" height="8" class="d-pulse d-pulse--alt"><animateMotion dur="2.8s" begin="2.1s" repeatCount="indefinite" path="M466 416 H350 V340" /></rect>
+    </g>
+  </svg>
+
+  <div class="d-circuit__core">
+    <div class="d-circuit__corebar"><span>OPC_ONE_PERSON_COMPANY</span></div>
+    <div class="d-circuit__corebody">
+      <img src="{{ '/assets/images/DIC2026/dic-mark.png' | relative_url }}" alt="" width="682" height="1000">
+    </div>
+  </div>
+
+  {%- for t in tracks %}
+  <a class="d-circuit__node d-circuit__node--{{ forloop.index }}" href="#{{ t.id }}" data-track-link="{{ t.id }}">
+    <span class="d-circuit__icon">{% include dic2026/icons/{{ t.icon }}.svg %}</span>
+    <span class="d-circuit__label"><b>{{ t.num }}</b> {% include dic2026/t.html v=t.name %}</span>
+  </a>
+  {%- endfor %}
+</div>

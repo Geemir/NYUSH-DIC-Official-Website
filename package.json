@@ -1,28 +1,27 @@
 {
-  "name": "nyush-dic",
-  "version": "0.1.0",
+  "name": "minimal-mistakes",
   "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+  "version": "4.26.2",
+  "description": "Minimal Mistakes 2 column Jekyll theme.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mmistakes/minimal-mistakes.git"
   },
-  "dependencies": {
-    "@fontsource/jetbrains-mono": "^5.3.0",
-    "@fontsource/montserrat": "^5.3.0",
-    "next": "16.3.4",
-    "react": "19.2.8",
-    "react-dom": "19.2.8"
+  "keywords": [
+    "jekyll",
+    "theme",
+    "minimal"
+  ],
+  "author": "Michael Rose",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mmistakes/minimal-mistakes/issues"
+  },
+  "homepage": "https://mmistakes.github.io/minimal-mistakes/",
+  "engines": {
+    "node": ">= 0.10.0"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.3.4",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "uglify-js": "^3.17.4"
   }
 }
