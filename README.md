@@ -18,7 +18,7 @@ bundle exec jekyll serve --livereload   # http://localhost:4000
 |---|---|
 | **DIC 2026 page** text, tracks, timeline, sign-up link | `_data/dic2026.yml` (official 公众号 copy, word for word) |
 | DIC 2026 page layout / styles / behaviour | `_layouts/dic2026.html`, `assets/css/dic2026.scss`, `assets/js/dic2026.js` |
-| DIC 2026 opening animation (first visit only) | `assets/js/dic2026-intro.js`; uses anime.js 3.2.2 in `assets/js/lib/` |
+| DIC 2026 opening animation (when arriving from the rest of the site, or on a first visit) | `assets/js/dic2026-intro.js`; uses anime.js 3.2.2 in `assets/js/lib/` |
 | Top menu | `_data/navigation.yml` |
 | Home page | `index.markdown` |
 | Site-wide style additions | `_sass/dic/` |

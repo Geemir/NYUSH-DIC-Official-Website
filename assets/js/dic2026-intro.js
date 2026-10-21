@@ -1,13 +1,14 @@
 /*
- * DIC 2026 opening animation — first visit only.
+ * DIC 2026 opening animation — on the way in from the rest of the site.
  *
  * "Digital Innovation Challenge" types in over a circuit board that draws
  * itself; then every letter except D, I and C folds away, the initials slide
  * together into "DIC", "2026" stamps in beside them, and the screen lifts like
  * a curtain onto the page.
  *
- * The head script (_includes/head/custom.html) decides whether to play: first
- * visit, no #anchor in the link, motion allowed. It sets html.d-intro-pending,
+ * The head script (_includes/head/custom.html) decides whether to play: coming
+ * from another page of the site (or a first visit), not a reload or back/forward,
+ * no #anchor in the link, motion allowed. It sets html.d-intro-pending,
  * which covers the page in navy until this runs, and removes it on its own
  * after a few seconds if anything goes wrong. Any click or key skips.
  * Requires anime.js 3 (window.anime).
