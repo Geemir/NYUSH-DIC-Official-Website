@@ -1,0 +1,28 @@
+<div class="page__footer-follow">
+  <ul class="social-icons">
+    {% if site.data.ui-text[site.locale].follow_label %}
+      <li><strong>{{ site.data.ui-text[site.locale].follow_label }}</strong></li>
+    {% endif %}
+
+    {% if site.footer.links %}
+      {% for link in site.footer.links %}
+        {% if link.label and link.url %}
+          <li><a href="{{ link.url | relative_url }}" rel="nofollow noopener noreferrer"><i class="{{ link.icon | default: 'fas fa-link' }}" aria-hidden="true"></i> {{ link.label }}</a></li>
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
+    {% unless site.atom_feed.hide %}
+      <li><a href="{% if site.atom_feed.path %}{{ site.atom_feed.path }}{% else %}{{ '/feed.xml' | relative_url }}{% endif %}"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> {{ site.data.ui-text[site.locale].feed_label | default: "Feed" }}</a></li>    {% endunless %}
+  </ul>
+</div>
+<div style="display: flex; justify-content: flex-start; gap: 10px;">
+  <a href="./">
+      <img src="{{ '/assets/images/CSDSE1.png' | relative_url }}" alt="NYUSHCSDSE1" width="300" height="100">
+  </a>
+  <a href="https://dail.shanghai.nyu.edu/">
+      <img src="{{ '/assets/images/SFSCAIDL1.png' | relative_url }}" alt="SFSCAIDL1" width="300" height="100">
+  </a>
+</div>
+<div class="page__footer-copyright">&copy; {{ site.time | date: '%Y' }} <a href="{{ site.copyright_url | default: site.url }}">{{ site.copyright | default: site.title }}</a></div>
+

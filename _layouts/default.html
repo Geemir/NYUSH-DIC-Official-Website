@@ -1,0 +1,49 @@
+---
+---
+
+<!doctype html>
+{% include copyright.html %}
+<html lang="{{ site.locale | replace: "_", "-" | default: "en" }}" class="no-js">
+  <head>
+    {% include head.html %}
+    {% include head/custom.html %}
+  </head>
+
+  <body class="layout--{{ page.layout | default: layout.layout }}{% if page.classes or layout.classes %}{{ page.classes | default: layout.classes | join: ' ' | prepend: ' ' }}{% endif %}" dir="{% if site.rtl %}rtl{% else %}ltr{% endif %}">
+    {% include_cached skip-links.html %}
+    {% include_cached masthead.html %}
+
+    <div class="initial-content">
+      {% comment %}
+        Pages write links/images as "/assets/..." or "/DIC2025/". When the site is served
+        from a sub-path (e.g. a GitHub project page, baseurl "/repo-name"), prefix those
+        with site.baseurl. Already-prefixed and protocol-relative ("//") URLs are left alone.
+        No-op when baseurl is empty (localhost, custom domain).
+      {% endcomment %}
+      {% if site.baseurl and site.baseurl != "" %}
+        {% capture _prefixed %}="{{ site.baseurl }}/{% endcapture %}
+        {% capture _src %}src="{{ site.baseurl }}/{% endcapture %}
+        {% capture _href %}href="{{ site.baseurl }}/{% endcapture %}
+        {{ content | replace: _prefixed, '="/' | replace: '="//', '="@@PROTO@@' | replace: 'src="/', _src | replace: 'href="/', _href | replace: '="@@PROTO@@', '="//' }}
+      {% else %}
+        {{ content }}
+      {% endif %}
+      {% include after-content.html %}
+    </div>
+
+    {% if site.search == true %}
+      <div class="search-content">
+        {% include_cached search/search_form.html %}
+      </div>
+    {% endif %}
+
+    <div id="footer" class="page__footer">
+      <footer>
+        {% include footer/custom.html %}
+        {% include_cached footer.html %}
+      </footer>
+    </div>
+
+    {% include scripts.html %}
+  </body>
+</html>

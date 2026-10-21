@@ -1,0 +1,15 @@
+main:
+  - title: "About us"
+    url: /AboutUs/
+  - title: "DIC 2026"
+    url: /DIC2026/
+  - title: "Past Events"
+    url: /PastEvents/
+  - title: "Registration"
+    url: /Registration/
+  - title: "Contact us"
+    url: /ContactUs/
+  # Archived pages (linked from Past Events, not shown in the menu):
+  #   /DIC2025/  /DIC2025-awards/  /Warm-up Workshops/  /DIC2024/  /Challenge/
+  #   /PreviousChallenge/  /PreviousChallenge_eng/
+  # Unused: /Activities/  /Flip/ (countdown test page)
