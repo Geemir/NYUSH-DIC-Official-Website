@@ -1,0 +1,30 @@
+---
+layout: default
+---
+{%- comment -%}
+  DIC 2026's own tabs (Registration, Team-up) and the organisers' page, in
+  the DIC 2026 page's visual language. Front matter: `app` names the script
+  (assets/js/dic-platform/<app>.js, which builds the interactive part and
+  talks to the DIC API, see server/README.md) and `copy` the page's text in
+  _data/dic2026.yml (its `head` is the file header).
+
+  The platform settings below come from _data/dic2026.yml → platform.
+{%- endcomment -%}
+{%- assign pf = site.data.dic2026.platform -%}
+{%- assign copy = site.data.dic2026[page.copy] -%}
+<script type="application/json" id="dic-platform">{"api": {{ pf.api_url | default: "" | jsonify }}, "base": {{ "/" | relative_url | jsonify }}, "chatbot": {{ pf.chatbot | default: false | jsonify }}}</script>
+
+<div class="d26 d-app" id="d26" data-app="{{ page.app }}">
+  <div class="d-wrap">
+    {% include dic2026/file-header.html f=copy.head id="app-title" %}
+    {{ content }}
+  </div>
+</div>
+
+<script src="{{ '/assets/js/dic2026.js' | relative_url }}" defer></script>
+<script type="module" src="{{ '/assets/js/dic-platform/' | append: page.app | append: '.js' | relative_url }}"></script>
+<script type="module" src="{{ '/assets/js/dic-platform/bot.js' | relative_url }}"></script>
+<script nomodule>
+  document.getElementById("d26").insertAdjacentHTML("beforeend",
+    '<p class="d-wrap d-note">Please update your browser to use this page. / 请更新浏览器后使用此页面。</p>');
+</script>

@@ -19,11 +19,16 @@ main:
   # issue #3); registration for 2026 lives on the DIC 2026 page.
   # Unused: /Activities/  /Flip/ (countdown test page)
 
-# The DIC 2026 page: this year's challenge only. The logo leads back home.
+# The DIC 2026 pages: this year's challenge only. The logo leads back home.
+# Registration and Team-up are DIC 2026's own tabs (DIC2026-register.html,
+# DIC2026-team-up.html); the organisers' page (/DIC2026/admin/) stays off
+# the menu.
 dic2026:
   - title: "DIC 2026"
     url: /DIC2026/
   - title: "Registration"
-    url: /DIC2026/#signup
+    url: /DIC2026/register/
+  - title: "Team-up"
+    url: /DIC2026/team-up/
   - title: "Contact us"
     url: /ContactUs/

@@ -74,3 +74,13 @@ exclude:
   - .bundle/
   - .jekyll-cache/
   - .sass-cache/
+  # The DIC API (server/). Only its source and schema are published: the
+  # Registration and Team-up preview mode (?preview=1) runs them in the browser.
+  - server/node_modules/
+  - server/test/
+  - server/data/
+  - server/package.json
+  - server/package-lock.json
+  - server/README.md
+  - server/wrangler.toml
+  - server/Dockerfile
