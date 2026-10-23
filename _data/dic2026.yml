@@ -383,3 +383,7 @@ admin_page:
   head:
     file: "APP / 03"
     heading: { zh: "组委会后台", en: "ORGANISERS" }
+
+platform:
+  api_url: "https://api.nyushdic.club"
+
