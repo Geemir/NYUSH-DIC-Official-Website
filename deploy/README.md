@@ -321,6 +321,37 @@ Do these on a phone **without a VPN**, on mobile data and on campus Wi-Fi:
   (`platform.chatbot` is already `true`). Public generative AI services hosted
   in the mainland would need their own filing; this server is in Hong Kong.
 
+### Two domains (nyushdic.com and nyushdic.club)
+
+One domain is the main one; the other just forwards to it. With
+`nyushdic.com` as the main domain:
+
+1. **DNS:** both domains get the same three A records (`@`, `www`, `api`)
+   pointing to the server.
+2. **`/opt/nyushdic/site.env`:**
+
+   ```
+   DOMAIN=nyushdic.com
+   ACME_EMAIL=shanghai.dic@nyu.edu
+   EXTRA_HOSTS=nyushdic.club www.nyushdic.club
+   EXTRA_API_HOSTS=api.nyushdic.club
+   ```
+
+   Every page on nyushdic.club then redirects to the same page on
+   www.nyushdic.com, and api.nyushdic.club keeps working as a second address
+   for the API.
+3. **`/opt/nyushdic/api.env`:** `ALLOWED_ORIGINS` lists the main domain
+   (`https://www.nyushdic.com,https://nyushdic.com,https://geemir.github.io`),
+   and `BOT_KNOWLEDGE_URL` uses it too.
+4. Apply: `cd /opt/nyushdic/deploy && docker compose up -d --force-recreate web api`.
+5. **The site:** `platform.api_url` in `_data/dic2026.yml` is
+   `https://api.nyushdic.com`, and `url` in `_config.yml` is
+   `https://www.nyushdic.com`.
+
+Sign-in emails can keep coming from `mail.nyushdic.club`; to send from
+`mail.nyushdic.com` instead, add that domain in DirectMail (step 7) and change
+`EMAIL_FROM`.
+
 ### Using a different domain
 
 Replace `nyushdic.com` everywhere above, and also:

@@ -2,8 +2,12 @@
 #   www.<domain>  the website, from /srv/site
 #   <domain>      redirects to www.<domain>
 #   api.<domain>  the API
-# DOMAIN and ACME_EMAIL come from /opt/nyushdic/site.env. HTTPS certificates
-# are requested and renewed automatically once the DNS records point here.
+# DOMAIN and ACME_EMAIL come from /opt/nyushdic/site.env. Other domains the
+# club owns can point here too (optional, also in site.env):
+#   EXTRA_HOSTS      e.g. "nyushdic.club www.nyushdic.club": redirect to www.<domain>
+#   EXTRA_API_HOSTS  e.g. "api.nyushdic.club": the API as well
+# HTTPS certificates are requested and renewed automatically once the DNS
+# records point here.
 
 {
 	email {$ACME_EMAIL}
@@ -34,11 +38,11 @@ www.{$DOMAIN} {
 	}
 }
 
-{$DOMAIN} {
+{$DOMAIN} {$EXTRA_HOSTS} {
 	redir https://www.{$DOMAIN}{uri} permanent
 }
 
-api.{$DOMAIN} {
+api.{$DOMAIN} {$EXTRA_API_HOSTS} {
 	encode zstd gzip
 	header -Server
 	reverse_proxy {$API_UPSTREAM:api:8787} {

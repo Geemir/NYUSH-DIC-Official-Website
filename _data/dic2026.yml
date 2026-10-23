@@ -334,7 +334,7 @@ footer_line: "DIGITAL INNOVATION CHALLENGE / 2026"
 # To try them anyway, add ?preview=1 to their address: the API then runs
 # inside your own browser with sample data, and nothing is sent anywhere.
 platform:
-  api_url: "https://api.nyushdic.club"  # the deployed API (testing domain; nyushdic.com later)
+  api_url: "https://api.nyushdic.com"   # the deployed API
   chatbot: true      # true: show the assistant button on the DIC 2026 pages
 
 # The pages' own text. Written for the website (not from the article):
