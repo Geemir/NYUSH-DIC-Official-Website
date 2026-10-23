@@ -6,7 +6,7 @@
  *
  * Tables and exports follow the language switch: English, Chinese, or both.
  */
-import { api, session, getForm, mode } from "./api.js";
+import { api, session, getForm, mode, base } from "./api.js";
 import { h, t, text, clear, win, setStatus, errorPair, busy, toast, confirmBox, stamp, copyText } from "./ui.js";
 import { signInForm, accountBar, previewBanner, soonPanel } from "./account.js";
 import { xlsx, csv, tsv, download } from "./xlsx.js";
@@ -89,7 +89,10 @@ function draw() {
         type: "button", role: "tab", "aria-selected": String(tab === tb.id),
         on: { click: () => { tab = tb.id; draw(); } },
       }, t(tb))) ),
-      h("div.d-admin__tools", exportMenu(), h("button.d-btn.d-btn--small.d-btn--ghost", {
+      h("div.d-admin__tools",
+        /* Organisers can take part too: their registration works like anyone's. */
+        h("a.d-btn.d-btn--small.d-btn--quiet", { href: `${base}DIC2026/register/` }, t({ en: "My registration", zh: "我的报名" })),
+        exportMenu(), h("button.d-btn.d-btn--small.d-btn--ghost", {
         type: "button", on: { click: (e) => busy(e.currentTarget, reload) },
       }, "↻ ", t({ en: "Refresh", zh: "刷新" })))),
     { overview, people: peopleTab, teams: teamsTab, moderation: moderationTab }[tab](),

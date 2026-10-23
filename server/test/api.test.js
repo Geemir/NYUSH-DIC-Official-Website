@@ -401,3 +401,88 @@ test("chatbot: refusals and API errors", async () => {
   assert.equal(ev.at(-1).type, "error");
   assert.match(ev.at(-1).message.en, /couldn't answer/);
 });
+
+/* DeepSeek through its OpenAI-style API, with the HTTP layer stubbed. */
+function deepseekStub({ status = 200, finish = "stop" } = {}) {
+  const sent = [];
+  const chunks = [
+    { choices: [{ delta: { role: "assistant", content: "" } }] },
+    { choices: [{ delta: { content: "Kick-off is " } }] },
+    { choices: [{ delta: { content: "on 9 November." } }] },
+    { choices: [{ delta: {}, finish_reason: finish }], usage: { prompt_tokens: 900, prompt_cache_hit_tokens: 850, completion_tokens: 9 } },
+  ];
+  const fetchStub = async (url, init) => {
+    sent.push({ url: String(url), headers: init.headers, body: JSON.parse(init.body) });
+    if (status !== 200) return new Response(JSON.stringify({ error: { message: "no" } }), { status });
+    return new Response(chunks.map((c) => `data: ${JSON.stringify(c)}\n\n`).join("") + "data: [DONE]\n\n",
+      { status: 200, headers: { "content-type": "text/event-stream" } });
+  };
+  return { sent, fetchStub };
+}
+
+test("chatbot: DeepSeek request shape and streaming", async () => {
+  const { call, config } = setup({ BOT_PROVIDER: "deepseek", DEEPSEEK_API_KEY: "sk-ds" });
+  assert.equal((await call("GET", "/api/bot")).data.enabled, true);
+  assert.equal(config.bot.model, "deepseek-v4-pro");
+  const stub = deepseekStub();
+  config.bot.fetch = stub.fetchStub;
+  config.bot.knowledgeText = "Kick-off Day: 2026-11-09.";
+  const log = console.log;
+  console.log = () => {};
+  let ev;
+  try {
+    ev = await events(await call("POST", "/api/bot/chat", { messages: [{ role: "user", text: "When is kick-off?" }] }, null, { raw: true }));
+  } finally {
+    console.log = log;
+  }
+  assert.equal(ev.filter((e) => e.type === "text").map((e) => e.text).join(""), "Kick-off is on 9 November.");
+  assert.equal(ev.at(-1).type, "done");
+  const { url, headers, body } = stub.sent[0];
+  assert.equal(url, "https://api.deepseek.com/chat/completions");
+  assert.equal(headers.Authorization, "Bearer sk-ds");
+  assert.equal(body.model, "deepseek-v4-pro");
+  assert.equal(body.stream, true);
+  assert.deepEqual(body.thinking, { type: "disabled" });
+  assert.equal(body.messages[0].role, "system");
+  assert.match(body.messages[0].content, /Kick-off Day: 2026-11-09\./);
+  assert.match(body.messages[1].content, /^Today's date in Shanghai: \d{4}-\d{2}-\d{2}\.$/);
+  assert.deepEqual(body.messages.at(-1), { role: "user", content: "When is kick-off?" });
+});
+
+test("chatbot: DeepSeek off without a key, errors and filtered answers", async () => {
+  assert.equal((await setup({ BOT_PROVIDER: "deepseek" }).call("GET", "/api/bot")).data.enabled, false);
+
+  const filtered = setup({ BOT_PROVIDER: "deepseek", DEEPSEEK_API_KEY: "k" });
+  filtered.config.bot.fetch = deepseekStub({ finish: "content_filter" }).fetchStub;
+  const log = console.log;
+  console.log = () => {};
+  let ev = await events(await filtered.call("POST", "/api/bot/chat", { messages: [{ role: "user", text: "?" }] }, null, { raw: true }));
+  console.log = log;
+  assert.ok(ev.some((e) => e.type === "refusal"));
+
+  const broke = setup({ BOT_PROVIDER: "deepseek", DEEPSEEK_API_KEY: "k" });
+  broke.config.bot.fetch = deepseekStub({ status: 402 }).fetchStub;
+  const err = console.error;
+  console.error = () => {};
+  ev = await events(await broke.call("POST", "/api/bot/chat", { messages: [{ role: "user", text: "?" }] }, null, { raw: true }));
+  console.error = err;
+  assert.equal(ev.at(-1).type, "error");
+
+  const busy = setup({ BOT_PROVIDER: "deepseek", DEEPSEEK_API_KEY: "k" });
+  busy.config.bot.fetch = deepseekStub({ status: 429 }).fetchStub;
+  ev = await events(await busy.call("POST", "/api/bot/chat", { messages: [{ role: "user", text: "?" }] }, null, { raw: true }));
+  assert.match(ev.at(-1).message.en, /busy/);
+});
+
+test("organisers can register and team up like anyone else", async () => {
+  const { call, signIn } = setup();
+  const admin = await signIn("admin@dic.test");
+  assert.equal((await call("GET", "/api/me", undefined, admin)).data.user.admin, true);
+  await call("PUT", "/api/registration/profile", { profile: PROFILE }, admin);
+  const t = await call("POST", "/api/registration/team", { action: "create", name: "Organisers", track: "track-01" }, admin);
+  assert.equal(t.status, 200);
+  const r = await call("POST", "/api/registration/submit", { consent: true }, admin);
+  assert.equal(r.data.registration.status, "submitted");
+  const p = (await call("GET", "/api/admin/participants", undefined, admin)).data.participants;
+  assert.equal(p[0].team.name, "Organisers");
+});

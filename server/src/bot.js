@@ -10,8 +10,9 @@
  * The assistant answers from the site's own facts (BOT_KNOWLEDGE_URL, which
  * the site builds from _data/dic2026.yml), so updating the page content
  * updates what it knows. Providers live in their own files and load only
- * when used: bot-claude.js (Claude, through Anthropic's SDK) and an "echo"
- * stand-in for testing the page without a key.
+ * when used: bot-deepseek.js (DeepSeek, the club's choice), bot-claude.js
+ * (Claude, through Anthropic's SDK) and an "echo" stand-in for testing the
+ * page without a key.
  */
 import { currentUser } from "./auth.js";
 import { HttpError, fail, text } from "./util.js";
@@ -21,7 +22,7 @@ const MAX_TURNS = 12;
 const MAX_CHARS = 2000;
 
 export const botEnabled = (config) =>
-  config.bot.provider === "echo" || (config.bot.provider === "anthropic" && !!config.bot.apiKey);
+  config.bot.provider === "echo" || (["anthropic", "deepseek"].includes(config.bot.provider) && !!config.bot.apiKey);
 
 export async function botInfo(ctx) {
   const { bot } = ctx.config;
@@ -74,6 +75,7 @@ function checkMessages(input) {
 }
 
 async function providerFor(config) {
+  if (config.bot.provider === "deepseek") return (await import("./bot-deepseek.js")).streamReply;
   if (config.bot.provider === "anthropic") return (await import("./bot-claude.js")).streamReply;
   if (config.bot.provider === "echo") return echoReply;
   fail(404, "bot_off", "The assistant isn't switched on.", "智能助手尚未开启。");

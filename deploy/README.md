@@ -308,11 +308,18 @@ Do these on a phone **without a VPN**, on mobile data and on campus Wi-Fi:
   filing within 30 days, and show the ICP number in the site footer. Then run
   `setup.sh` there (with Docker's `--mirror Aliyun`, see the comment in it,
   plus a Docker Hub mirror), and change the DNS records to the new IP.
-- **The assistant.** Anthropic's API isn't offered in Hong Kong or mainland
-  China, so Claude can't be called from this server. Turning the assistant on
-  here means adding another model provider, for example Qwen on Alibaba Cloud
-  Model Studio (百炼). That is one more file in `server/src/`. Public generative
-  AI services hosted in the mainland also need their own filing.
+- **The assistant** uses DeepSeek. Get an API key at platform.deepseek.com
+  (and top up the balance), then add to `/opt/nyushdic/api.env`:
+
+  ```
+  BOT_PROVIDER=deepseek
+  DEEPSEEK_API_KEY=sk-…
+  BOT_KNOWLEDGE_URL=https://www.nyushdic.com/assets/dic2026/knowledge.txt
+  ```
+
+  and run `docker compose up -d`. The "Ask DIC" button appears by itself
+  (`platform.chatbot` is already `true`). Public generative AI services hosted
+  in the mainland would need their own filing; this server is in Hong Kong.
 
 ### Using a different domain
 
