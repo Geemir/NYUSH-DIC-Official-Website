@@ -156,24 +156,23 @@ as JSON, so no database change is needed.
 
 Off by default. To switch it on:
 
-1. Set `BOT_PROVIDER=anthropic`, `ANTHROPIC_API_KEY`, and
+1. Set `BOT_PROVIDER=deepseek`, `DEEPSEEK_API_KEY`, and
    `BOT_KNOWLEDGE_URL=https://<the website>/assets/dic2026/knowledge.txt`
    (the site builds that file from `_data/dic2026.yml`, so the assistant
    always knows the current page content).
 2. Set `platform.chatbot: true` in `_data/dic2026.yml` to show the button.
 
-It uses Claude (`claude-opus-5-5` through Anthropic's SDK) at low effort,
-so answers start quickly. The instructions and facts are cached between
-questions, which makes repeat questions much cheaper. Server-side fallbacks
-are on: if a safety check declines a question, Anthropic retries it on the
-model it recommends for that case. Costs are bounded by `BOT_LIMIT_PER_HOUR`
-(per person), `BOT_LIMIT_PER_DAY` (everyone together) and `BOT_MAX_TOKENS`.
+The club uses DeepSeek (`deepseek-v4-pro`, `src/bot-deepseek.js`), with
+thinking switched off so answers start at once (`BOT_THINKING=1` turns it
+on). The instructions and facts come first in every request and never change,
+so DeepSeek's automatic cache makes repeat questions cheaper. Costs are bounded
+by `BOT_LIMIT_PER_HOUR` (per person), `BOT_LIMIT_PER_DAY` (everyone together)
+and `BOT_MAX_TOKENS`; keep the DeepSeek account topped up.
 
-**Check before switching on:** Anthropic's API is not offered in mainland
-China. The API key has to belong to an account in a supported region, and the
-server has to call from one. To use a different model provider, add a
-`src/bot-<name>.js` that exports `streamReply` (see `src/bot-claude.js`) and
-route to it in `providerFor()` in `src/bot.js`.
+Claude also works (`BOT_PROVIDER=anthropic`, `src/bot-claude.js`), but
+Anthropic's API isn't offered in Hong Kong or mainland China, so not from the
+club's server. Another provider is one more `src/bot-<name>.js` exporting
+`streamReply`, routed in `providerFor()` in `src/bot.js`.
 
 `BOT_PROVIDER=echo` is a stand-in that repeats the question, for testing the
 page without a key.

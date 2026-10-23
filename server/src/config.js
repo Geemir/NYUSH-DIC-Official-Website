@@ -73,12 +73,17 @@ export function configFromEnv(env = {}) {
     },
 
     bot: {
-      /* "" = off; "anthropic" = Claude (needs ANTHROPIC_API_KEY); "echo" =
-         a stand-in that repeats the question, for testing the page. */
+      /* "" = off; "deepseek" = DeepSeek (needs DEEPSEEK_API_KEY); "anthropic"
+         = Claude (needs ANTHROPIC_API_KEY; not offered in Hong Kong or the
+         mainland); "echo" = a stand-in that repeats the question. */
       provider: env.BOT_PROVIDER || "",
-      model: env.BOT_MODEL || "claude-opus-5-5",
-      effort: env.BOT_EFFORT || "low", // low | medium | high: more thinking, slower and dearer
-      apiKey: env.ANTHROPIC_API_KEY || "",
+      model: env.BOT_MODEL || (env.BOT_PROVIDER === "deepseek" ? "deepseek-v4-pro" : "claude-opus-5-5"),
+      effort: env.BOT_EFFORT || "low", // Claude: low | medium | high: more thinking, slower and dearer
+      /* DeepSeek thinks before answering by default; off here, so answers
+         start at once. BOT_THINKING=1 turns it back on. */
+      thinking: env.BOT_THINKING === "1",
+      apiKey: (env.BOT_PROVIDER === "deepseek" ? env.DEEPSEEK_API_KEY : env.ANTHROPIC_API_KEY) || "",
+      baseUrl: env.BOT_BASE_URL || "https://api.deepseek.com",
       name: env.BOT_NAME || "DIC Assistant",
       /* The facts the assistant answers from: the site publishes them at
          /assets/dic2026/knowledge.txt, built from _data/dic2026.yml. */

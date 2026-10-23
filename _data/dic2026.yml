@@ -334,8 +334,8 @@ footer_line: "DIGITAL INNOVATION CHALLENGE / 2026"
 # To try them anyway, add ?preview=1 to their address: the API then runs
 # inside your own browser with sample data, and nothing is sent anywhere.
 platform:
-  api_url: ""        # the deployed API, e.g. "https://api.nyushdic.com"
-  chatbot: false     # true: show the assistant button on the DIC 2026 pages
+  api_url: "https://api.nyushdic.club"  # the deployed API (testing domain; nyushdic.com later)
+  chatbot: true      # true: show the assistant button on the DIC 2026 pages
 
 # The pages' own text. Written for the website (not from the article):
 # review before registration opens.
@@ -383,7 +383,3 @@ admin_page:
   head:
     file: "APP / 03"
     heading: { zh: "组委会后台", en: "ORGANISERS" }
-
-platform:
-  api_url: "https://api.nyushdic.club"
-
