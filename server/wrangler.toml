@@ -1,0 +1,27 @@
+# Cloudflare Workers deployment of the DIC API. Steps in README.md.
+name = "nyushdic-api"
+main = "src/worker.js"
+compatibility_date = "2026-10-01"
+
+# Serve on the club's own domain: *.workers.dev addresses are blocked in
+# mainland China. Uncomment after the domain is on Cloudflare.
+# routes = [{ pattern = "api.nyushdic.com", custom_domain = true }]
+workers_dev = false
+
+[[d1_databases]]
+binding = "DB"
+database_name = "nyushdic"
+database_id = "REPLACE_WITH_THE_ID_FROM_wrangler_d1_create"
+
+[vars]
+ALLOWED_ORIGINS = "https://www.nyushdic.com,https://geemir.github.io"
+ADMIN_EMAILS = "shanghai.dic@nyu.edu"
+EMAIL_PROVIDER = "resend"
+EMAIL_FROM = "NYUSH DIC <noreply@nyushdic.com>"
+EMAIL_REPLY_TO = "shanghai.dic@nyu.edu"
+# REGISTRATION_CLOSES = "2026-11-30T23:59:00+08:00"
+# PROJECT_EDIT_CLOSES = "2026-12-04T23:59:00+08:00"
+# BOT_PROVIDER = "anthropic"
+# BOT_KNOWLEDGE_URL = "https://www.nyushdic.com/assets/dic2026/knowledge.txt"
+
+# Secrets: npx wrangler secret put AUTH_SECRET (and RESEND_API_KEY, ANTHROPIC_API_KEY)

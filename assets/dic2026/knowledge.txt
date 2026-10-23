@@ -1,0 +1,103 @@
+---
+# The facts the assistant answers from, as plain text (server/src/bot.js
+# fetches this file from BOT_KNOWLEDGE_URL). Built from _data/dic2026.yml,
+# so it changes whenever the DIC 2026 page does.
+layout: null
+---
+{%- assign d = site.data.dic2026 -%}
+{%- assign tf = d.theme_file -%}
+{%- assign kf = d.tracks_file -%}
+{%- assign lf = d.timeline_file -%}
+{%- assign sf = d.signup_file -%}
+{%- assign pf = d.partners_file -%}
+NYU Shanghai Digital Innovation Challenge {{ d.year }} (DIC {{ d.year }}) / {{ d.year }} 上海纽约大学数字创新挑战赛
+Organised by the student organisation NYUSH Digital Innovation Community (NYUSH DIC). Contact: {{ pf.open.email }}.
+Website pages: DIC 2026 (the challenge), Registration, Team-up (find teammates and chat), Contact us.
+
+== About the challenge / 大赛简介 ==
+{% for p in tf.about.paragraphs %}
+{{ p.en }}
+{{ p.zh }}
+{% endfor %}
+Theme / 主题: {{ tf.theme.full }} ({{ tf.theme.short }} = {{ tf.theme.expansion }})
+{{ tf.invitation.en }}
+{{ tf.invitation.zh }}
+
+== The four tracks / 四大赛道 ==
+{{ kf.lead.en }}
+{{ kf.lead.zh }}
+{% for t in kf.tracks %}
+-- Track {{ t.num }}: {{ t.name.en }} / 赛道 {{ t.num }}：{{ t.name.zh }}
+Mission: {{ t.mission.en }}
+使命：{{ t.mission.zh }}
+{{ t.body.en }}
+{{ t.body.zh }}
+Example: {{ t.example.title.en }}. {{ t.example.en }}
+案例：{{ t.example.title.zh }}。{{ t.example.zh }}
+{%- if t.example.why %}
+Why it matters: {{ t.example.why.en }}
+为什么值得关注：{{ t.example.why.zh }}
+Questions to explore:
+{%- for q in t.example.explore %}
+- {{ q.en }} / {{ q.zh }}
+{%- endfor %}
+{%- endif %}
+{% endfor %}
+== How it works / 比赛方式 ==
+{% for p in lf.overview.paragraphs %}
+{{ p.en }}
+{{ p.zh }}
+{% endfor %}
+{%- for ph in lf.phases.items %}
+-- {{ ph.name.en }} / {{ ph.name.zh }}
+{{ ph.body.en }}
+{{ ph.body.zh }}
+{%- for item in ph.deliverables %}
+- {{ item.en }} / {{ item.zh }}
+{%- endfor %}
+{% endfor %}
+== Timeline / 时间线 ==
+{%- for stage in lf.stages %}
+-- {{ stage.label.en }} / {{ stage.label.zh }}
+{%- for e in stage.events %}
+- {% if e.when.en %}{{ e.when.en }} / {{ e.when.zh }}{% else %}{{ e.when }}{% endif %}: {{ e.title.en }} / {{ e.title.zh }}
+{%- for item in e.items %}
+  {{ item.en }} / {{ item.zh }}
+{%- endfor %}
+{%- endfor %}
+{%- endfor %}
+{{ lf.note.en }} / {{ lf.note.zh }}
+
+== Registration / 报名 ==
+{%- if d.platform.api_url != "" %}
+{{ sf.body_open.en }}
+{{ sf.body_open.zh }}
+{%- else %}
+{{ sf.body.en }}
+{{ sf.body.zh }}
+{%- endif %}
+{%- for f in d.register_page.facts %}
+- {{ f.en }} / {{ f.zh }}
+{%- endfor %}
+Registering takes four steps on the Registration page: sign in with an emailed code, fill in "About you", choose to start a team, join one with the captain's 6-character invite code, or go ahead without a team for now, then add the project (repository link, project name, one-line idea; optional at first) and submit. Details can be changed until registration closes.
+报名在报名页面完成，共四步：用邮箱验证码登录，填写个人信息，选择创建队伍、用队长的 6 位队伍码加入队伍或暂不组队，补充项目信息（代码仓库链接、项目名称、一句话介绍，开始时可不填），然后提交。报名截止前可以随时修改。
+
+== Team-up / 组队广场 ==
+{{ d.teamup_page.lead.en }}
+{{ d.teamup_page.lead.zh }}
+{{ d.teamup_page.rules.en }}
+{{ d.teamup_page.rules.zh }}
+
+== Partners and support / 合作与支持 ==
+{%- for row in pf.rows %}
+- {{ row.label.en }}: {{ row.value.en }} / {{ row.label.zh }}：{{ row.value.zh }}
+{%- endfor %}
+{{ pf.past.label.en }}: {% for n in pf.past.names %}{{ n.en }}{% unless forloop.last %}, {% endunless %}{% endfor %}
+{{ pf.open.title.en }}: {{ pf.open.body.en }} ({{ pf.open.email }})
+{{ pf.open.title.zh }}：{{ pf.open.body.zh }}
+
+== Contact / 联系方式 ==
+Email: {{ pf.open.email }}. Follow NYUSH DIC on WeChat (公众号) and Xiaohongshu for announcements.
+{%- for link in site.footer.links %}
+- {{ link.label }}{% if link.url contains "://" %}: {{ link.url }}{% endif %}
+{%- endfor %}

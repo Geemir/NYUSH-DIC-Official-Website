@@ -1,0 +1,36 @@
+---
+title: "DIC 2026 Registration"
+permalink: /DIC2026/register/
+layout: dic2026-app
+app: register
+copy: register_page
+classes: layout--dic2026
+navigation: dic2026
+masthead_logo: /assets/images/DIC2026/dic-mark-light.png
+lang_switch: true
+excerpt: "Register for the NYU Shanghai Digital Innovation Challenge 2026: on your own, as a team, or find teammates."
+header:
+  og_image: /assets/images/DIC2026/kickoff-poster.jpg
+---
+{%- comment -%}
+  Registration. The text is in _data/dic2026.yml → register_page; the form
+  itself is built by assets/js/dic-platform/register.js.
+{%- endcomment -%}
+{%- assign c = site.data.dic2026.register_page -%}
+<div class="d-app__intro">
+  <div class="d-pair d-lead">{% include dic2026/t.html v=c.lead tag="p" %}</div>
+  <ul class="d-list d-app__facts">
+    {%- for f in c.facts %}
+    <li>{% include dic2026/t.html v=f %}</li>
+    {%- endfor %}
+  </ul>
+</div>
+
+<div class="d-app__main" data-register>
+  <noscript><p class="d-note">Registration needs JavaScript. / 报名需要启用 JavaScript。</p></noscript>
+</div>
+
+<template id="d-soon">{% include dic2026/t.html v=c.soon tag="p" %}</template>
+<template id="d-consent">{% include dic2026/t.html v=c.consent %}</template>
+<template id="d-privacy">{% include dic2026/t.html v=c.privacy %}</template>
+<template id="d-next">{%- for s in c.next_steps %}<li>{% include dic2026/t.html v=s %}</li>{%- endfor %}</template>

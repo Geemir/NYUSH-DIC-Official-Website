@@ -51,6 +51,8 @@
     if (remember) {
       try { localStorage.setItem("dic26-lang", lang); } catch (e) { /* private mode */ }
     }
+    /* The platform pages relabel placeholders and menus on this. */
+    document.dispatchEvent(new CustomEvent("dic:lang", { detail: lang }));
   }
 
   if (langSwitch) {

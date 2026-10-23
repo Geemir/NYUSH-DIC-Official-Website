@@ -10,3 +10,11 @@ _site/
 # Bundler / local gems
 .bundle/
 vendor/
+
+# DIC API: local database, dependencies and settings
+server/node_modules/
+server/data/
+server/.env
+
+# Cloudflare Wrangler local state
+server/.wrangler/

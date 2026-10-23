@@ -279,6 +279,12 @@ signup_file:
   body:
     zh: "报名链接将在后续发布，请持续关注NYUSH DIC公众号及各平台官方账号。"
     en: "The sign up link will be published later, please subscribe to NYUSH DIC official accounts."
+  # Shown instead of `body` once registration is live (platform.api_url is
+  # set), above buttons to the Registration and Team-up tabs. Written for
+  # the website: review before going live.
+  body_open:
+    zh: "报名已开放！请在报名页面完成报名，也可以在组队广场寻找队友。"
+    en: "Registration is open! Sign up on the Registration page, and find teammates on Team-up."
   closing: "SEE YOU VERY SOON!"
   # Paste the registration link here when it is published. The sign-up
   # section turns into a "Register" button automatically.
@@ -319,3 +325,61 @@ partners_file:
     subject: "DIC 2026 Partnership"
 
 footer_line: "DIGITAL INNOVATION CHALLENGE / 2026"
+
+# ================================================================= platform
+# Registration, Team-up and the assistant run on the DIC API (server/ in this
+# repository; deployment steps in server/README.md).
+#
+# Until api_url is set, the Registration and Team-up pages say "opening soon".
+# To try them anyway, add ?preview=1 to their address: the API then runs
+# inside your own browser with sample data, and nothing is sent anywhere.
+platform:
+  api_url: ""        # the deployed API, e.g. "https://api.nyushdic.com"
+  chatbot: false     # true: show the assistant button on the DIC 2026 pages
+
+# The pages' own text. Written for the website (not from the article):
+# review before registration opens.
+register_page:
+  head:
+    file: "APP / 01"
+    heading: { zh: "报名", en: "REGISTRATION" }
+  lead:
+    zh: "四步完成报名：登录，填写个人信息，选择组队方式，补充项目信息。信息会随时保存，报名截止前都可以回来修改。"
+    en: "Register in four steps: sign in, tell us about yourself, choose how you'll team up, and add your project. Your answers are saved as you go, and you can come back and change them until registration closes."
+  facts:
+    - { zh: "面向所有学校、所有专业的学生开放", en: "Open to students from any school and any major" }
+    - { zh: "每队 1–3 人：可以个人报名、组队报名，也可以在开幕式现场组队", en: "Teams of 1–3: register on your own or as a team, or form a team at Kick-off Day" }
+    - { zh: "每位成员都用自己的邮箱报名，队员凭队长分享的队伍码加入", en: "Each member registers with their own email; teammates join with the code their captain shares" }
+  soon:
+    zh: "报名系统即将开放。开放后，你可以在这里报名、创建或加入队伍，并随时修改信息。"
+    en: "Registration opens soon. Once it's open, you'll register here, create or join a team, and update your details at any time."
+  consent:
+    zh: "我同意 DIC 组委会保存并使用以上信息，用于组织 2026 数字创新挑战赛：组队、联系参赛者和评审。"
+    en: "I agree that the DIC organisers may store and use this information to run DIC 2026: forming teams, contacting participants and judging."
+  privacy:
+    zh: "你的信息仅组委会和评委可见，队友可以看到你的姓名和学校。如需删除你的信息，请联系 shanghai.dic@nyu.edu。"
+    en: "Only the organisers and judges see your details; your teammates see your name and school. To have your details deleted, write to shanghai.dic@nyu.edu."
+  # Shown after someone registers.
+  next_steps:
+    - { zh: "我们会通过你填写的微信号，邀请你加入参赛者微信群。", en: "We'll add you to the participants' WeChat group using your WeChat ID." }
+    - { zh: "开幕式将于 11 月 9 日举行：介绍各赛道，也可以现场组队。", en: "Kick-off Day is on Nov 9: track briefings, and a chance to form teams on-site." }
+    - { zh: "第一阶段作品提交截止日期为 12 月 4 日。", en: "Stage 1 submissions are due on Dec 4." }
+
+teamup_page:
+  head:
+    file: "APP / 02"
+    heading: { zh: "组队广场", en: "TEAM-UP" }
+  lead:
+    zh: "在这里寻找队友，或者找一支想加入的队伍。发布一张卡片介绍你自己或你的队伍，回复感兴趣的卡片，也可以在频道里和大家交流。"
+    en: "Find teammates, or a team to join. Post a card about yourself or your team, reply to the cards that interest you, and talk things over in the channels."
+  rules:
+    zh: "请友善交流，只留下你愿意让其他参赛者看到的联系方式。遇到不当内容可以举报，组委会会及时处理。"
+    en: "Be kind, and only share contact details you're happy for other participants to see. Report anything inappropriate and the organisers will deal with it."
+  soon:
+    zh: "组队广场将与报名系统同时开放。"
+    en: "Team-up opens together with registration."
+
+admin_page:
+  head:
+    file: "APP / 03"
+    heading: { zh: "组委会后台", en: "ORGANISERS" }

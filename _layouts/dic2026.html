@@ -266,7 +266,17 @@ layout: default
         <div class="d-win__bar"><span>SIGN_UP.APP</span><span class="d-win__ctl" aria-hidden="true"><i></i><i></i><i></i></span></div>
         <div class="d-win__body d-signup__body">
           <div>
+            {%- comment -%} Once the platform is live (platform.api_url), the section points to DIC 2026's own tabs. {%- endcomment -%}
+            {%- assign live = d.platform.api_url | default: "" -%}
+            {%- if live != "" %}
+            <div class="d-pair d-signup__text">{% include dic2026/t.html v=sf.body_open tag="p" %}</div>
+            <p class="d-signup__actions">
+              <a class="d-btn d-btn--primary" href="{{ '/DIC2026/register/' | relative_url }}">{% include dic2026/t.html v=sf.heading %} <span aria-hidden="true">→</span></a>
+              <a class="d-btn d-btn--ghost" href="{{ '/DIC2026/team-up/' | relative_url }}">{% include dic2026/t.html v=d.teamup_page.head.heading %}</a>
+            </p>
+            {%- else %}
             <div class="d-pair d-signup__text">{% include dic2026/t.html v=sf.body tag="p" %}</div>
+            {%- endif %}
             {%- if sf.register_url != "" %}
             <a class="d-btn d-btn--primary" href="{{ sf.register_url }}" target="_blank" rel="noopener">{% include dic2026/t.html v=sf.heading %} ↗</a>
             {%- endif %}
@@ -337,3 +347,8 @@ layout: default
 <script src="{{ '/assets/js/lib/anime-3.2.2.min.js' | relative_url }}" defer></script>
 <script src="{{ '/assets/js/dic2026-intro.js' | relative_url }}" defer></script>
 <script src="{{ '/assets/js/dic2026.js' | relative_url }}" defer></script>
+{%- if d.platform.chatbot %}
+{%- comment -%} The assistant (assets/js/dic-platform/bot.js), when switched on in _data/dic2026.yml. {%- endcomment %}
+<script type="application/json" id="dic-platform">{"api": {{ d.platform.api_url | default: "" | jsonify }}, "base": {{ "/" | relative_url | jsonify }}, "chatbot": true}</script>
+<script type="module" src="{{ '/assets/js/dic-platform/bot.js' | relative_url }}"></script>
+{%- endif %}
