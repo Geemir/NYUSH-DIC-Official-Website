@@ -1,0 +1,55 @@
+# The DIC website and API on one server. Step-by-step guide: deploy/README.md.
+#
+# On the server everything lives in /opt/nyushdic:
+#   deploy/   this folder (copied by the GitHub workflow)
+#   server/   the API's source (copied by the GitHub workflow)
+#   site/     the built website (copied by the GitHub workflow)
+#   api.env   the API's settings (made by setup.sh, then edited by hand)
+#   site.env  the domain and certificate email (made by setup.sh)
+#   backups/  daily copies of the database (backup.sh)
+#
+# Start or update:  cd /opt/nyushdic/deploy && docker compose up -d --build
+name: nyushdic
+
+services:
+  # The API (server/), with its SQLite database in the "api-data" volume.
+  api:
+    build: ../server
+    restart: unless-stopped
+    env_file: ../api.env
+    environment:
+      HOST: 0.0.0.0
+      PORT: "8787"
+      DATABASE_PATH: /app/data/dic.sqlite
+      TRUST_PROXY: "1"
+    volumes:
+      - api-data:/app/data
+    expose:
+      - "8787"
+    logging: &logs
+      driver: json-file
+      options: { max-size: "10m", max-file: "5" }
+
+  # Caddy: serves the website, passes api.<domain> to the API, and gets and
+  # renews the HTTPS certificates by itself.
+  web:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      - api
+    env_file: ../site.env
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ../site:/srv/site:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    logging: *logs
+
+volumes:
+  api-data:
+  caddy-data:
+  caddy-config:

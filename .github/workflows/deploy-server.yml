@@ -1,0 +1,72 @@
+# Builds the website and copies it, with the API, to the club's server, then
+# restarts the containers there (deploy/compose.yaml). Runs on every push to
+# main and from the Actions tab ("Run workflow").
+#
+# It stays switched off until the server is set up (deploy/README.md, step 6):
+#   Settings → Secrets and variables → Actions
+#     Variables: DEPLOY_HOST  the server's public IP address
+#                DEPLOY_USER  deploy
+#     Secrets:   DEPLOY_SSH_KEY      the private half of the deploy key
+#                DEPLOY_KNOWN_HOSTS  the server's host key (ssh-keyscan)
+# GitHub Pages (jekyll.yml) keeps deploying as before.
+name: Deploy to the DIC server
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: server
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: vars.DEPLOY_HOST != ''
+    runs-on: ubuntu-latest
+    env:
+      TARGET: ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Ruby
+        # https://github.com/ruby/setup-ruby/releases/tag/v1.207.0
+        uses: ruby/setup-ruby@4a9ddd6f338a97768b8006bf671dfbad383215f4
+        with:
+          ruby-version: '3.1'
+          bundler-cache: true
+          cache-version: 0
+
+      - name: Build the website
+        # Served from the domain's root, so no base path.
+        run: bundle exec jekyll build --baseurl ""
+        env:
+          JEKYLL_ENV: production
+
+      - name: SSH key
+        env:
+          KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+      - name: Copy the website, the API and the server files
+        run: |
+          rsync -az --delete _site/ "$TARGET:/opt/nyushdic/site/"
+          rsync -az --delete --exclude node_modules --exclude data --exclude .env --exclude .wrangler server/ "$TARGET:/opt/nyushdic/server/"
+          rsync -az --delete deploy/ "$TARGET:/opt/nyushdic/deploy/"
+
+      - name: Restart
+        run: ssh "$TARGET" 'cd /opt/nyushdic/deploy && docker compose up -d --build --remove-orphans && docker image prune -f'
+
+      - name: Check
+        run: |
+          sleep 5
+          ssh "$TARGET" 'cd /opt/nyushdic/deploy && docker compose ps && docker compose exec -T api node -e "fetch(\"http://127.0.0.1:8787/api/health\").then(r => r.text()).then(console.log)"'

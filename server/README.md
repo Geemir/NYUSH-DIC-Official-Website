@@ -61,11 +61,16 @@ Tests: `npm test`.
 
 ## Deploy
 
-Pick one. Either way, the API needs **its own domain** (for example
-`api.nyushdic.com`): free hosting addresses such as `*.workers.dev` are blocked
-in mainland China.
+**The club's setup: an Alibaba Cloud server in Hong Kong.** The website and the
+API run there together, deployed by GitHub Actions on every push to `main`.
+The full guide, from renting the server to going live, is
+[deploy/README.md](../deploy/README.md).
 
-### Option A: Cloudflare Workers + D1 (recommended)
+Other ways to run the API are below. Whichever you choose, the API needs **its
+own domain** (for example `api.nyushdic.com`): free hosting addresses such as
+`*.workers.dev` are blocked in mainland China.
+
+### Option A: Cloudflare Workers + D1
 
 Free for this size, nothing to maintain, and it scales by itself on Kick-off
 Day. Needs a Cloudflare account and the domain added to it.
@@ -85,7 +90,7 @@ emails, email sender, deadlines), and uncomment the `routes` line with your
 API's domain. Running the `d1 execute` line again later is safe; it only
 creates what's missing.
 
-### Option B: a small server with Docker
+### Option B: any server with Docker
 
 For example, a Hong Kong cloud server: quick from the mainland, and no ICP
 filing (备案) needed, which a server in mainland China would require.
@@ -118,7 +123,9 @@ Back up the database (the `nyushdic-data` volume) regularly.
 
 ### Email
 
-Sign-in codes go out by email. The default is [Resend](https://resend.com):
+Sign-in codes go out by email. On Alibaba Cloud, use DirectMail (邮件推送,
+`EMAIL_PROVIDER=aliyun`; set-up in [deploy/README.md](../deploy/README.md),
+step 7). Elsewhere, [Resend](https://resend.com) (`EMAIL_PROVIDER=resend`):
 add your domain there, put the DNS records it gives you in place, and set
 `EMAIL_FROM` to an address on that domain. Send yourself a test code at a QQ
 and a 163 address: Chinese mailboxes are strict, and a new sender can land in
@@ -135,7 +142,7 @@ All settings are environment variables, listed with explanations in
 | `AUTH_SECRET` | Required. A long random string. |
 | `ALLOWED_ORIGINS` | Required. The website's address(es). |
 | `ADMIN_EMAILS` | Who can open the organisers' page. |
-| `EMAIL_PROVIDER`, `EMAIL_FROM`, `RESEND_API_KEY` | Sending sign-in codes. |
+| `EMAIL_PROVIDER`, `EMAIL_FROM`, `ALIYUN_ACCESS_KEY_ID` / `_SECRET` (or `RESEND_API_KEY`) | Sending sign-in codes. |
 | `REGISTRATION_CLOSES`, `PROJECT_EDIT_CLOSES` | Deadlines, China time, e.g. `2026-11-30T23:59:00+08:00`. |
 | `TEAM_MAX` | Team size limit (default 3). |
 | `BOARD_PUBLIC_READ` | `0` hides Team-up cards from signed-out visitors. |

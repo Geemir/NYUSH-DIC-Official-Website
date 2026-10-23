@@ -84,3 +84,6 @@ exclude:
   - server/README.md
   - server/wrangler.toml
   - server/Dockerfile
+  - server/.dockerignore
+  # Server set-up files (deploy/README.md).
+  - deploy/

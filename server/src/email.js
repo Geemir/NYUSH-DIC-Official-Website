@@ -4,11 +4,67 @@
  * Providers (EMAIL_PROVIDER):
  *   console  print the message in the server log (development)
  *   none     send nothing (development with DEV_RETURN_CODE=1, tests, preview)
+ *   aliyun   Alibaba Cloud DirectMail (邮件推送), with ALIYUN_ACCESS_KEY_ID /
+ *            ALIYUN_ACCESS_KEY_SECRET; EMAIL_FROM must be a sender address
+ *            set up in the DirectMail console
  *   resend   Resend's HTTP API (resend.com), with RESEND_API_KEY
  *   webhook  POST { to, subject, text, html, replyTo } as JSON to
  *            EMAIL_WEBHOOK_URL, for any other mail service
  */
 import { fail } from "./util.js";
+
+/* ------------------------------------------------- Alibaba Cloud DirectMail */
+/* RFC 3986 encoding, as Alibaba Cloud's signatures expect. */
+const pct = (s) => encodeURIComponent(s).replace(/[!'()*]/g, (c) => "%" + c.charCodeAt(0).toString(16).toUpperCase());
+
+/*
+ * Signs an Alibaba Cloud RPC-style request (signature version 1.0,
+ * HMAC-SHA1) and returns the encoded query string, Signature included.
+ * https://help.aliyun.com/zh/sdk/product-overview/rpc-mechanism
+ */
+export async function signAliyun(params, secret, method = "POST") {
+  const canonical = Object.keys(params).sort().map((k) => `${pct(k)}=${pct(params[k])}`).join("&");
+  const toSign = `${method}&${pct("/")}&${pct(canonical)}`;
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(`${secret}&`), { name: "HMAC", hash: "SHA-1" }, false, ["sign"]);
+  const mac = new Uint8Array(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(toSign)));
+  const signature = btoa(String.fromCharCode(...mac));
+  return { signature, query: `${canonical}&Signature=${pct(signature)}` };
+}
+
+/* "NYUSH DIC <noreply@mail.nyushdic.com>" → { name, address } */
+function parseFrom(from) {
+  const m = /^\s*(.*?)\s*<([^>]+)>\s*$/.exec(from);
+  return m ? { name: m[1], address: m[2] } : { name: "", address: from.trim() };
+}
+
+async function sendAliyun(email, message) {
+  const sender = parseFrom(email.from);
+  const params = {
+    Action: "SingleSendMail",
+    AccountName: sender.address,
+    AddressType: "1", // send from the configured sender address
+    ReplyToAddress: "false",
+    ToAddress: message.to,
+    Subject: message.subject,
+    HtmlBody: message.html,
+    TextBody: message.text,
+    FromAlias: sender.name,
+    Format: "JSON",
+    Version: "2015-11-23",
+    RegionId: email.aliyunRegion,
+    AccessKeyId: email.aliyunKeyId,
+    SignatureMethod: "HMAC-SHA1",
+    SignatureVersion: "1.0",
+    SignatureNonce: crypto.randomUUID(),
+    Timestamp: new Date().toISOString().replace(/\.\d{3}Z$/, "Z"),
+  };
+  const { query } = await signAliyun(params, email.aliyunKeySecret);
+  return fetch(`https://${email.aliyunEndpoint}/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: query,
+  });
+}
 
 export async function sendEmail(config, message) {
   const { provider, from, replyTo } = config.email;
@@ -20,7 +76,9 @@ export async function sendEmail(config, message) {
   }
 
   let res;
-  if (provider === "resend") {
+  if (provider === "aliyun") {
+    res = await sendAliyun(config.email, message);
+  } else if (provider === "resend") {
     res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${config.email.resendKey}`, "Content-Type": "application/json" },

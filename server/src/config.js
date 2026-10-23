@@ -33,10 +33,18 @@ export function configFromEnv(env = {}) {
     devReturnCode: dev && env.DEV_RETURN_CODE === "1",
 
     email: {
-      provider: env.EMAIL_PROVIDER || (dev ? "console" : ""), // console | resend | webhook
+      provider: env.EMAIL_PROVIDER || (dev ? "console" : ""), // console | aliyun | resend | webhook
       from: env.EMAIL_FROM || "NYUSH DIC <noreply@example.com>",
       replyTo: env.EMAIL_REPLY_TO || "shanghai.dic@nyu.edu",
       resendKey: env.RESEND_API_KEY || "",
+      /* Alibaba Cloud DirectMail: the region the sending domain was set up in
+         (cn-hangzhou, ap-southeast-1 = Singapore, …) and an AccessKey of a RAM
+         user that may only send mail. */
+      aliyunRegion: env.ALIYUN_DM_REGION || "cn-hangzhou",
+      aliyunEndpoint: env.ALIYUN_DM_ENDPOINT
+        || (!env.ALIYUN_DM_REGION || env.ALIYUN_DM_REGION === "cn-hangzhou" ? "dm.aliyuncs.com" : `dm.${env.ALIYUN_DM_REGION}.aliyuncs.com`),
+      aliyunKeyId: env.ALIYUN_ACCESS_KEY_ID || "",
+      aliyunKeySecret: env.ALIYUN_ACCESS_KEY_SECRET || "",
       webhookUrl: env.EMAIL_WEBHOOK_URL || "",
       webhookSecret: env.EMAIL_WEBHOOK_SECRET || "",
     },

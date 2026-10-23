@@ -25,6 +25,7 @@ bundle exec jekyll serve --livereload   # http://localhost:4000
 | Site-wide script (tap-to-zoom images, home countdown, home mouse trail) | `assets/js/dic-site.js` |
 | **Registration, Team-up, organisers' page** (`/DIC2026/register/`, `/DIC2026/team-up/`, `/DIC2026/admin/`) | pages `DIC2026-*.html`, text in `_data/dic2026.yml`, scripts in `assets/js/dic-platform/`, styles in `_sass/dic/_dic2026-app.scss` |
 | The API behind them (sign-in, registrations, Team-up, export, chatbot) | `server/`: see [server/README.md](server/README.md) |
+| Going live on the club's Alibaba Cloud server (www.nyushdic.com) | `deploy/`: step-by-step guide in [deploy/README.md](deploy/README.md) |
 
 Registration and Team-up need the API in `server/`. Until it is deployed and its
 address is in `platform.api_url` in `_data/dic2026.yml`, those pages say

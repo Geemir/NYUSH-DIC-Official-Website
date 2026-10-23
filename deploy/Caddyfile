@@ -1,0 +1,48 @@
+# Caddy, the web server in front of everything (deploy/compose.yaml).
+#   www.<domain>  the website, from /srv/site
+#   <domain>      redirects to www.<domain>
+#   api.<domain>  the API
+# DOMAIN and ACME_EMAIL come from /opt/nyushdic/site.env. HTTPS certificates
+# are requested and renewed automatically once the DNS records point here.
+
+{
+	email {$ACME_EMAIL}
+}
+
+www.{$DOMAIN} {
+	root * /srv/site
+	encode zstd gzip
+	file_server
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+	# Assets aren't fingerprinted, so keep browser caching short.
+	@assets path /assets/*
+	header @assets Cache-Control "public, max-age=3600"
+
+	handle_errors {
+		@missing expression {err.status_code} == 404
+		handle @missing {
+			rewrite * /404.html
+			file_server
+		}
+		respond "{err.status_code} {err.status_text}"
+	}
+}
+
+{$DOMAIN} {
+	redir https://www.{$DOMAIN}{uri} permanent
+}
+
+api.{$DOMAIN} {
+	encode zstd gzip
+	header -Server
+	reverse_proxy {$API_UPSTREAM:api:8787} {
+		# The assistant streams its replies: pass them on as they come.
+		flush_interval -1
+	}
+}
