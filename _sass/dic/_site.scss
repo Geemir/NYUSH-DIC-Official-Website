@@ -264,6 +264,7 @@ $dic-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", m
     flex-direction: column;
     margin-top: 1rem;
     padding-left: 1.5rem;
+    font-family: $global-font-family;
     font-size: 0.85rem;
     color: $muted-text-color;
 
@@ -389,6 +390,90 @@ $dic-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", m
     max-width: 100%;
     height: auto;
   }
+}
+
+/* --------------------------------------------------------------------------
+   Phones: everything you tap is at least 44 px tall (Apple's minimum), and
+   small print is no smaller than 14 px. Wider screens keep the theme's sizes.
+   -------------------------------------------------------------------------- */
+
+@media (max-width: #{$small - 1px}) {
+  .greedy-nav {
+    a.site-logo,
+    a.site-title,
+    .visible-links a {
+      display: flex;
+      align-items: center;
+      min-height: 44px;
+    }
+    a.site-logo { min-width: 44px; }
+
+    .greedy-nav__toggle {
+      min-width: 44px;
+      height: 44px;
+    }
+
+    .hidden-links a { padding-block: 12px; }
+  }
+
+  .page__footer-follow .social-icons {
+    li { padding-block: 0; }
+
+    a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35em;
+      min-height: 44px;
+      font-size: 0.875rem;
+    }
+  }
+
+  .page__footer-copyright {
+    font-size: 0.875rem;
+
+    a {
+      display: inline-block;
+      padding-block: 12px;
+    }
+  }
+
+  .dic-footer-logos a {
+    display: block;
+    padding-block: 4px;
+  }
+
+  .dic-home__actions .btn,
+  .page__content .btn {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  /* Headings that are links (e.g. the track write-ups on DIC 2025). */
+  .page__content :is(h2, h3, h4, h5) > a:not(.header-link) {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .page__content .notice,
+  .page__content [class*="notice--"] { font-size: 0.875rem !important; }
+
+  .feature__item .archive__item-excerpt { font-size: 1rem; }
+
+  .dic-teaser__bar,
+  .dic-teaser__meta { font-size: 0.8rem; }
+
+  .dic-quote figcaption { font-size: 0.9rem; }
+}
+
+/* Inline icons (_includes/icon.html) in the footer's links, in the brand
+   colours the icon font used to give them. */
+.social-icons .dic-icon {
+  vertical-align: -0.125em;
+
+  &--instagram { color: $instagram-color; }
+  &--linkedin { color: $linkedin-color; }
 }
 
 /* --------------------------------------------------------------------------

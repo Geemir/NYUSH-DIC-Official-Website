@@ -36,5 +36,11 @@ Once `api_url` is set, the DIC 2026 sign-up section points to them.
 (An external sign-up form also still works: paste its link into `register_url`.)
 
 Keep everything loadable from mainland China: no Google Fonts, Google Docs or
-Forms, or unpinned CDNs. Fonts and Font Awesome are self-hosted under
-`assets/`.
+Forms, or unpinned CDNs. Fonts are self-hosted under `assets/`; icons are
+inline SVG (`_includes/icon.html`), so pages load no icon font.
+
+Most visitors arrive on a phone, from WeChat. On phones, the DIC 2026 pages
+get a tab bar along the bottom (`_includes/dic2026/tabbar.html`), and long
+passages marked `data-more` fold behind "Read more"; the phone sizes are in
+`_sass/dic/_dic2026-phone.scss` (anything you tap ≥ 44 px, body text 16 px).
+Shrink photos before adding them: about 1600 px wide is plenty.

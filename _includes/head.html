@@ -18,9 +18,11 @@
 
 <!-- For all browsers -->
 <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}">
-{%- comment -%} Font Awesome is self-hosted and pinned: a third-party CDN at @latest is slow or blocked in mainland China (issue #4). {%- endcomment %}
-<link rel="preload" href="{{ '/assets/fontawesome-6.7.2/css/all.min.css' | relative_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="{{ '/assets/fontawesome-6.7.2/css/all.min.css' | relative_url }}"></noscript>
+{%- comment -%}
+  No icon font: the few icons the site uses are inline SVG (_includes/icon.html),
+  which saves phones ~140 KB on every page. Font Awesome 6.7.2 stays vendored in
+  assets/fontawesome-6.7.2/ in case a page ever needs it again.
+{%- endcomment %}
 
 {% if site.head_scripts %}
   {% for script in site.head_scripts %}

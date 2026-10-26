@@ -11,7 +11,7 @@
   // Let the menu share the row with the switch; the theme's greedy menu
   // measures its own width, so it adapts.
   .masthead__menu { flex: 1 1 auto; min-width: 0; width: auto; }
-  @media (max-width: 479px) { .site-title { display: none; } }
+  @media (max-width: 479px) { .greedy-nav a.site-title { display: none; } }
 }
 
 .d-langswitch {

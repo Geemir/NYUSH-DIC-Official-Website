@@ -1,0 +1,241 @@
+// Partial of assets/css/dic2026.scss (imported last; uses its variables).
+// DIC 2026 on phones, on every DIC 2026 page: the bottom tab bar, the
+// "Read more" cut for long passages, a shorter page, and phone sizes —
+// everything you tap at least 44 px, body text 16 px, small print no smaller
+// than 12 px (labels) or 14 px (sentences). Wider screens keep the design as
+// it is. Rules here repeat the selectors they adjust, so they win by order.
+
+$phone: $sm - 1px;   // phones
+$compact: 759px;     // phones and small tablets: below the progress rail
+$tabbar-h: 60px;
+$safe-bottom: env(safe-area-inset-bottom, 0px);
+
+// =============================================================================
+// Bottom tab bar (_includes/dic2026/tabbar.html)
+// =============================================================================
+.d-tabbar { display: none; }
+
+@media (max-width: $compact) {
+  .d-tabbar {
+    position: fixed; z-index: 40; left: 0; right: 0; bottom: 0;
+    display: flex;
+    padding-bottom: $safe-bottom;
+    background: var(--d-navy-950);
+    border-top: 1px solid var(--d-navy-600);
+  }
+  .d26 .d-tabbar__item {
+    flex: 1 1 0; min-width: 0; min-height: $tabbar-h;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+    padding: 6px 4px; border: 0; background: none;
+    font-family: $display; font-size: 12px; font-weight: 700; line-height: 1.2; letter-spacing: 0.02em;
+    color: var(--d-mist);
+    -webkit-tap-highlight-color: transparent;
+    transition: color 150ms, background-color 150ms;
+    &:active { background: var(--d-navy-800); }
+    &[aria-current="page"] { color: var(--d-lav); background: var(--d-navy-800); box-shadow: inset 0 3px 0 var(--d-cyan); }
+    &[aria-expanded="true"] { color: var(--d-cyan); }
+  }
+  .d-tabbar__icon { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: square; }
+  .d-tabbar__label { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  // Both languages: tab labels stay one word.
+  #{$both} .d26 .d-tabbar__label .l-en { display: none; }
+
+  // Room under the page's last line, so the bar never covers it.
+  .layout--dic2026 .page__footer { padding-bottom: calc(#{$tabbar-h} + #{$safe-bottom}); }
+
+  // The tabs take over from the progress rail.
+  .d-rail { display: none; }
+
+  // The assistant opens from the bar's "Ask", as a sheet just above it;
+  // the floating button steps aside so nothing covers the page.
+  .d26 .d-tabbar ~ .d-bot {
+    left: 8px; right: 8px; bottom: calc(#{$tabbar-h} + 8px + #{$safe-bottom});
+    align-items: stretch;
+  }
+  .d26 .d-tabbar ~ .d-bot .d-bot__open { display: none; }
+  .d26 .d-tabbar ~ .d-bot .d-bot__panel {
+    width: auto;
+    // unquote: Ruby Sass would read min() as its own function.
+    height: unquote("min(560px, calc(100vh - #{$tabbar-h} - 88px))");
+    height: unquote("min(560px, calc(100dvh - #{$tabbar-h} - 88px - #{$safe-bottom}))");
+  }
+  .d26 .d-tabbar ~ .d-toasts { bottom: calc(#{$tabbar-h} + 16px + #{$safe-bottom}); }
+}
+
+// =============================================================================
+// "Read more" (data-more; assets/js/dic2026.js measures and adds the button)
+// =============================================================================
+.d-more__toggle { display: none; }
+
+@media (max-width: $phone) {
+  .d-more.is-cut {
+    max-height: var(--more-h, 10.5em); overflow: hidden;
+    -webkit-mask-image: linear-gradient(#000 50%, transparent);
+    mask-image: linear-gradient(#000 50%, transparent);
+  }
+  .d26 .d-more__toggle {
+    display: inline-flex; align-items: center; gap: 10px; min-height: 44px; margin-top: 2px; padding: 0;
+    border: 0; background: none;
+    font-family: $mono; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--d-cyan);
+    #{$both} & span.l-zh + span.l-en::before { content: " / "; }
+  }
+  .d-more__sign { font-size: 18px; line-height: 1; }
+  .d26 .d-app__intro.d-more { --more-h: 8.5em; }
+  .d26 .d-app__intro.is-cut, .d26 .d-app__intro.is-open { margin-bottom: 0; }
+  .d26 .d-app__intro + .d-more__toggle { margin-bottom: 20px; }
+}
+
+// =============================================================================
+// Phones: header, type, spacing, and the DIC 2026 page
+// =============================================================================
+@media (max-width: $phone) {
+  // ---- header: language switch
+  .d-langswitch {
+    margin-left: 8px;
+    button { min-width: 44px; min-height: 44px; padding: 0 10px; font-size: 12px; }
+  }
+
+  // ---- shared
+  .d26 .d-mono { font-size: 12px; letter-spacing: 0.1em; }
+  .d-win__bar { height: 36px; font-size: 12px; }
+  .d-section { padding: 48px 0; }
+  .d-filehead { margin-bottom: 28px; }
+  .d-filehead__title { font-size: 30px; }
+  .d-lead { font-size: 16px; }
+  #{$both} .d26 .d-pair .l-en { font-size: 15px; }
+  .d-sublabel { font-size: 19px; }
+
+  // ---- hero: one screen. The circuit art goes (the track tabs below do
+  // its job), and the theme box in FILE / 01 repeats what the hero says.
+  .d-hero { padding: 28px 0 44px; }
+  .d-hero__art { display: none; }
+  .d-hero__actions { gap: 14px; margin-top: 28px; }
+  .d-clock { margin-top: 28px; }
+  .d-unit__label { font-size: 12px; }
+  .d-clock__date { font-size: 13px; }
+  .d-themebox { display: none; }
+  .d26 .d-figure { margin-top: 32px; }
+  .d-invite { margin-top: 28px; font-size: 16px; }
+
+  // ---- tracks
+  .d-tabs { margin: 28px 0 20px; button { min-height: 64px; } }
+  .d-tabs__name { font-size: 15px; }
+  .d-track__name { font-size: 20px; }
+  .d-mission { font-size: 16px; }
+  .d-example__label { font-size: 13px; }
+  .d-example .d-pair { font-size: 16px; }
+  .d-dig summary { min-height: 48px; padding: 2px 0 0; font-size: 13px; }
+  .d-dig__label { font-size: 12px; }
+  .d-dig__list li::before { font-size: 13px; }
+
+  // ---- timeline
+  .d-overview { margin-bottom: 40px; }
+  .d-phase__num { font-size: 40px; }
+  .d-list li { font-size: 16px; }
+  .d-tlx { margin-top: 40px; }
+  .d-tlx .d-tlx__play,
+  .d-tlx .d-tlx__views button { min-height: 44px; padding: 0 14px; font-size: 12px; }
+  .d-tlx__stage { font-size: 12px; }
+  .d-tlx__now span { font-size: 11px; }
+  .d-tlx__short { font-size: 13px; }
+  .d-tlx__name { font-size: 14px; }
+  .d-tlx__title { font-size: 20px; }
+  .d-tlx__items li { font-size: 16px; }
+  .d-event__items li { font-size: 15px; }
+  .d-event__state { font-size: 11px; }
+  .d-note { font-size: 13px; }
+
+  // ---- sign up and partners
+  .d-signup__text { font-size: 16px; }
+  .d-signup__closing { font-size: 30px; }
+  .d-signup__links a { min-height: 44px; padding: 0 16px; font-size: 15px; .dic-icon { width: 18px; height: 18px; } }
+  .d-signup__poster { width: 180px; }
+  .d-past li { font-size: 14px; }
+  .d-open__title { font-size: 24px; }
+  .d-endline { margin-top: 48px !important; letter-spacing: 0.2em; }
+
+  // ---- opening animation: a skip button a thumb can hit
+  .d-intro__skip { min-height: 44px; padding: 0 16px; font-size: 12px; bottom: calc(20px + #{$safe-bottom}); }
+}
+
+// =============================================================================
+// Phones: Registration, Team-up and the assistant
+// =============================================================================
+@media (max-width: $phone) {
+  .d26 {
+    &.d-app { padding: 28px 0 48px; }
+    .d-app__intro { margin-bottom: 24px; }
+    .d-app__rules { font-size: 15px; }
+    .d-loading { font-size: 13px; }
+    .d-note-box { font-size: 16px; }
+    .d-preview { font-size: 14px; }
+    .d-preview__tag { font-size: 12px; }
+    .d-pill { font-size: 12px; }
+
+    // Buttons and button-links: a full 44 px to tap, and room between them.
+    .d-btn.d-btn--small { min-height: 44px; font-size: 14px; }
+    .d-link { display: inline-block; padding-block: 11px; line-height: 22px; }
+    .d-actions { gap: 12px 20px; }
+
+    // Fields. Inputs at 16 px also stop iPhones zooming in on focus.
+    .d-field__label { font-size: 15px; }
+    .d-field__opt { font-size: 13px; }
+    .d-field__hint, .d-field__error { font-size: 14px; }
+    .d-field__count { font-size: 12px; }
+    .d-input--small, .d-select--small, .d-input--search { min-height: 44px; font-size: 16px; }
+    .d-input--search { flex-basis: 100%; max-width: none; }
+    .d-chip { min-height: 44px; }
+    .d-chip--small { min-width: 44px; min-height: 44px; padding: 6px 12px; font-size: 13px; }
+    .d-choice__kicker { font-size: 12px; }
+    .d-choice__note { font-size: 14px; }
+    .d-seg__item { min-height: 44px; padding: 8px 16px; font-size: 14px; }
+
+    // Registration
+    .d-steps__link { min-height: 44px; }
+    .d-steps__num { font-size: 13px; }
+    .d-step__lead { font-size: 16px; }
+    .d-code__label { font-size: 12px; }
+    .d-code__hint { font-size: 14px; }
+    .d-members__school { font-size: 14px; }
+    .d-members .d-link { font-size: 15px; }
+    .d-facts dt { font-size: 14px; }
+    .d-dash__withdraw { font-size: 14px; }
+    .d-done__date { font-size: 13px; }
+    .d-account { font-size: 14px; }
+
+    // Dialogs: a close button a thumb can hit, in a taller title bar.
+    .d-dialog { width: calc(100% - 16px); }
+    .d-dialog .d-win__bar, .d-bot .d-win__bar { height: 44px; padding-right: 0; }
+    .d-dialog__close { width: 44px; height: 44px; font-size: 26px; }
+    .d-dialog__text { font-size: 16px; }
+    .d-toast { font-size: 15px; }
+
+    // Team-up
+    .d-tu__tab { min-height: 48px; font-size: 15px; }
+    .d-card__bar { height: 36px; font-size: 12px; }
+    .d-card__title { font-size: 18px; }
+    .d-card__meta { font-size: 14px; }
+    .d-card__text { font-size: 15px; }
+    .d-card__body > .d-link, .d-card__contact { font-size: 15px; }
+    .d-card__label, .d-card__closed { font-size: 12px; }
+    .d-card__foot { gap: 4px 16px; padding: 4px 16px; font-size: 15px; }
+    .d-card__actions { gap: 0 16px; }
+    .d-card__replies { min-height: 44px; padding: 6px 14px; font-size: 14px; }
+    .d-thread__empty { font-size: 15px; }
+    .d-thread__form .d-textarea { font-size: 16px; }
+    .d-reply__head, .d-msg__head { font-size: 13px; b { font-size: 14px; } }
+    .d-reply__body, .d-msg__body { font-size: 15px; }
+    .d-reply__actions, .d-msg__actions { gap: 16px; font-size: 14px; }
+    .d-posting { font-size: 14px; }
+    .d-chat { height: calc(100vh - 200px); height: calc(100dvh - 200px); }
+    .d-chat__tab { min-height: 44px; font-size: 13px; }
+    .d-chat__empty { font-size: 15px; }
+    .d-chat__input { min-height: 44px; font-size: 16px; }
+
+    // The assistant
+    .d-bot__msg { font-size: 15px; }
+    .d-bot__input { min-height: 44px; font-size: 16px; }
+    .d-bot__note { font-size: 12px; }
+  }
+}

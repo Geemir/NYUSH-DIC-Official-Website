@@ -1,0 +1,25 @@
+{%- comment -%}
+  Phones and small tablets: DIC 2026's own tabs in a bar along the bottom of
+  the screen, where a thumb reaches (styles: _sass/dic/_dic2026-phone.scss).
+  "Ask" appears once the assistant is switched on (assets/js/dic-platform/bot.js),
+  and opens it in place of the floating button.
+{%- endcomment -%}
+{%- assign here = page.url -%}
+<nav class="d-tabbar" aria-label="DIC 2026">
+  <a class="d-tabbar__item" href="{{ '/DIC2026/' | relative_url }}"{% if here == "/DIC2026/" %} aria-current="page"{% endif %}>
+    <svg class="d-tabbar__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16"/><path d="M3 9h18M7 13h6M7 16h10"/></svg>
+    <span class="d-tabbar__label"><span class="l-zh" lang="zh-Hans">大赛</span><span class="l-en" lang="en">DIC 2026</span></span>
+  </a>
+  <a class="d-tabbar__item" href="{{ '/DIC2026/register/' | relative_url }}"{% if here == "/DIC2026/register/" %} aria-current="page"{% endif %}>
+    <svg class="d-tabbar__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4H5v17h14V4h-4"/><path d="M9 2.5h6v3H9zM8.5 13.5l2.5 2.5 5-5.5"/></svg>
+    <span class="d-tabbar__label"><span class="l-zh" lang="zh-Hans">报名</span><span class="l-en" lang="en">Register</span></span>
+  </a>
+  <a class="d-tabbar__item" href="{{ '/DIC2026/team-up/' | relative_url }}"{% if here == "/DIC2026/team-up/" %} aria-current="page"{% endif %}>
+    <svg class="d-tabbar__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.6 2.7-6 6-6s6 2.4 6 6"/><circle cx="17" cy="9" r="2.6"/><path d="M16 14.1c3-.4 5.4 1.6 5.4 4.9"/></svg>
+    <span class="d-tabbar__label"><span class="l-zh" lang="zh-Hans">组队</span><span class="l-en" lang="en">Team-up</span></span>
+  </a>
+  <button class="d-tabbar__item" type="button" data-bot-open hidden>
+    <svg class="d-tabbar__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 4h18v12H11l-5 4v-4H3z"/><path d="M9.6 8.4a2.4 2.4 0 1 1 3.4 2.2c-.6.3-1 .8-1 1.5"/><path d="M12 13.6v.4"/></svg>
+    <span class="d-tabbar__label"><span class="l-zh" lang="zh-Hans">问问</span><span class="l-en" lang="en">Ask</span></span>
+  </button>
+</nav>

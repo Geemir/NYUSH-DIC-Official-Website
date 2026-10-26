@@ -61,7 +61,9 @@ layout: default
         </div>
 
         <div class="d-hero__actions">
-          <a class="d-btn d-btn--primary" href="#signup">{% include dic2026/t.html v=sf.heading %}</a>
+          {%- comment -%} Once registration is live, straight to it: one tap from the top of the page. {%- endcomment %}
+          {%- assign live = d.platform.api_url | default: "" %}
+          <a class="d-btn d-btn--primary" href="{% if live != "" %}{{ '/DIC2026/register/' | relative_url }}{% else %}#signup{% endif %}">{% include dic2026/t.html v=sf.heading %}{% if live != "" %} <span aria-hidden="true">→</span>{% endif %}</a>
           <a class="d-btn d-btn--ghost" href="#tracks">{% include dic2026/t.html v=kf.heading %}</a>
         </div>
 
@@ -110,9 +112,11 @@ layout: default
       <div class="d-theme">
         <div class="d-theme__text d-reveal">
           <h3 class="d-sublabel">{% include dic2026/t.html v=tf.about.label %}</h3>
-          {%- for p in tf.about.paragraphs %}
-          <div class="d-pair">{% include dic2026/t.html v=p tag="p" %}</div>
-          {%- endfor %}
+          <div class="d-more" data-more>
+            {%- for p in tf.about.paragraphs %}
+            <div class="d-pair">{% include dic2026/t.html v=p tag="p" %}</div>
+            {%- endfor %}
+          </div>
         </div>
 
         <div class="d-themebox d-reveal">
@@ -166,7 +170,7 @@ layout: default
             </div>
 
             <div class="d-mission d-pair">{% include dic2026/t.html v=t.mission tag="p" %}</div>
-            <div class="d-pair d-track__body">{% include dic2026/t.html v=t.body tag="p" %}</div>
+            <div class="d-pair d-track__body d-more" data-more>{% include dic2026/t.html v=t.body tag="p" %}</div>
 
             <div class="d-example">
               <p class="d-example__label">{% include dic2026/t.html v=t.example_label %}</p>
@@ -202,9 +206,11 @@ layout: default
 
       <div class="d-overview d-reveal">
         <h3 class="d-sublabel">{% include dic2026/t.html v=lf.overview.label %}</h3>
-        {%- for p in lf.overview.paragraphs %}
-        <div class="d-pair">{% include dic2026/t.html v=p tag="p" %}</div>
-        {%- endfor %}
+        <div class="d-more" data-more>
+          {%- for p in lf.overview.paragraphs %}
+          <div class="d-pair">{% include dic2026/t.html v=p tag="p" %}</div>
+          {%- endfor %}
+        </div>
       </div>
 
       <h3 class="d-sublabel">{% include dic2026/t.html v=lf.phases.label %}</h3>
@@ -214,14 +220,16 @@ layout: default
           <div class="d-win__bar"><span>STAGE_{{ ph.num }}</span><span class="d-win__ctl" aria-hidden="true"><i></i><i></i><i></i></span></div>
           <div class="d-win__body">
             <div class="d-phase__head"><span class="d-phase__num d-chroma">{{ ph.num }}</span><h4>{% include dic2026/t.html v=ph.name %}</h4></div>
-            <div class="d-pair">{% include dic2026/t.html v=ph.body tag="p" %}</div>
-            {%- if ph.deliverables %}
-            <ul class="d-list">
-              {%- for item in ph.deliverables %}
-              <li>{% include dic2026/t.html v=item %}</li>
-              {%- endfor %}
-            </ul>
-            {%- endif %}
+            <div class="d-more" data-more>
+              <div class="d-pair">{% include dic2026/t.html v=ph.body tag="p" %}</div>
+              {%- if ph.deliverables %}
+              <ul class="d-list">
+                {%- for item in ph.deliverables %}
+                <li>{% include dic2026/t.html v=item %}</li>
+                {%- endfor %}
+              </ul>
+              {%- endif %}
+            </div>
           </div>
         </article>
         {%- endfor %}
@@ -283,7 +291,7 @@ layout: default
             <p class="d-signup__closing">{{ sf.closing }}</p>
             <ul class="d-signup__links">
               {%- for link in site.footer.links %}
-              <li><a href="{{ link.url }}"{% if link.url contains "://" %} target="_blank" rel="noopener"{% endif %}>{% if link.icon contains "/" %}<img src="{{ link.icon }}" alt="" width="16" height="16">{% else %}<i class="{{ link.icon }}" aria-hidden="true"></i>{% endif %} {{ link.label }}</a></li>
+              <li><a href="{{ link.url }}"{% if link.url contains "://" %} target="_blank" rel="noopener"{% endif %}>{% if link.icon contains "/" %}<img src="{{ link.icon }}" alt="" width="16" height="16">{% else %}{% include icon.html name=link.icon %}{% endif %} {{ link.label }}</a></li>
               {%- endfor %}
             </ul>
           </div>
@@ -341,6 +349,8 @@ layout: default
       <p class="d-endline d-mono">{{ d.footer_line }}</p>
     </div>
   </section>
+
+  {% include dic2026/tabbar.html %}
 </div>
 
 {%- comment -%} anime.js 3.2.2 (MIT), self-hosted: drives the opening animation and the clock. {%- endcomment %}

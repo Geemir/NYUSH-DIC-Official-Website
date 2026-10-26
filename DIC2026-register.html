@@ -6,7 +6,7 @@ app: register
 copy: register_page
 classes: layout--dic2026
 navigation: dic2026
-masthead_logo: /assets/images/DIC2026/dic-mark-light.png
+masthead_logo: /assets/images/DIC2026/dic-mark-light-96.png
 lang_switch: true
 excerpt: "Register for the NYU Shanghai Digital Innovation Challenge 2026: on your own, as a team, or find teammates."
 header:
@@ -17,7 +17,7 @@ header:
   itself is built by assets/js/dic-platform/register.js.
 {%- endcomment -%}
 {%- assign c = site.data.dic2026.register_page -%}
-<div class="d-app__intro">
+<div class="d-app__intro d-more" data-more>
   <div class="d-pair d-lead">{% include dic2026/t.html v=c.lead tag="p" %}</div>
   <ul class="d-list d-app__facts">
     {%- for f in c.facts %}

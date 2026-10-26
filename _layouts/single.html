@@ -48,7 +48,8 @@ layout: default
             </nav>
           </aside>
         {% endif %}
-        {{ content }}
+        {%- comment -%} Pictures load as they scroll into view, so phones fetch only what is read. {%- endcomment %}
+        {{ content | replace: '<img ', '<img loading="lazy" decoding="async" ' }}
         {% if page.link %}<div><a href="{{ page.link }}" class="btn btn--primary">{{ site.data.ui-text[site.locale].ext_link_label | default: "Direct Link" }}</a></div>{% endif %}
       </section>
 

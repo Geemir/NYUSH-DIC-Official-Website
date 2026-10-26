@@ -24,24 +24,29 @@ description: >- # this means to ignore newlines until "baseurl:"
   This is the official website of NYUSH DIC !!!
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://www.nyushdic.com" # the base hostname & protocol for your site, e.g. http://example.com
-logo: "/assets/images/NYUSHDIC.png"
+logo: "/assets/images/NYUSHDIC-96.png" # shown at 32px; the full-size original is NYUSHDIC.png
 
+# icon: a name from _includes/icon.html, or an image path.
 footer:
   links:
     - label: "Instagram"
-      icon: "fab fa-fw fa-instagram"
+      icon: "instagram"
       url: "https://www.instagram.com/nyushdic/"
     - label: "WeChat"
-      icon: "fa-brands fa-weixin"
+      icon: "wechat"
       url: "/WeChat/"
     - label: "LinkedIn"
-      icon: "fa-brands fa-linkedin"
+      icon: "linkedin"
       url: "https://www.linkedin.com/company/nyushdic"
     - label: "Xiaohongshu"
-      icon: "/assets/images/xhs.ico"
+      icon: "/assets/images/xhs-48.png"
       url: "https://www.xiaohongshu.com/user/profile/64a1341900000000100358af"
 
 # Build settings
+# Minified stylesheets: smaller downloads on phones.
+sass:
+  style: compressed
+
 # Theme: Minimal Mistakes 4.26.2, fully vendored in _layouts/_includes/_sass/assets
 # (no remote_theme download needed; customise those files directly).
 theme: null # stop github-pages from falling back to its default "primer" theme

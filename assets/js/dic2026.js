@@ -490,6 +490,8 @@
       trackPanels.forEach(function (panel) {
         panel.classList.toggle("is-active", panel.id === id);
       });
+      /* A window that was hidden has its "Read more" measured now. */
+      document.dispatchEvent(new CustomEvent("dic:layout"));
     };
     var isTrack = function (id) {
       return trackPanels.some(function (p) { return p.id === id; });
@@ -571,6 +573,63 @@
     window.addEventListener("resize", queueRail);
     updateRail();
     rail.classList.add("is-ready");
+  }
+
+  /* --------------------------------------------------------------- read more */
+  /* Long passages marked data-more are cut to a few lines on phones, with a
+     "Read more" button (the cut itself is CSS, in _dic2026-phone.scss, so
+     wider screens never see it). Each passage is measured, and only gets the
+     button when there is more to read; again whenever the language or the
+     width changes. Without this script everything shows in full. */
+  var mores = page.querySelectorAll("[data-more]");
+  if (mores.length) {
+    var moreLabel = function (open) {
+      return open
+        ? '<span class="l-zh" lang="zh-Hans">收起</span><span class="l-en" lang="en">Show less</span><span class="d-more__sign" aria-hidden="true">−</span>'
+        : '<span class="l-zh" lang="zh-Hans">展开全文</span><span class="l-en" lang="en">Read more</span><span class="d-more__sign" aria-hidden="true">+</span>';
+    };
+    var measureMore = function (el) {
+      if (el.classList.contains("is-open")) return;
+      el.classList.add("is-cut");
+      var cut = el.scrollHeight > el.clientHeight + 24;
+      el.classList.toggle("is-cut", cut);
+      el._moreButton.hidden = !cut;
+    };
+    each(mores, function (el, i) {
+      if (!el.id) el.id = "d-more-" + i;
+      var button = document.createElement("button");
+      button.type = "button";
+      button.className = "d-more__toggle";
+      button.setAttribute("aria-controls", el.id);
+      button.setAttribute("aria-expanded", "false");
+      button.innerHTML = moreLabel(false);
+      button.hidden = true;
+      button.addEventListener("click", function () {
+        var open = !el.classList.contains("is-open");
+        el.classList.toggle("is-open", open);
+        button.setAttribute("aria-expanded", String(open));
+        button.innerHTML = moreLabel(open);
+        if (open) {
+          el.classList.remove("is-cut");
+        } else {
+          measureMore(el);
+          /* Folding up from far below: bring the passage back into view. */
+          if (el.getBoundingClientRect().top < 0) el.scrollIntoView({ block: "start" });
+        }
+      });
+      el._moreButton = button;
+      el.parentNode.insertBefore(button, el.nextSibling);
+    });
+    var measureAll = function () { each(mores, measureMore); };
+    var moreTimer;
+    measureAll();
+    document.addEventListener("dic:lang", measureAll);
+    document.addEventListener("dic:layout", measureAll);
+    window.addEventListener("resize", function () {
+      clearTimeout(moreTimer);
+      moreTimer = setTimeout(measureAll, 150);
+    });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(measureAll);
   }
 
   /* ------------------------------------------------------------ scroll reveal */

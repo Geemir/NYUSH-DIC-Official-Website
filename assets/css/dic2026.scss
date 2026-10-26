@@ -376,7 +376,7 @@ html[data-dic-lang="en"] .d26 .l-zh { display: none !important; }
   &__links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px !important;
     a { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; border: 1px solid var(--d-navy-600); font-size: 14px; color: var(--d-mist); transition: border-color 150ms, color 150ms;
       &:hover { border-color: var(--d-cyan); color: var(--d-paper); }
-      i { color: var(--d-cyan); } img { width: 16px; height: 16px; } } }
+      .dic-icon { flex-shrink: 0; color: var(--d-cyan); } img { width: 16px; height: 16px; } } }
   &__poster { display: block; width: 200px; margin: 0 auto; border: 1px solid var(--d-navy-600); box-shadow: 4px 4px 0 var(--d-plum); transition: transform 150ms $ease; cursor: zoom-in;
     &:hover { transform: translate(-2px, -2px); } @media (min-width: $sm) { width: 230px; } }
 }
@@ -385,6 +385,7 @@ html[data-dic-lang="en"] .d26 .l-zh { display: none !important; }
 @import "dic/dic2026-timeline";
 @import "dic/dic2026-chrome";
 @import "dic/dic2026-app";
+@import "dic/dic2026-phone";
 
 // =============================================================================
 // Scroll reveal — only once the page script confirms it is running

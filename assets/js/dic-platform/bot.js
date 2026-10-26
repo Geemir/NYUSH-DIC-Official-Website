@@ -62,14 +62,23 @@ function build(info) {
   greet();
   for (const m of history) bubble(m.role, m.text);
 
+  // On phones the bottom tab bar's "Ask" (_includes/dic2026/tabbar.html)
+  // opens the panel, and the floating button stays out of the way (CSS).
+  const openers = [open, ...document.querySelectorAll("[data-bot-open]")];
+  let opener = open;
   const toggle = (show) => {
     panel.hidden = !show;
-    open.setAttribute("aria-expanded", String(show));
+    for (const b of openers) b.setAttribute("aria-expanded", String(show));
     root.classList.toggle("is-open", show);
     if (show) input.focus();
-    else open.focus();
+    else opener.focus();
   };
-  open.addEventListener("click", () => toggle(panel.hidden));
+  for (const b of openers) {
+    b.hidden = false;
+    b.setAttribute("aria-controls", "d-bot-panel");
+    b.setAttribute("aria-expanded", "false");
+    b.addEventListener("click", () => { opener = b; toggle(panel.hidden); });
+  }
   close.addEventListener("click", () => toggle(false));
   panel.addEventListener("keydown", (e) => { if (e.key === "Escape") toggle(false); });
 
