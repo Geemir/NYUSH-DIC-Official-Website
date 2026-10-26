@@ -277,6 +277,7 @@ Do these on a phone **without a VPN**, on mobile data and on campus Wi-Fi:
 |---|---|
 | Update the site or API | Merge to `main`. The workflow deploys. |
 | Change a setting | `ssh root@SERVER_IP`, edit `/opt/nyushdic/api.env`, then `cd /opt/nyushdic/deploy && docker compose up -d` |
+| Change the domains | Edit `/opt/nyushdic/site.env`, then `cd /opt/nyushdic/deploy && docker compose up -d --force-recreate web` |
 | See what's happening | `cd /opt/nyushdic/deploy && docker compose logs -f api` (or `web`) |
 | Restart | `cd /opt/nyushdic/deploy && docker compose restart` |
 | Backups | Every night at 04:00, into `/opt/nyushdic/backups` (kept 14 days). Copy one off the server now and then: `scp root@SERVER_IP:/opt/nyushdic/backups/dic-….sqlite .` Restoring is described in `backup.sh`. |
@@ -285,6 +286,10 @@ Do these on a phone **without a VPN**, on mobile data and on campus Wi-Fi:
 
 **Troubleshooting**
 
+- **A domain isn't served after changing `site.env` or the Caddyfile** (no
+  certificate, or the browser can't connect): Caddy is still on its old
+  settings. Run `docker compose up -d --force-recreate web`, then
+  `docker compose logs web` to watch it get the certificates.
 - **No HTTPS / certificate errors:** the DNS records don't point to the server
   yet, or ports 80/443 aren't open in the Firewall tab. Run
   `docker compose logs web` to see why.

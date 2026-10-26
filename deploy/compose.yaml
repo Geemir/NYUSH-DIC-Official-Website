@@ -43,7 +43,9 @@ services:
       - "443:443"
       - "443:443/udp"
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      # The whole folder, not just the Caddyfile: each deployment replaces the
+      # file, and a single-file mount would keep showing Caddy the old one.
+      - ./:/etc/caddy:ro
       - ../site:/srv/site:ro
       - caddy-data:/data
       - caddy-config:/config

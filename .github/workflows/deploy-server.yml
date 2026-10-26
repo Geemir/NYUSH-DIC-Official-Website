@@ -64,7 +64,11 @@ jobs:
           rsync -az --delete deploy/ "$TARGET:/opt/nyushdic/deploy/"
 
       - name: Restart
-        run: ssh "$TARGET" 'cd /opt/nyushdic/deploy && docker compose up -d --build --remove-orphans && docker image prune -f'
+        # "up" recreates containers whose settings changed; Caddy is then told to
+        # reload its Caddyfile, which "up" alone doesn't notice (no downtime).
+        run: |
+          ssh "$TARGET" 'cd /opt/nyushdic/deploy && docker compose up -d --build --remove-orphans && docker image prune -f'
+          ssh "$TARGET" 'cd /opt/nyushdic/deploy && docker compose exec -T web caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile --force'
 
       - name: Check
         run: |
