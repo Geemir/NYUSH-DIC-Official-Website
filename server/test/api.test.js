@@ -423,7 +423,7 @@ function deepseekStub({ status = 200, finish = "stop" } = {}) {
 test("chatbot: DeepSeek request shape and streaming", async () => {
   const { call, config } = setup({ BOT_PROVIDER: "deepseek", DEEPSEEK_API_KEY: "sk-ds" });
   assert.equal((await call("GET", "/api/bot")).data.enabled, true);
-  assert.equal(config.bot.model, "deepseek-v4-pro");
+  assert.equal(config.bot.model, "deepseek-v4-flash");
   const stub = deepseekStub();
   config.bot.fetch = stub.fetchStub;
   config.bot.knowledgeText = "Kick-off Day: 2026-11-09.";
@@ -440,7 +440,7 @@ test("chatbot: DeepSeek request shape and streaming", async () => {
   const { url, headers, body } = stub.sent[0];
   assert.equal(url, "https://api.deepseek.com/chat/completions");
   assert.equal(headers.Authorization, "Bearer sk-ds");
-  assert.equal(body.model, "deepseek-v4-pro");
+  assert.equal(body.model, "deepseek-v4-flash");
   assert.equal(body.stream, true);
   assert.deepEqual(body.thinking, { type: "disabled" });
   assert.equal(body.messages[0].role, "system");

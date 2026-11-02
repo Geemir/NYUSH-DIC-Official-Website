@@ -77,7 +77,7 @@ export function configFromEnv(env = {}) {
          = Claude (needs ANTHROPIC_API_KEY; not offered in Hong Kong or the
          mainland); "echo" = a stand-in that repeats the question. */
       provider: env.BOT_PROVIDER || "",
-      model: env.BOT_MODEL || (env.BOT_PROVIDER === "deepseek" ? "deepseek-v4-pro" : "claude-opus-5-5"),
+      model: env.BOT_MODEL || (env.BOT_PROVIDER === "deepseek" ? "deepseek-v4-flash" : "claude-opus-5-5"),
       effort: env.BOT_EFFORT || "low", // Claude: low | medium | high: more thinking, slower and dearer
       /* DeepSeek thinks before answering by default; off here, so answers
          start at once. BOT_THINKING=1 turns it back on. */
