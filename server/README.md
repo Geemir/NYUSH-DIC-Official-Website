@@ -162,7 +162,7 @@ Off by default. To switch it on:
    always knows the current page content).
 2. Set `platform.chatbot: true` in `_data/dic2026.yml` to show the button.
 
-The club uses DeepSeek (`deepseek-v4-pro`, `src/bot-deepseek.js`), with
+The club uses DeepSeek (`deepseek-v4-flash`, `src/bot-deepseek.js`), with
 thinking switched off so answers start at once (`BOT_THINKING=1` turns it
 on). The instructions and facts come first in every request and never change,
 so DeepSeek's automatic cache makes repeat questions cheaper. Costs are bounded

@@ -3,7 +3,7 @@
  * Loaded only when BOT_PROVIDER=deepseek (needs DEEPSEEK_API_KEY).
  * https://api-docs.deepseek.com/
  *
- * - Model BOT_MODEL (default deepseek-v4-pro), thinking off unless
+ * - Model BOT_MODEL (default deepseek-v4-flash), thinking off unless
  *   BOT_THINKING=1, so answers start straight away.
  * - The system prompt (instructions plus the site's facts) comes first and
  *   never changes between requests, so DeepSeek's automatic context cache
