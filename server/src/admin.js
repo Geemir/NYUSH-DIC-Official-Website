@@ -10,10 +10,22 @@
  *   POST /api/admin/reports/:id/resolve
  *   POST /api/admin/users/:id/ban   { banned: true | false }
  *
+ * Clean-up (spam sign-ups):
+ *   POST /api/admin/users/delete           { ids }  accounts and everything they made
+ *   POST /api/admin/participants/delete    { ids }  registrations only (accounts stay)
+ *   POST /api/admin/teams/:id/delete       { members: keep | delete }
+ *   POST /api/admin/teams/:id/remove-member { userId }
+ *   POST /api/admin/reports/delete         { ids }
+ *   GET  /api/admin/domains                accounts per email domain, blocked domains
+ *   POST /api/admin/domains/block          { domain, reason?, deleteAccounts? }
+ *   POST /api/admin/domains/unblock        { domain }
+ *
  * The admin page turns participants and teams into tables, and those into
  * Excel / CSV files, in the browser.
  */
-import { requireAdmin } from "./auth.js";
+import { requireAdmin, isAdmin } from "./auth.js";
+import { removeFromTeam } from "./registration.js";
+import { COMMON } from "./guard.js";
 import { fail, oneOf } from "./util.js";
 import { HOUR, DAY } from "./ratelimit.js";
 
@@ -193,6 +205,189 @@ export async function resolveReport(ctx) {
   const admin = await requireAdmin(ctx);
   await ctx.db.run("UPDATE reports SET resolved_at = ?, resolved_by = ? WHERE id = ?", Date.now(), admin.id, Number(ctx.params.id));
   await log(ctx, admin, "resolve report", ctx.params.id);
+  return { ok: true };
+}
+
+/* ------------------------------------------------------------------ clean-up */
+/* For spam sign-ups: remove registrations, whole accounts, teams, reports,
+   and block an email domain (deleting its accounts in one go). Admin
+   accounts are never deleted, and each action is written to admin_log. */
+const MAX_BATCH = 1000;
+
+function idList(value, field = "ids") {
+  const ids = [...new Set((Array.isArray(value) ? value : []).map(String))].filter((s) => /^[\w-]{1,40}$/.test(s));
+  if (!ids.length) fail(400, "invalid", "Nothing selected.", "未选择任何项。", { field });
+  if (ids.length > MAX_BATCH) fail(400, "too_many", `At most ${MAX_BATCH} at a time.`, `一次最多 ${MAX_BATCH} 项。`, { field });
+  return ids;
+}
+
+const marks = (n) => Array(n).fill("?").join(",");
+
+/* Leave any team (handing captaincy on, or closing an empty team) and drop the registration. */
+async function dropRegistration(ctx, userId) {
+  const p = await ctx.db.get("SELECT team_id FROM participants WHERE user_id = ?", userId);
+  if (!p) return false;
+  if (p.team_id) {
+    const team = await ctx.db.get("SELECT * FROM teams WHERE id = ?", p.team_id);
+    if (team) await removeFromTeam(ctx, team, userId);
+  }
+  await ctx.db.run("DELETE FROM participants WHERE user_id = ?", userId);
+  return true;
+}
+
+/* Deletes accounts and everything they made. Returns how many were deleted; admins are skipped. */
+async function eraseUsers(ctx, admin, ids) {
+  const users = await ctx.db.all(`SELECT id, email FROM users WHERE id IN (${marks(ids.length)})`, ...ids);
+  const victims = users.filter((u) => u.id !== admin.id && !isAdmin(ctx.config, u));
+  for (const u of victims) {
+    await dropRegistration(ctx, u.id);
+    const posts = (await ctx.db.all("SELECT id FROM posts WHERE user_id = ?", u.id)).map((r) => r.id);
+    const ops = [];
+    if (posts.length) {
+      ops.push([`DELETE FROM replies WHERE post_id IN (${marks(posts.length)})`, ...posts]);
+      ops.push([`DELETE FROM reports WHERE kind = 'post' AND target_id IN (${marks(posts.length)})`, ...posts]);
+    }
+    ops.push(
+      ["DELETE FROM reports WHERE kind = 'reply' AND target_id IN (SELECT id FROM replies WHERE user_id = ?)", u.id],
+      ["DELETE FROM reports WHERE kind = 'message' AND target_id IN (SELECT CAST(id AS TEXT) FROM messages WHERE user_id = ?)", u.id],
+      ["DELETE FROM reports WHERE reporter_id = ?", u.id],
+      ["DELETE FROM posts WHERE user_id = ?", u.id],
+      ["DELETE FROM replies WHERE user_id = ?", u.id],
+      ["DELETE FROM messages WHERE user_id = ?", u.id],
+      ["DELETE FROM sessions WHERE user_id = ?", u.id],
+      ["DELETE FROM login_codes WHERE email = ?", u.email],
+      ["DELETE FROM users WHERE id = ?", u.id],
+    );
+    await ctx.db.batch(ops);
+  }
+  return { deleted: victims.length, skipped: users.length - victims.length };
+}
+
+/* POST /api/admin/users/delete { ids } → deletes the accounts and all they made */
+export async function deleteUsers(ctx) {
+  const admin = await requireAdmin(ctx);
+  const ids = idList((await ctx.body()).ids);
+  const r = await eraseUsers(ctx, admin, ids);
+  await log(ctx, admin, "delete accounts", `${r.deleted}: ${ids.slice(0, 20).join(" ")}`);
+  return { ok: true, ...r };
+}
+
+/* POST /api/admin/participants/delete { ids } → removes registrations (the accounts stay) */
+export async function deleteRegistrations(ctx) {
+  const admin = await requireAdmin(ctx);
+  const ids = idList((await ctx.body()).ids);
+  let deleted = 0;
+  for (const id of ids) if (await dropRegistration(ctx, id)) deleted++;
+  await log(ctx, admin, "delete registrations", `${deleted}: ${ids.slice(0, 20).join(" ")}`);
+  return { ok: true, deleted };
+}
+
+/* POST /api/admin/teams/:id/delete { members: "keep" | "delete" }
+   keep: the team closes, its members stay registered without a team;
+   delete: the members' accounts go too (for spam teams). */
+export async function deleteTeam(ctx) {
+  const admin = await requireAdmin(ctx);
+  const members = oneOf((await ctx.body()).members || "keep", ["keep", "delete"], { field: "members" });
+  const team = await ctx.db.get("SELECT * FROM teams WHERE id = ?", ctx.params.id);
+  if (!team) fail(404, "not_found", "No such team.", "没有这个队伍。");
+  const ids = (await ctx.db.all("SELECT user_id FROM participants WHERE team_id = ?", team.id)).map((r) => r.user_id);
+  let accounts = 0;
+  if (members === "delete" && ids.length) accounts = (await eraseUsers(ctx, admin, ids)).deleted;
+  const t = Date.now();
+  await ctx.db.batch([
+    ["UPDATE participants SET team_id = NULL, team_choice = 'none', joined_team_at = NULL, updated_at = ? WHERE team_id = ?", t, team.id],
+    ["DELETE FROM teams WHERE id = ?", team.id],
+  ]);
+  await log(ctx, admin, members === "delete" ? "delete team and members" : "disband team", `${team.name} (${team.code})`);
+  return { ok: true, accounts };
+}
+
+/* POST /api/admin/teams/:id/remove-member { userId } */
+export async function removeTeamMember(ctx) {
+  const admin = await requireAdmin(ctx);
+  const userId = String((await ctx.body()).userId || "");
+  const team = await ctx.db.get("SELECT * FROM teams WHERE id = ?", ctx.params.id);
+  const member = team && (await ctx.db.get("SELECT user_id FROM participants WHERE user_id = ? AND team_id = ?", userId, team.id));
+  if (!member) fail(404, "not_member", "That person isn't in this team.", "此人不在该队伍中。");
+  await removeFromTeam(ctx, team, userId);
+  await log(ctx, admin, "remove from team", `${userId} ← ${team.name} (${team.code})`);
+  return { ok: true };
+}
+
+/* POST /api/admin/reports/delete { ids } → deletes reports (e.g. spam reports) */
+export async function deleteReports(ctx) {
+  const admin = await requireAdmin(ctx);
+  const ids = idList((await ctx.body()).ids).map(Number).filter(Number.isInteger);
+  const r = await ctx.db.run(`DELETE FROM reports WHERE id IN (${marks(ids.length)})`, ...ids);
+  await log(ctx, admin, "delete reports", ids.join(" "));
+  return { ok: true, deleted: r.changes };
+}
+
+/* GET /api/admin/domains → accounts per email domain, and the blocked list */
+export async function domains(ctx) {
+  await requireAdmin(ctx);
+  const rows = await ctx.db.all(
+    `SELECT lower(substr(u.email, instr(u.email, '@') + 1)) AS domain,
+            COUNT(*) AS accounts,
+            SUM(CASE WHEN p.user_id IS NOT NULL THEN 1 ELSE 0 END) AS registrations,
+            SUM(CASE WHEN p.status = 'submitted' THEN 1 ELSE 0 END) AS submitted,
+            SUM(CASE WHEN u.created_at > ? THEN 1 ELSE 0 END) AS lastDay,
+            MAX(u.created_at) AS newest
+       FROM users u LEFT JOIN participants p ON p.user_id = u.id
+      GROUP BY domain ORDER BY accounts DESC, newest DESC LIMIT 100`, Date.now() - DAY);
+  const blocked = [
+    ...(await ctx.db.all("SELECT domain, reason, created_by AS createdBy, created_at AS createdAt FROM blocked_domains ORDER BY created_at DESC"))
+      .map((b) => ({ ...b, source: "admin" })),
+    ...ctx.config.guard.blockedDomains.map((domain) => ({ domain, source: "settings" })),
+  ];
+  const under = (domain, list) => list.some((d) => domain === d || domain.endsWith("." + d));
+  return {
+    domains: rows.map((r) => ({
+      ...r,
+      common: under(r.domain, COMMON),
+      blocked: under(r.domain, blocked.map((b) => b.domain)),
+      organisers: ctx.config.adminEmails.some((e) => under(e.split("@").pop(), [r.domain])),
+    })),
+    blocked,
+  };
+}
+
+const domainArg = (value) => {
+  const d = String(value || "").trim().toLowerCase().replace(/^@/, "");
+  if (!/^(?=.{3,253}$)([a-z0-9-]+\.)+[a-z]{2,}$/.test(d)) fail(400, "invalid", "Please enter a domain like example.com.", "请输入域名，例如 example.com。", { field: "domain" });
+  return d;
+};
+
+/* POST /api/admin/domains/block { domain, reason?, deleteAccounts? } */
+export async function blockDomain(ctx) {
+  const admin = await requireAdmin(ctx);
+  const body = await ctx.body();
+  const domain = domainArg(body.domain);
+  if (ctx.config.adminEmails.some((e) => e.endsWith("@" + domain) || e.endsWith("." + domain))) {
+    fail(400, "admin_domain", "An organiser's email is on this domain, so it can't be blocked.", "组委会成员的邮箱属于该域名，无法屏蔽。");
+  }
+  if (COMMON.includes(domain)) {
+    fail(400, "common_domain", "This is a common provider or school domain; block single accounts instead.", "这是常用邮箱或学校域名，请改为删除单个账号。");
+  }
+  const reason = String(body.reason || "").slice(0, 200);
+  await ctx.db.run("INSERT INTO blocked_domains (domain, reason, created_by, created_at) VALUES (?, ?, ?, ?) ON CONFLICT (domain) DO UPDATE SET reason = excluded.reason",
+    domain, reason, admin.email, Date.now());
+  let deleted = 0;
+  if (body.deleteAccounts === true) {
+    const ids = (await ctx.db.all("SELECT id FROM users WHERE email LIKE ? OR email LIKE ?", `%@${domain}`, `%.${domain}`)).map((r) => r.id);
+    for (let i = 0; i < ids.length; i += MAX_BATCH) deleted += (await eraseUsers(ctx, admin, ids.slice(i, i + MAX_BATCH))).deleted;
+  }
+  await log(ctx, admin, body.deleteAccounts === true ? "block domain and delete accounts" : "block domain", `${domain}${deleted ? ` (${deleted} accounts)` : ""}`);
+  return { ok: true, domain, deleted };
+}
+
+/* POST /api/admin/domains/unblock { domain } */
+export async function unblockDomain(ctx) {
+  const admin = await requireAdmin(ctx);
+  const domain = domainArg((await ctx.body()).domain);
+  const r = await ctx.db.run("DELETE FROM blocked_domains WHERE domain = ?", domain);
+  if (!r.changes) fail(404, "not_found", "That domain isn't on the list (domains in BLOCKED_EMAIL_DOMAINS are changed on the server).", "该域名不在屏蔽列表中（BLOCKED_EMAIL_DOMAINS 中的域名需在服务器上修改）。");
+  await log(ctx, admin, "unblock domain", domain);
   return { ok: true };
 }
 

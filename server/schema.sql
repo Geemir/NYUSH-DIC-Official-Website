@@ -122,6 +122,20 @@ CREATE TABLE IF NOT EXISTS rate_limits (
   count         INTEGER NOT NULL
 );
 
+-- Email domains organisers have blocked (src/guard.js; also BLOCKED_EMAIL_DOMAINS).
+CREATE TABLE IF NOT EXISTS blocked_domains (
+  domain      TEXT PRIMARY KEY,         -- lower case, e.g. 'example.com' (covers its subdomains)
+  reason      TEXT NOT NULL DEFAULT '',
+  created_by  TEXT NOT NULL DEFAULT '',
+  created_at  INTEGER NOT NULL
+);
+
+-- Proof-of-work challenges already used (each works once until it expires).
+CREATE TABLE IF NOT EXISTS used_challenges (
+  salt        TEXT PRIMARY KEY,
+  expires_at  INTEGER NOT NULL
+);
+
 -- What admins changed, and when.
 CREATE TABLE IF NOT EXISTS admin_log (
   id          INTEGER PRIMARY KEY AUTOINCREMENT,

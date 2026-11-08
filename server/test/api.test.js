@@ -6,6 +6,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { DatabaseSync } from "node:sqlite";
 import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { createApp } from "../src/app.js";
 import { configFromEnv } from "../src/config.js";
 import { fromNodeSqlite } from "../src/db.js";
@@ -15,6 +16,18 @@ const PROFILE = {
   name: "Lin Wei", school: "NYU Shanghai", program: "Computer Science", year: "y2",
   wechat: "linwei_dic", phone: "", skills: ["coding", "ai"], source: "wechat",
 };
+
+/* Solves a sign-in proof-of-work challenge, as the page does (assets/js/dic-platform/pow.js). */
+function solve({ challenge, bits }) {
+  if (!bits) return {};
+  const salt = challenge.split(".")[0];
+  for (let n = 0; ; n++) {
+    const h = createHash("sha256").update(`${salt}:${n}`).digest();
+    let z = 0;
+    for (const byte of h) { if (byte === 0) { z += 8; continue; } z += Math.clz32(byte) - 24; break; }
+    if (z >= bits) return { challenge, nonce: String(n) };
+  }
+}
 
 function setup(env = {}) {
   const sqlite = new DatabaseSync(":memory:");
@@ -26,13 +39,17 @@ function setup(env = {}) {
   const app = createApp({ config, db: fromNodeSqlite(sqlite) });
   let ip = 0;
 
-  async function call(method, path, body, token, { origin, raw } = {}) {
+  async function call(method, path, body, token, { origin, raw, ip: from = "10.0.0.1", pow = true } = {}) {
+    /* Code requests carry a solved challenge, unless the test is about leaving it out. */
+    if (method === "POST" && path === "/api/auth/code" && pow && body && !("challenge" in body)) {
+      body = { ...body, ...solve((await call("GET", "/api/auth/challenge", undefined, undefined, { ip: from })).data) };
+    }
     const headers = { "Content-Type": "application/json" };
     if (token) headers.Authorization = `Bearer ${token}`;
     if (origin) headers.Origin = origin;
     const res = await app.fetch(
       new Request("http://api.test" + path, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) }),
-      { ip: "10.0.0.1" },
+      { ip: from },
     );
     if (raw) return res;
     const type = res.headers.get("Content-Type") || "";
@@ -41,10 +58,9 @@ function setup(env = {}) {
 
   /* Each sign-in comes from its own address, to stay clear of the per-address limit. */
   async function signIn(email) {
-    const res = await app.fetch(new Request("http://api.test/api/auth/code", {
-      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email }),
-    }), { ip: `10.1.0.${++ip}` });
-    const { devCode } = await res.json();
+    const res = await call("POST", "/api/auth/code", { email }, undefined, { ip: `10.1.0.${++ip}` });
+    assert.equal(res.status, 200, JSON.stringify(res.data));
+    const { devCode } = res.data;
     const r = await call("POST", "/api/auth/verify", { email, code: devCode });
     assert.equal(r.status, 200, JSON.stringify(r.data));
     return r.data.token;
@@ -485,4 +501,113 @@ test("organisers can register and team up like anyone else", async () => {
   assert.equal(r.data.registration.status, "submitted");
   const p = (await call("GET", "/api/admin/participants", undefined, admin)).data.participants;
   assert.equal(p[0].team.name, "Organisers");
+});
+
+test("sign-in keeps bots out: proof of work, honeypot, blocked domains", async () => {
+  const { call, sqlite } = setup({ CODE_LIMIT_PER_DOMAIN_HOUR: "3" });
+  const bare = await call("POST", "/api/auth/code", { email: "x@nyu.edu" }, undefined, { pow: false });
+  assert.equal(bare.data.error.code, "challenge", "no solved challenge, no code");
+
+  const ch = (await call("GET", "/api/auth/challenge")).data;
+  assert.ok(ch.bits >= 8);
+  const solved = solve(ch);
+  const [salt, exp, , sig] = solved.challenge.split(".");
+  const forged = [salt, exp, 1, sig].join(".");
+  assert.equal((await call("POST", "/api/auth/code", { email: "x@nyu.edu", challenge: forged, nonce: solved.nonce })).data.error.code, "challenge", "difficulty can't be edited");
+  assert.equal((await call("POST", "/api/auth/code", { email: "x@nyu.edu", ...solved })).status, 200);
+  assert.equal((await call("POST", "/api/auth/code", { email: "y@nyu.edu", ...solved })).data.error.code, "challenge", "a challenge works once");
+
+  const trap = await call("POST", "/api/auth/code", { email: "bot@nyu.edu", website: "http://spam" });
+  assert.equal(trap.status, 200);
+  assert.equal(trap.data.devCode, undefined);
+  assert.equal(sqlite.prepare("SELECT COUNT(*) AS n FROM login_codes WHERE email = 'bot@nyu.edu'").get().n, 0, "the honeypot sends nothing");
+
+  assert.equal((await call("POST", "/api/auth/code", { email: "a@mailinator.com" })).data.error.code, "email_blocked");
+  for (let i = 0; i < 3; i++) assert.equal((await call("POST", "/api/auth/code", { email: `u${i}@spam.test` })).status, 200);
+  assert.equal((await call("POST", "/api/auth/code", { email: "u9@spam.test" })).status, 429, "codes to one unknown domain are capped");
+  assert.equal((await call("POST", "/api/auth/code", { email: "fine@nyu.edu" })).status, 200, "common domains aren't");
+});
+
+test("wrong codes: parallel guesses share the five tries, and each address has a cap", async () => {
+  const { call } = setup();
+  const sent = await call("POST", "/api/auth/code", { email: "p@nyu.edu" });
+  const wrong = sent.data.devCode === "000000" ? "111111" : "000000";
+  const results = await Promise.all(Array.from({ length: 20 }, () => call("POST", "/api/auth/verify", { email: "p@nyu.edu", code: wrong })));
+  assert.ok(results.filter((r) => r.data.error.code === "code_wrong").length <= 5, "at most five real guesses");
+  assert.equal((await call("POST", "/api/auth/verify", { email: "p@nyu.edu", code: sent.data.devCode })).data.error.code, "code_locked");
+
+  // 60 wrong codes from one address, spread over many emails, then that address waits
+  let last;
+  for (let i = 0; i < 13; i++) {
+    const s = await call("POST", "/api/auth/code", { email: `g${i}@nyu.edu` }, undefined, { ip: "10.9.9.9" });
+    const w = s.data.devCode === "000000" ? "111111" : "000000";
+    for (let k = 0; k < 5; k++) last = await call("POST", "/api/auth/verify", { email: `g${i}@nyu.edu`, code: w }, undefined, { ip: "10.9.9.9" });
+  }
+  assert.equal(last.status, 429);
+  assert.equal(last.data.error.code, "slow_down");
+});
+
+test("admin clean-up: domains, accounts, registrations, teams and reports", async () => {
+  const { call, signIn, register } = setup();
+  const a = await register("a@nyu.edu");
+  await call("POST", "/api/registration/team", { action: "create", name: "Real team", track: "track-01" }, a);
+  const aPost = (await call("POST", "/api/board/posts", { kind: "team", track: "track-01", title: "Need a designer", body: "Hi" }, a)).data.post;
+  const b1 = await register("bot1@spam.test");
+  await call("POST", "/api/registration/team", { action: "create", name: "Spam team", track: "track-02" }, b1);
+  const code = (await call("GET", "/api/registration", undefined, b1)).data.team.code;
+  const b2 = await register("bot2@spam.test");
+  await call("POST", "/api/registration/team", { action: "join", code }, b2);
+  const b3 = await register("bot3@mail.spam.test");
+  await call("POST", "/api/board/posts", { kind: "solo", track: "any", title: "Buy now", body: "spam" }, b3);
+  await call("POST", "/api/report", { kind: "post", id: aPost.id, reason: "fake report" }, b3);
+
+  assert.equal((await call("GET", "/api/admin/domains", undefined, a)).status, 403, "organisers only");
+  const admin = await signIn("admin@dic.test");
+  const d = (await call("GET", "/api/admin/domains", undefined, admin)).data;
+  assert.equal(d.domains.find((x) => x.domain === "spam.test").accounts, 2);
+  assert.equal(d.domains.find((x) => x.domain === "nyu.edu").common, true);
+
+  assert.equal((await call("POST", "/api/admin/domains/block", { domain: "nyu.edu" }, admin)).data.error.code, "common_domain");
+  assert.equal((await call("POST", "/api/admin/domains/block", { domain: "dic.test" }, admin)).data.error.code, "admin_domain");
+  const blocked = await call("POST", "/api/admin/domains/block", { domain: "spam.test", deleteAccounts: true }, admin);
+  assert.equal(blocked.data.deleted, 3, "subdomains included");
+  const people = (await call("GET", "/api/admin/participants", undefined, admin)).data.participants;
+  assert.deepEqual(people.map((p) => p.email), ["a@nyu.edu"]);
+  assert.deepEqual((await call("GET", "/api/admin/teams", undefined, admin)).data.teams.map((t) => t.name), ["Real team"]);
+  assert.equal((await call("GET", "/api/board/posts")).data.posts.length, 1, "the spam card is gone");
+  assert.equal((await call("GET", "/api/admin/reports", undefined, admin)).data.reports.length, 0, "and the spam report");
+  assert.equal((await call("GET", "/api/me", undefined, b1)).status, 401, "signed out");
+  assert.equal((await call("POST", "/api/auth/code", { email: "new@spam.test" })).data.error.code, "email_blocked");
+  assert.equal((await call("GET", "/api/admin/domains", undefined, admin)).data.blocked[0].domain, "spam.test");
+  await call("POST", "/api/admin/domains/unblock", { domain: "spam.test" }, admin);
+  assert.equal((await call("POST", "/api/auth/code", { email: "new@spam.test" })).status, 200);
+
+  // registrations only: the account stays signed in
+  const c = await register("c@nyu.edu");
+  await call("POST", "/api/registration/team", { action: "join", code: (await call("GET", "/api/registration", undefined, a)).data.team.code }, c);
+  const cId = (await call("GET", "/api/me", undefined, c)).data.user.id;
+  const teamId = (await call("GET", "/api/admin/teams", undefined, admin)).data.teams[0].id;
+  assert.equal((await call("POST", `/api/admin/teams/${teamId}/remove-member`, { userId: cId }, admin)).status, 200);
+  assert.equal((await call("GET", "/api/registration", undefined, c)).data.team, null);
+  assert.equal((await call("POST", "/api/admin/participants/delete", { ids: [cId] }, admin)).data.deleted, 1);
+  assert.equal((await call("GET", "/api/registration", undefined, c)).data.registration, null);
+  assert.equal((await call("GET", "/api/me", undefined, c)).status, 200);
+
+  // disband a team: members stay registered without a team
+  assert.equal((await call("POST", `/api/admin/teams/${teamId}/delete`, { members: "keep" }, admin)).status, 200);
+  const mine = (await call("GET", "/api/registration", undefined, a)).data;
+  assert.equal(mine.team, null);
+  assert.equal(mine.registration.teamChoice, "none");
+
+  // accounts: admins are never deleted
+  const adminId = (await call("GET", "/api/me", undefined, admin)).data.user.id;
+  const del = (await call("POST", "/api/admin/users/delete", { ids: [cId, adminId] }, admin)).data;
+  assert.deepEqual([del.deleted, del.skipped], [1, 1]);
+  assert.equal((await call("GET", "/api/me", undefined, admin)).status, 200);
+
+  // reports
+  await call("POST", "/api/report", { kind: "post", id: aPost.id, reason: "x" }, a);
+  const rep = (await call("GET", "/api/admin/reports", undefined, admin)).data.reports[0];
+  assert.equal((await call("POST", "/api/admin/reports/delete", { ids: [rep.id] }, admin)).data.deleted, 1);
+  assert.equal((await call("GET", "/api/admin/reports", undefined, admin)).data.reports.length, 0);
 });

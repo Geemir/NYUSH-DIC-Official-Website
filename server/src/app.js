@@ -13,6 +13,7 @@ import * as board from "./board.js";
 import * as chat from "./chat.js";
 import * as admin from "./admin.js";
 import * as bot from "./bot.js";
+import * as guard from "./guard.js";
 
 const MAX_BODY = 64 * 1024;
 
@@ -37,6 +38,7 @@ const routes = [
   ["GET", "/api/health", async () => ({ ok: true, time: Date.now() })],
   ["GET", "/api/form", form],
 
+  ["GET", "/api/auth/challenge", guard.challenge],
   ["POST", "/api/auth/code", auth.requestCode],
   ["POST", "/api/auth/verify", auth.verifyCode],
   ["POST", "/api/auth/logout", auth.logout],
@@ -75,6 +77,14 @@ const routes = [
   ["POST", "/api/admin/moderate", admin.moderate],
   ["POST", "/api/admin/reports/:id/resolve", admin.resolveReport],
   ["POST", "/api/admin/users/:id/ban", admin.ban],
+  ["POST", "/api/admin/users/delete", admin.deleteUsers],
+  ["POST", "/api/admin/participants/delete", admin.deleteRegistrations],
+  ["POST", "/api/admin/teams/:id/delete", admin.deleteTeam],
+  ["POST", "/api/admin/teams/:id/remove-member", admin.removeTeamMember],
+  ["POST", "/api/admin/reports/delete", admin.deleteReports],
+  ["GET", "/api/admin/domains", admin.domains],
+  ["POST", "/api/admin/domains/block", admin.blockDomain],
+  ["POST", "/api/admin/domains/unblock", admin.unblockDomain],
 
   ["GET", "/api/bot", bot.botInfo],
   ["POST", "/api/bot/chat", bot.chat],

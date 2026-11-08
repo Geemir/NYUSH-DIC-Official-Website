@@ -154,7 +154,19 @@ export const session = {
     emit();
     return user;
   },
-  sendCode: (email) => api("POST", "/api/auth/code", { email }),
+  /* Asking for a code takes a solved proof-of-work challenge (pow.js); a
+     stale one is replaced once. `website` is the sign-in form's honeypot. */
+  async sendCode(email, website = "") {
+    const { solveChallenge } = await import("./pow.js");
+    for (let tries = 0; ; tries++) {
+      const proof = await solveChallenge(await api("GET", "/api/auth/challenge"));
+      try {
+        return await api("POST", "/api/auth/code", { email, website, ...proof });
+      } catch (err) {
+        if (err.code !== "challenge" || tries) throw err;
+      }
+    }
+  },
   async verify(email, code) {
     const r = await api("POST", "/api/auth/verify", { email, code });
     token = r.token;
