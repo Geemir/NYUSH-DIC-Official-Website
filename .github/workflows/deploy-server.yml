@@ -26,7 +26,9 @@ concurrency:
 jobs:
   deploy:
     if: vars.DEPLOY_HOST != ''
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest moved to 26.04, which the pinned ruby/setup-ruby
+    # (v1.207.0) treats as self-hosted and can't install Ruby on.
+    runs-on: ubuntu-24.04
     env:
       TARGET: ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}
     steps:
