@@ -177,6 +177,35 @@ club's server. Another provider is one more `src/bot-<name>.js` exporting
 `BOT_PROVIDER=echo` is a stand-in that repeats the question, for testing the
 page without a key.
 
+## Bots and spam sign-ups
+
+Sign-in is the only way in, so that's where bots are stopped (`src/guard.js`):
+
+- **Proof of work.** Asking for a code needs a challenge from
+  `GET /api/auth/challenge`, solved by the page in a Web Worker
+  (`assets/js/dic-platform/pow.js`, about half a second on a phone). Each
+  challenge is signed, expires in 5 minutes and works once, and it gets harder
+  for an address that keeps asking. No third-party CAPTCHA, so it works in
+  mainland China. `POW_BITS` sets the difficulty.
+- **Honeypot.** The sign-in form has a field people never see. A request that
+  fills it gets a normal-looking answer and no email.
+- **Email domains.** Organisers block a domain on the admin page (Clean-up),
+  or in `BLOCKED_EMAIL_DOMAINS`. Throwaway-inbox services are refused. Codes to
+  any one domain are capped per hour (`CODE_LIMIT_PER_DOMAIN_HOUR`), except
+  big providers and schools, and all code emails together too
+  (`CODE_LIMIT_TOTAL_HOUR`).
+- **Wrong codes.** Five tries per code, taken atomically, so parallel guesses
+  share them. Wrong codes are also capped per network address (60 an hour)
+  and per email (15 a day), so asking for new codes doesn't buy more guesses.
+
+If spam gets through anyway, use **Clean-up** on the admin page. It lists
+accounts by email domain, and one click blocks a domain and deletes its
+accounts with everything they made. The **Participants** and **Teams** tabs
+can also remove registrations, delete accounts (one at a time or ticked in
+bulk) and disband or delete teams. Reports can be deleted from the Team-up
+tab. Organiser accounts are never deleted, and every action is written to
+`admin_log`.
+
 ## Data
 
 What's stored: each person's email, the "About you" answers, team and project
@@ -186,9 +215,7 @@ each other's name and school; Team-up contact details are shown only to
 signed-in people.
 
 People can withdraw their registration themselves (it's deleted). To remove
-someone entirely, delete their rows in `users`, `participants`, `sessions`,
-`posts`, `replies` and `messages` (with `wrangler d1 execute … --command` on
-Cloudflare, or `sqlite3` on a server).
+someone entirely, use **Delete account** on the admin page.
 
 ## Code
 
@@ -198,9 +225,10 @@ Cloudflare, or `sqlite3` on a server).
 | `src/app.js` | Routes, CORS, errors. Every endpoint is listed here. |
 | `src/form.js` | The registration questions, tracks, skills, channels. |
 | `src/auth.js` | Sign-in codes, sessions, display names. |
+| `src/guard.js` | Keeping bots out of sign-in: proof of work, honeypot, email domains. |
 | `src/registration.js` | Registration and teams. |
 | `src/board.js`, `src/chat.js` | Team-up cards, replies, reports, channels. |
-| `src/admin.js` | Organisers' data and moderation. |
+| `src/admin.js` | Organisers' data, moderation and clean-up. |
 | `src/bot.js`, `src/bot-claude.js` | The assistant. |
 | `src/config.js`, `src/db.js`, `src/email.js`, `src/ratelimit.js`, `src/util.js` | Settings, database adapters, email, limits, helpers. |
 | `src/node.js`, `src/worker.js` | Node and Cloudflare entry points. |

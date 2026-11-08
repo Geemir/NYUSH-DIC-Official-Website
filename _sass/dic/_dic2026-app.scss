@@ -231,6 +231,8 @@
   }
 
   .d-signin { max-width: 520px; .d-actions { justify-content: flex-start; } }
+  // The sign-in honeypot (account.js): off-screen for people, there for bots.
+  .d-trap { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
 
   .d-team {
     &__panel { margin-top: 24px; }
@@ -480,7 +482,18 @@
     td { max-width: 320px; padding: 8px 12px; border-bottom: 1px solid var(--d-navy-700); color: var(--d-paper); vertical-align: top; overflow-wrap: anywhere; }
     tbody tr:nth-child(even) td { background: rgba(11, 44, 77, 0.6); }
     tbody tr:hover td { background: var(--d-navy-700); }
+    tbody tr.is-chosen td { background: rgba(202, 125, 221, 0.14); }
+    .d-table__tick { width: 36px; text-align: center; }
+    .d-table__actions { max-width: none; white-space: nowrap; .d-link + .d-link { margin-left: 14px; } }
+    .d-pill { margin-left: 8px; }
   }
+  .d-tick { width: 18px; height: 18px; margin: 0; accent-color: var(--d-cyan); vertical-align: middle; cursor: pointer; }
+  .d-link--small { font-size: 13px; }
+
+  // Clean-up: bulk actions on the selected participants, and the domain tools
+  .d-bulk { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; margin: 0 0 12px; padding: 10px 14px;
+    border: 1px solid var(--d-orchid); background: rgba(202, 125, 221, 0.08); font-size: 14px; }
+  .d-cleanup { display: grid; gap: 24px; .d-filters { margin: 0; align-items: center; } .d-check { align-items: center; } }
 
   .d-menu {
     position: relative;

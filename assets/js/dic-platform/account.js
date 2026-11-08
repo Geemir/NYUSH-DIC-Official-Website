@@ -23,6 +23,8 @@ export function signInForm({ onDone, focus = true }) {
     });
     const status = h("p.d-status", { role: "alert" });
     const send = h("button.d-btn.d-btn--primary", { type: "submit" }, t({ en: "Email me a code", zh: "发送验证码" }), " →");
+    /* A honeypot: hidden from people and screen readers, filled in by bots. */
+    const trap = h("input", { type: "text", name: "website", tabindex: "-1", autocomplete: "off", "aria-hidden": "true" });
     const form = h("form.d-form", { novalidate: true },
       h("div.d-field",
         h("label.d-field__label", { for: "signin-email" }, t({ en: "Your email", zh: "你的邮箱" })),
@@ -31,6 +33,7 @@ export function signInForm({ onDone, focus = true }) {
           en: "We'll email you a 6-digit code: no password needed. Use an address you check often; it's where we'll reach you about DIC.",
           zh: "我们会向你的邮箱发送 6 位验证码，无需设置密码。请使用常用邮箱，之后的比赛通知也会发到这里。",
         }))),
+      h("div.d-trap", { "aria-hidden": "true" }, trap),
       status,
       h("div.d-actions", send));
     form.addEventListener("submit", (e) => {
@@ -38,7 +41,7 @@ export function signInForm({ onDone, focus = true }) {
       busy(send, async () => {
         setStatus(status, null);
         try {
-          const r = await session.sendCode(input.value);
+          const r = await session.sendCode(input.value, trap.value);
           address = r.email;
           askCode(r.devCode);
         } catch (err) {

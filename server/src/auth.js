@@ -11,12 +11,17 @@
  * Only hashes of codes and tokens are stored.
  */
 import { fail, email as checkEmail, text, newId, newLoginCode, newToken, sha256 } from "./util.js";
-import { limit, MINUTE, HOUR, DAY } from "./ratelimit.js";
+import { limit, checkLimit, MINUTE, HOUR, DAY } from "./ratelimit.js";
 import { sendEmail, codeEmail } from "./email.js";
+import { checkChallenge, checkCodeRequest, isBlocked, failBlocked } from "./guard.js";
 
 const CODE_TTL = 10 * MINUTE;
 const SESSION_TTL = 30 * DAY;
 const MAX_ATTEMPTS = 5;
+/* Wrong codes allowed from one network address per hour (campus Wi-Fi is
+   shared, so not too low), and for one email per day. */
+const FAILS_PER_ADDRESS_HOUR = 60;
+const FAILS_PER_EMAIL_DAY = 15;
 
 const hashCode = (config, address, code) => sha256(`${config.secret}:code:${address}:${code}`);
 const hashToken = (token) => sha256(`session:${token}`);
@@ -83,10 +88,17 @@ export function canPost(user) {
 /* ------------------------------------------------------------------ routes */
 export async function requestCode(ctx) {
   const { db, config } = ctx;
-  const address = checkEmail((await ctx.body()).email);
+  const body = await ctx.body();
+  const address = checkEmail(body.email);
+  /* The honeypot field is hidden from people; a bot that fills it gets a
+     normal-looking answer and no email. */
+  if (String(body.website || "").trim()) return { ok: true, email: address };
+  await checkChallenge(ctx, body);
+  if (await isBlocked(ctx, address)) failBlocked();
   await limit(db, `code:ip:${ctx.ip}`, config.limits.codesPerAddressHour, HOUR);
   await limit(db, `code:min:${address}`, 1, MINUTE);
   await limit(db, `code:hour:${address}`, 6, HOUR);
+  await checkCodeRequest(ctx, address);
 
   const code = newLoginCode();
   const t = Date.now();
@@ -106,19 +118,32 @@ export async function verifyCode(ctx) {
   const address = checkEmail(body.email);
   const code = String(body.code || "").replace(/\D/g, "");
   await limit(db, `verify:ip:${ctx.ip}`, config.limits.codesPerAddressHour * 3, HOUR);
+  /* Wrong guesses are capped per address and per email across codes, so
+     asking for a new code doesn't buy more guesses. */
+  await checkLimit(db, `verify:fail:ip:${ctx.ip}`, FAILS_PER_ADDRESS_HOUR, HOUR);
+  await checkLimit(db, `verify:fail:${address}`, FAILS_PER_EMAIL_DAY, DAY);
 
+  const t0 = Date.now();
   const row = await db.get("SELECT * FROM login_codes WHERE email = ?", address);
-  if (!row || row.expires_at < Date.now()) {
+  if (!row || row.expires_at < t0) {
     fail(400, "code_expired", "This code has expired. Please ask for a new one.", "验证码已过期，请重新获取。");
   }
-  if (row.attempts >= MAX_ATTEMPTS) {
+  /* Take one attempt before comparing. Done as a single conditional update,
+     so requests sent in parallel can't share one attempt. */
+  const took = await db.run("UPDATE login_codes SET attempts = attempts + 1 WHERE email = ? AND code_hash = ? AND attempts < ?",
+    address, row.code_hash, MAX_ATTEMPTS);
+  if (!took.changes) {
     fail(400, "code_locked", "Too many wrong tries. Please ask for a new code.", "错误次数过多，请重新获取验证码。");
   }
   if (code.length !== 6 || row.code_hash !== (await hashCode(config, address, code))) {
-    await db.run("UPDATE login_codes SET attempts = attempts + 1 WHERE email = ?", address);
+    await limit(db, `verify:fail:ip:${ctx.ip}`, FAILS_PER_ADDRESS_HOUR + 1, HOUR);
+    await limit(db, `verify:fail:${address}`, FAILS_PER_EMAIL_DAY + 1, DAY);
     fail(400, "code_wrong", "That code isn't right. Check the email and try again.", "验证码不正确，请检查邮件后重试。");
   }
-  await db.run("DELETE FROM login_codes WHERE email = ?", address);
+  /* A code works once: only the request that deletes it signs in. */
+  const used = await db.run("DELETE FROM login_codes WHERE email = ? AND code_hash = ?", address, row.code_hash);
+  if (!used.changes) fail(400, "code_expired", "This code has expired. Please ask for a new one.", "验证码已过期，请重新获取。");
+  if (await isBlocked(ctx, address)) failBlocked();
 
   const t = Date.now();
   await db.run("INSERT INTO users (id, email, created_at, last_seen_at) VALUES (?, ?, ?, ?) ON CONFLICT (email) DO NOTHING",

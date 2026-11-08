@@ -56,6 +56,18 @@ export function configFromEnv(env = {}) {
       codesPerAddressHour: int(env.CODE_LIMIT_PER_ADDRESS_HOUR, 300),
     },
 
+    /* Keeping bots out of sign-in (src/guard.js). */
+    guard: {
+      /* Proof-of-work difficulty for asking for a code: 17 bits is about half
+         a second on a typical phone (it rises for addresses that keep asking). 0 turns it off. */
+      powBits: int(env.POW_BITS, dev ? 8 : 17),
+      blockedDomains: list(env.BLOCKED_EMAIL_DOMAINS).map((d) => d.toLowerCase()),
+      /* Schools and providers many participants use: no per-domain cap. */
+      trustedDomains: list(env.TRUSTED_EMAIL_DOMAINS).map((d) => d.toLowerCase()),
+      codesPerDomainHour: int(env.CODE_LIMIT_PER_DOMAIN_HOUR, 40),
+      codesTotalHour: int(env.CODE_LIMIT_TOTAL_HOUR, 1000),
+    },
+
     registration: {
       /* After this moment people can no longer register, change their
          details or change teams (admins still can). */

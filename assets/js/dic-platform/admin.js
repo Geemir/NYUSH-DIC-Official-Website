@@ -22,6 +22,7 @@ const TABS = [
   { id: "people", en: "Participants", zh: "参赛者" },
   { id: "teams", en: "Teams", zh: "队伍" },
   { id: "moderation", en: "Team-up", zh: "组队广场" },
+  { id: "cleanup", en: "Clean-up", zh: "清理" },
 ];
 const trackShort = (id) => (id === "any" ? "ANY" : `T${id.slice(-2)}`);
 const trackPair = (id) => (id === "any" ? { en: "Any track", zh: "任意赛道" } : form.tracks.find((tr) => tr.id === id) || { en: id || "", zh: id || "" });
@@ -95,7 +96,7 @@ function draw() {
         exportMenu(), h("button.d-btn.d-btn--small.d-btn--ghost", {
         type: "button", on: { click: (e) => busy(e.currentTarget, reload) },
       }, "↻ ", t({ en: "Refresh", zh: "刷新" })))),
-    { overview, people: peopleTab, teams: teamsTab, moderation: moderationTab }[tab](),
+    { overview, people: peopleTab, teams: teamsTab, moderation: moderationTab, cleanup: cleanupTab }[tab](),
     accountBar());
   window.scrollTo(0, y);
 }
@@ -229,16 +230,60 @@ function filteredPeople() {
     && (!q || JSON.stringify([p.email, p.profile, p.team && p.team.name, p.team && p.team.code]).toLowerCase().includes(q)));
 }
 
-function tableView(table, { link } = {}) {
+/* select: { ids, chosen: Set, onChange } adds a tick box to each row;
+   actions(i) adds a last column of buttons for row i. */
+function tableView(table, { link, select, actions } = {}) {
+  const tick = (checked, label, onChange) => h("input.d-tick", { type: "checkbox", checked, "aria-label": label, on: { change: (e) => onChange(e.target.checked) } });
+  const allOn = select && select.ids.length > 0 && select.ids.every((id) => select.chosen.has(id));
   return h("div.d-tablewrap", { tabindex: "0", role: "region", "aria-label": { en: "Table", zh: "表格" } },
     h("table.d-table",
-      h("thead", h("tr", table.columns.map((c) => h("th", { scope: "col" }, t(c))))),
-      h("tbody", table.rows.map((row) => h("tr", row.map((v, i) => {
-        if (link === i && v) return h("td", h("a.d-link", { href: v, target: "_blank", rel: "noopener noreferrer" }, v));
-        if (Array.isArray(v)) return h("td", v.map((x, j) => [j ? ", " : null, typeof x === "object" ? t(x) : x]));
-        return h("td", v && typeof v === "object" ? t(v) : String(v ?? ""));
-      }))))));
+      h("thead", h("tr",
+        select ? h("th.d-table__tick", { scope: "col" }, tick(allOn, { en: "Select all shown", zh: "全选当前显示" }, (on) => {
+          for (const id of select.ids) on ? select.chosen.add(id) : select.chosen.delete(id);
+          select.onChange();
+        })) : null,
+        table.columns.map((c) => h("th", { scope: "col" }, t(c))),
+        actions ? h("th", { scope: "col" }, t({ en: "Actions", zh: "操作" })) : null)),
+      h("tbody", table.rows.map((row, r) => h(`tr${select && select.chosen.has(select.ids[r]) ? ".is-chosen" : ""}`,
+        select ? h("td.d-table__tick", tick(select.chosen.has(select.ids[r]), { en: "Select", zh: "选择" }, (on) => {
+          on ? select.chosen.add(select.ids[r]) : select.chosen.delete(select.ids[r]);
+          select.onChange();
+        })) : null,
+        row.map((v, i) => {
+          if (link === i && v) return h("td", h("a.d-link", { href: v, target: "_blank", rel: "noopener noreferrer" }, v));
+          if (Array.isArray(v)) return h("td", v.map((x, j) => [j ? ", " : null, typeof x === "object" ? t(x) : x]));
+          return h("td", v && typeof v === "object" ? t(v) : String(v ?? ""));
+        }),
+        actions ? h("td.d-table__actions", actions(r)) : null)))));
 }
+
+/* ---------------------------------------------------------------- clean-up */
+/* A confirmed admin action: ask, run, then reload everything. */
+async function act({ message, yes, run, done }) {
+  if (message && !(await confirmBox({ message, yes, danger: true }))) return;
+  try {
+    const r = await run();
+    if (done) toast(done(r));
+    await reload();
+  } catch (err) {
+    toast(errorPair(err), "error");
+  }
+}
+const rowLink = (label, onClick, danger) => h(`button.d-link.d-link--small${danger ? ".d-link--danger" : ""}`, { type: "button", on: { click: (e) => busy(e.currentTarget, onClick) } }, t(label));
+
+const removeRegistrations = (ids, who) => act({
+  message: { en: `Remove the registration of ${who}? They leave their team and their answers are deleted. The account stays and can register again.`, zh: `确定删除 ${who} 的报名吗？对方将退出所在队伍，填写的信息会被删除；账号保留，之后仍可重新报名。` },
+  yes: { en: "Remove registration", zh: "删除报名" },
+  run: () => api("POST", "/api/admin/participants/delete", { ids }),
+  done: (r) => ({ en: `Removed ${r.deleted} registration(s).`, zh: `已删除 ${r.deleted} 份报名。` }),
+});
+const deleteAccounts = (ids, who) => act({
+  message: { en: `Delete ${who} completely? Their registration, team membership, Team-up cards, replies, messages and reports are all deleted, and they're signed out. Organiser accounts are skipped. This can't be undone.`, zh: `确定彻底删除 ${who} 吗？其报名、队伍成员身份、组队卡片、回复、消息和举报都会被删除，并退出登录。组委会账号不会被删除。此操作无法撤销。` },
+  yes: { en: "Delete accounts", zh: "删除账号" },
+  run: () => api("POST", "/api/admin/users/delete", { ids }),
+  done: (r) => ({ en: `Deleted ${r.deleted} account(s)${r.skipped ? `, skipped ${r.skipped} organiser(s)` : ""}.`, zh: `已删除 ${r.deleted} 个账号${r.skipped ? `，跳过 ${r.skipped} 个组委会账号` : ""}。` }),
+});
+const chosenPeople = new Set();
 
 function select(label, value, options, onChange) {
   return h("label.d-filter", h("span.d-filter__label", t(label)),
@@ -268,14 +313,136 @@ function peopleTab() {
           on: { change: (e) => { filter.q = e.target.value; redraw(); } },
         }))),
     h("p.d-admin__count", t({ en: `Showing ${list.length} of ${data.participants.length}`, zh: `显示 ${list.length} / ${data.participants.length} 人` })),
-    list.length ? tableView(participantTable(list)) : h("p.d-empty", t({ en: "Nobody here yet.", zh: "暂无数据。" })));
+    bulkBar(),
+    list.length
+      ? tableView(participantTable(list), {
+        select: { ids: list.map((p) => p.userId), chosen: chosenPeople, onChange: redraw },
+        actions: (i) => {
+          const p = list[i];
+          return [
+            p.team ? rowLink({ en: "Remove from team", zh: "移出队伍" }, () => act({
+              run: () => api("POST", `/api/admin/teams/${p.team.id}/remove-member`, { userId: p.userId }),
+              done: () => ({ en: `${p.email} left ${p.team.name}.`, zh: `${p.email} 已移出 ${p.team.name}。` }),
+            })) : null,
+            rowLink({ en: "Remove registration", zh: "删除报名" }, () => removeRegistrations([p.userId], p.email), true),
+            rowLink({ en: "Delete account", zh: "删除账号" }, () => deleteAccounts([p.userId], p.email), true),
+          ];
+        },
+      })
+      : h("p.d-empty", t({ en: "Nobody here yet.", zh: "暂无数据。" })));
+}
+
+/* The selected participants, and what to do with them. Search by an email
+   domain (e.g. "@example.com"), tick the header box, then delete. */
+function bulkBar() {
+  for (const id of [...chosenPeople]) if (!data.participants.some((p) => p.userId === id)) chosenPeople.delete(id);
+  const ids = [...chosenPeople];
+  if (!ids.length) return h("p.d-field__hint", t({ en: "Tick rows (or the box in the header for everyone shown) to remove several at once.", zh: "勾选多行（或勾选表头选中当前显示的全部）即可批量删除。" }));
+  const who = { en: `${ids.length} selected`, zh: `已选 ${ids.length} 人` };
+  const label = (pair) => text(pair);
+  return h("div.d-bulk",
+    h("b", t(who)),
+    rowLink({ en: "Remove registrations", zh: "删除报名" }, () => removeRegistrations(ids, label({ en: `${ids.length} people`, zh: `${ids.length} 人` })), true),
+    rowLink({ en: "Delete accounts", zh: "删除账号" }, () => deleteAccounts(ids, label({ en: `${ids.length} accounts`, zh: `${ids.length} 个账号` })), true),
+    rowLink({ en: "Clear selection", zh: "取消选择" }, async () => { chosenPeople.clear(); draw(); }));
 }
 
 function teamsTab() {
   const table = teamTable(data.teams);
   return h("div.d-admin__table",
     h("p.d-admin__count", t({ en: `${data.teams.length} teams`, zh: `共 ${data.teams.length} 支队伍` })),
-    data.teams.length ? tableView(table, { link: 10 }) : h("p.d-empty", t({ en: "No teams yet.", zh: "暂无队伍。" })));
+    data.teams.length
+      ? tableView(table, {
+        link: 10,
+        actions: (i) => {
+          const tm = data.teams[i];
+          return [
+            rowLink({ en: "Disband", zh: "解散" }, () => act({
+              message: { en: `Disband “${tm.name}”? Its ${tm.members.length} member(s) stay registered, without a team.`, zh: `确定解散“${tm.name}”吗？其 ${tm.members.length} 名成员的报名保留，变为未组队。` },
+              yes: { en: "Disband", zh: "解散" },
+              run: () => api("POST", `/api/admin/teams/${tm.id}/delete`, { members: "keep" }),
+              done: () => ({ en: `“${tm.name}” disbanded.`, zh: `“${tm.name}”已解散。` }),
+            }), true),
+            rowLink({ en: "Delete team and accounts", zh: "删除队伍及成员账号" }, () => act({
+              message: { en: `Delete “${tm.name}” and its members' accounts (${tm.members.map((m) => m.email).join(", ")})? Use this for spam teams. Organiser accounts are skipped. This can't be undone.`, zh: `确定删除“${tm.name}”及其成员账号（${tm.members.map((m) => m.email).join("，")}）吗？适用于垃圾队伍。组委会账号不会被删除。此操作无法撤销。` },
+              yes: { en: "Delete team and accounts", zh: "删除队伍及账号" },
+              run: () => api("POST", `/api/admin/teams/${tm.id}/delete`, { members: "delete" }),
+              done: (r) => ({ en: `Deleted “${tm.name}” and ${r.accounts} account(s).`, zh: `已删除“${tm.name}”及 ${r.accounts} 个账号。` }),
+            }), true),
+          ];
+        },
+      })
+      : h("p.d-empty", t({ en: "No teams yet.", zh: "暂无队伍。" })));
+}
+
+/* Accounts by email domain: spot a wave of sign-ups from one domain, block it
+   and delete its accounts in one step. */
+function cleanupTab() {
+  const body = h("div.d-cleanup", h("p.d-loading", t({ en: "Loading…", zh: "加载中…" })));
+  loadCleanup(body);
+  return body;
+}
+
+async function loadCleanup(body) {
+  let info;
+  try {
+    info = await api("GET", "/api/admin/domains");
+  } catch (err) {
+    clear(body).append(h("p.d-status.d-status--error", t(errorPair(err))));
+    return;
+  }
+  const block = (domain, deleteAccounts, n) => act({
+    message: deleteAccounts
+      ? { en: `Block ${domain} and delete ${n ? `its ${n} account(s)` : "all its accounts"} with everything they made? Nobody can sign in with an @${domain} address afterwards (subdomains too). This can't be undone.`, zh: `确定屏蔽 ${domain} 并删除其${n ? ` ${n} 个` : "全部"}账号及其全部内容吗？之后任何 @${domain} 邮箱（含子域名）都无法登录。此操作无法撤销。` }
+      : { en: `Block ${domain}? Existing accounts stay; nobody can sign in with an @${domain} address from now on.`, zh: `确定屏蔽 ${domain} 吗？已有账号保留；之后任何 @${domain} 邮箱都无法登录。` },
+    yes: deleteAccounts ? { en: "Block and delete", zh: "屏蔽并删除" } : { en: "Block", zh: "屏蔽" },
+    run: () => api("POST", "/api/admin/domains/block", { domain, deleteAccounts }),
+    done: (r) => ({ en: `Blocked ${r.domain}${deleteAccounts ? `; deleted ${r.deleted} account(s)` : ""}.`, zh: `已屏蔽 ${r.domain}${deleteAccounts ? `，删除 ${r.deleted} 个账号` : ""}。` }),
+  });
+
+  const columns = [
+    { en: "Email domain", zh: "邮箱域名" }, { en: "Accounts", zh: "账号" }, { en: "Registrations", zh: "报名" },
+    { en: "Submitted", zh: "已提交" }, { en: "New in 24 h", zh: "24 小时新增" }, { en: "Newest", zh: "最近注册" },
+  ];
+  const rows = info.domains.map((d) => [
+    h("span", d.domain, d.common ? h("span.d-pill", t({ en: "common", zh: "常用" })) : null, d.blocked ? h("span.d-pill.d-pill--wait", t({ en: "blocked", zh: "已屏蔽" })) : null,
+      d.organisers ? h("span.d-pill.d-pill--lav", t({ en: "organisers", zh: "组委会" })) : null),
+    d.accounts, d.registrations, d.submitted, d.lastDay, stamp(d.newest),
+  ]);
+  const table = h("div.d-tablewrap", h("table.d-table",
+    h("thead", h("tr", columns.map((c) => h("th", { scope: "col" }, t(c))), h("th", { scope: "col" }, t({ en: "Actions", zh: "操作" })))),
+    h("tbody", info.domains.map((d, i) => h("tr", rows[i].map((v) => h("td", v instanceof Node ? v : String(v ?? ""))),
+      h("td.d-table__actions", d.common || d.blocked || d.organisers ? null : [
+        rowLink({ en: "Block and delete accounts", zh: "屏蔽并删除账号" }, () => block(d.domain, true, d.accounts), true),
+        rowLink({ en: "Block only", zh: "仅屏蔽" }, () => block(d.domain, false)),
+      ]))))));
+
+  const input = h("input.d-input.d-input--small", { type: "text", placeholder: "example.com", "aria-label": { en: "Domain to block", zh: "要屏蔽的域名" } });
+  const alsoDelete = h("input", { type: "checkbox" });
+  const manual = h("form.d-filters", { novalidate: true, on: { submit: (e) => { e.preventDefault(); if (input.value.trim()) block(input.value.trim().toLowerCase().replace(/^@/, ""), alsoDelete.checked); } } },
+    h("label.d-filter.d-filter--grow", h("span.d-filter__label", t({ en: "Block a domain", zh: "屏蔽域名" })), input),
+    h("label.d-check", alsoDelete, h("span", t({ en: "also delete its accounts", zh: "同时删除其账号" }))),
+    h("button.d-btn.d-btn--small.d-btn--danger", { type: "submit" }, t({ en: "Block", zh: "屏蔽" })));
+
+  const blocked = info.blocked.length
+    ? h("ul.d-mod__list", info.blocked.map((b) => h("li.d-mod__item",
+      h("p.d-mod__meta", h("b", b.domain), b.source === "settings"
+        ? h("span", t({ en: "set in BLOCKED_EMAIL_DOMAINS on the server", zh: "在服务器的 BLOCKED_EMAIL_DOMAINS 中设置" }))
+        : [h("span", b.createdBy || ""), h("time", stamp(b.createdAt))]),
+      b.source === "admin" ? h("p.d-mod__actions", rowLink({ en: "Unblock", zh: "取消屏蔽" }, () => act({
+        run: () => api("POST", "/api/admin/domains/unblock", { domain: b.domain }),
+        done: () => ({ en: `${b.domain} can sign in again.`, zh: `${b.domain} 已可重新登录。` }),
+      }))) : null)))
+    : h("p.d-empty", t({ en: "No domains blocked.", zh: "暂无屏蔽的域名。" }));
+
+  clear(body).append(
+    h("div.d-pair.d-note-box", h("p", t({
+      en: "Sign-in already stops most bots: each code request needs a quick browser check, codes to one unknown domain are capped per hour, throwaway-inbox services are refused, and wrong codes are limited. If a wave of fake sign-ups still gets through, it usually shares one email domain. Find it below, then block it and delete its accounts in one step.",
+      zh: "登录环节已拦截大部分机器人：每次获取验证码都需要浏览器完成一次快速校验，同一陌生域名每小时的验证码数量有上限，临时邮箱会被拒绝，错误验证码次数也受限。若仍有大量虚假注册，通常来自同一个邮箱域名：可在下方找到它，一键屏蔽并删除其账号。",
+    }))),
+    win("ACCOUNTS_BY_EMAIL_DOMAIN", table, h("p.d-field__hint", t({ en: "The 100 domains with the most accounts. “Common” providers and schools can't be blocked as a whole; delete single accounts on the Participants tab instead.", zh: "账号最多的 100 个域名。标为“常用”的邮箱服务商和学校无法整体屏蔽，请在“参赛者”页删除单个账号。" }))),
+    win("BLOCK_A_DOMAIN", manual),
+    win("BLOCKED_DOMAINS", blocked));
 }
 
 /* ---------------------------------------------------------------- exports */
@@ -386,6 +553,17 @@ function modButtons(kind, id, removed, author) {
         await api("POST", `/api/admin/users/${author.id}/ban`, { banned: !author.banned });
       }, !author.banned)
       : null,
+    author && author.id
+      ? act({ en: "Delete their account", zh: "删除其账号" }, async () => {
+        const ok = await confirmBox({
+          message: { en: `Delete ${author.email} completely, with their registration and everything they posted? This can't be undone.`, zh: `确定彻底删除 ${author.email} 吗？其报名和发布的全部内容都会被删除，此操作无法撤销。` },
+          yes: { en: "Delete account", zh: "删除账号" }, danger: true,
+        });
+        if (!ok) return;
+        const r = await api("POST", "/api/admin/users/delete", { ids: [author.id] });
+        if (r.skipped) toast({ en: "Organiser accounts can't be deleted.", zh: "组委会账号无法删除。" }, "error");
+      }, true)
+      : null,
     status);
 }
 
@@ -407,6 +585,10 @@ function reportItem(r) {
     type: "button",
     on: { click: (e) => busy(e.currentTarget, async () => { await api("POST", `/api/admin/reports/${r.id}/resolve`, {}); draw(); }) },
   }, t({ en: "Mark as handled", zh: "标记为已处理" }));
+  const remove = h("button.d-link.d-link--danger", {
+    type: "button",
+    on: { click: (e) => busy(e.currentTarget, async () => { await api("POST", "/api/admin/reports/delete", { ids: [r.id] }); draw(); }) },
+  }, t({ en: "Delete report", zh: "删除举报" }));
   return h("article.d-mod__item",
     h("p.d-mod__meta", h("span.d-pill", t(KIND_LABEL[r.kind])), h("span", t({ en: "Reported by", zh: "举报人：" }), " ", r.reporter), h("time", stamp(r.createdAt))),
     r.reason ? h("p.d-mod__reason", t({ en: "Reason:", zh: "原因：" }), " ", r.reason) : null,
@@ -415,7 +597,7 @@ function reportItem(r) {
           r.target.removed ? h("span.d-pill.d-pill--wait", t({ en: "Already hidden", zh: "已隐藏" })) : null),
         modButtons(r.kind, r.kind === "message" ? Number(r.targetId) : r.targetId, r.target.removed, r.target.author)]
       : h("p.d-field__hint", t({ en: "The reported item no longer exists.", zh: "被举报的内容已不存在。" })),
-    h("p.d-mod__actions", resolve));
+    h("p.d-mod__actions", resolve, remove));
 }
 
 start();

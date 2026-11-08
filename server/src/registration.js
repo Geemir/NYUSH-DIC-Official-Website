@@ -263,7 +263,7 @@ export async function updateTeam(ctx) {
 
 /* Leaving: a captain hands over to the longest-standing member; the last
    person out closes the team. */
-async function removeFromTeam(ctx, team, userId) {
+export async function removeFromTeam(ctx, team, userId) {
   const t = Date.now();
   const ops = [["UPDATE participants SET team_id = NULL, team_choice = 'none', joined_team_at = NULL, updated_at = ? WHERE user_id = ?", t, userId]];
   if (team.captain_id === userId) {
