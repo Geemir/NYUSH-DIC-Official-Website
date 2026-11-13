@@ -28,9 +28,27 @@ layout: home
     <span class="dic-teaser__body">
       <span class="dic-teaser__opc">{{ d26.theme_file.theme.short }}_</span>
       <span class="dic-teaser__line">{{ d26.theme_file.theme.line_1 }} {{ d26.theme_file.theme.line_2 }}</span>
-      <span class="dic-teaser__meta">
-        <span>Kick-off Day <b>2026.11.9</b></span>
-        <span class="dic-teaser__count" data-teaser-countdown="2026-11-09T17:00:00+08:00" hidden></span>
+      {%- comment -%}
+        The next single-day milestone of the DIC 2026 timeline (_data/dic2026.yml),
+        with a countdown. Chosen at build time, and again in the browser
+        (assets/js/dic-site.js), so it moves on by itself as dates pass.
+      {%- endcomment -%}
+      {%- assign today = site.time | date: "%Y-%m-%d" -%}
+      {%- assign next = nil -%}
+      {%- capture milestones -%}
+        {%- for stage in d26.timeline_file.stages -%}{%- for e in stage.events -%}
+          {%- if e.start and e.end == nil -%}
+            {%- if next == nil and e.start >= today -%}{%- assign next = e -%}{%- endif -%}
+            {%- assign when = e.when.en | default: e.when -%}
+            {"at":"{{ e.start }}T{{ e.time | default: '00:00' }}:00+08:00","day":"{{ e.start }}","label":{{ e.title.en | jsonify }},"when":{{ when | jsonify }}},
+          {%- endif -%}
+        {%- endfor -%}{%- endfor -%}
+      {%- endcapture %}
+      <span class="dic-teaser__meta" data-milestones='[{{ milestones | strip | remove_last: "," }}]'>
+        {%- if next %}
+        <span><span data-milestone-label>{{ next.title.en }}</span> <b data-milestone-when>{{ next.when.en | default: next.when }}</b></span>
+        <span class="dic-teaser__count" data-teaser-countdown="{{ next.start }}T{{ next.time | default: '00:00' }}:00+08:00" hidden></span>
+        {%- endif %}
       </span>
     </span>
   </a>

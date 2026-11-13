@@ -24,7 +24,8 @@ export function signInForm({ onDone, focus = true }) {
     const status = h("p.d-status", { role: "alert" });
     const send = h("button.d-btn.d-btn--primary", { type: "submit" }, t({ en: "Email me a code", zh: "发送验证码" }), " →");
     /* A honeypot: hidden from people and screen readers, filled in by bots. */
-    const trap = h("input", { type: "text", name: "website", tabindex: "-1", autocomplete: "off", "aria-hidden": "true" });
+    /* (Its name is one no browser autofill or password manager recognises.) */
+    const trap = h("input", { type: "text", name: "dic_hp_x7", tabindex: "-1", autocomplete: "off", "aria-hidden": "true" });
     const form = h("form.d-form", { novalidate: true },
       h("div.d-field",
         h("label.d-field__label", { for: "signin-email" }, t({ en: "Your email", zh: "你的邮箱" })),

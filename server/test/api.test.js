@@ -611,3 +611,40 @@ test("admin clean-up: domains, accounts, registrations, teams and reports", asyn
   assert.equal((await call("POST", "/api/admin/reports/delete", { ids: [rep.id] }, admin)).data.deleted, 1);
   assert.equal((await call("GET", "/api/admin/reports", undefined, admin)).data.reports.length, 0);
 });
+
+test("WeChat ID is optional", async () => {
+  const { call, signIn } = setup();
+  const form = (await call("GET", "/api/form")).data;
+  assert.equal(form.profile.find((f) => f.key === "wechat").required, false);
+  const t = await signIn("nowechat@nyu.edu");
+  const r = await call("PUT", "/api/registration/profile", { profile: { ...PROFILE, wechat: "" } }, t);
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.equal(r.data.registration.profileComplete, true);
+  await call("POST", "/api/registration/team", { action: "none", track: "any" }, t);
+  assert.equal((await call("POST", "/api/registration/submit", { consent: true }, t)).data.registration.status, "submitted");
+});
+
+test("a team can't go over the limit when people join at the same moment", async () => {
+  const { call, register } = setup();
+  const cap = await register("cap@nyu.edu");
+  await call("POST", "/api/registration/team", { action: "create", name: "Race", track: "track-01" }, cap);
+  const code = (await call("GET", "/api/registration", undefined, cap)).data.team.code;
+  const joiners = [];
+  for (const e of ["j1@nyu.edu", "j2@nyu.edu", "j3@nyu.edu", "j4@nyu.edu"]) joiners.push(await register(e));
+  const results = await Promise.all(joiners.map((t) => call("POST", "/api/registration/team", { action: "join", code }, t)));
+  assert.equal(results.filter((r) => r.status === 200).length, 2, "only two places were left");
+  assert.equal(results.filter((r) => r.data.error && r.data.error.code === "team_full").length, 2);
+  assert.equal((await call("GET", "/api/registration", undefined, cap)).data.team.members.length, 3);
+});
+
+test("reports: only existing items, and once per person", async () => {
+  const { call, signIn, register } = setup();
+  const a = await register("ra@nyu.edu");
+  const post = (await call("POST", "/api/board/posts", { kind: "solo", track: "any", title: "Hi", body: "Hello" }, a)).data.post;
+  const b = await register("rb@nyu.edu");
+  assert.equal((await call("POST", "/api/report", { kind: "post", id: "p_doesnotexist", reason: "x" }, b)).status, 404);
+  assert.equal((await call("POST", "/api/report", { kind: "message", id: "999999", reason: "x" }, b)).status, 404);
+  for (let i = 0; i < 3; i++) assert.equal((await call("POST", "/api/report", { kind: "post", id: post.id, reason: "spam" }, b)).status, 200);
+  const admin = await signIn("admin@dic.test");
+  assert.equal((await call("GET", "/api/admin/reports", undefined, admin)).data.reports.length, 1, "counted once");
+});
