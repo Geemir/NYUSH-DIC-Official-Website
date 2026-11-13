@@ -201,6 +201,13 @@ export async function report(ctx) {
   const kind = oneOf(body.kind, ["post", "reply", "message"], { field: "kind" });
   const id = text(String(body.id ?? ""), { min: 1, max: 40, field: "id" });
   const reason = text(body.reason, { max: 300, multiline: true, field: "reason" });
+  /* Only things that still exist can be reported, and each person's open
+     report on an item counts once. */
+  const table = { post: "posts", reply: "replies", message: "messages" }[kind];
+  const target = await ctx.db.get(`SELECT id FROM ${table} WHERE id = ? AND removed IS NULL`, kind === "message" ? Number(id) : id);
+  if (!target) fail(404, "not_found", "This has already been removed.", "该内容已被删除。");
+  const dup = await ctx.db.get("SELECT id FROM reports WHERE reporter_id = ? AND kind = ? AND target_id = ? AND resolved_at IS NULL", user.id, kind, id);
+  if (dup) return { ok: true };
   await ctx.db.run("INSERT INTO reports (reporter_id, kind, target_id, reason, created_at) VALUES (?, ?, ?, ?, ?)",
     user.id, kind, id, reason, Date.now());
   return { ok: true };

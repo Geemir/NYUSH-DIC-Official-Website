@@ -88,8 +88,30 @@
   var pad = function (n) { return (n < 10 ? "0" : "") + n; };
   var counters = document.querySelectorAll("[data-teaser-countdown]");
 
+  /* The teaser names the next milestone; once its day has passed, move on to
+     the one after (the list comes from the timeline in _data/dic2026.yml). */
+  var meta = document.querySelector("[data-milestones]");
+  var milestones = [];
+  try { milestones = meta ? JSON.parse(meta.getAttribute("data-milestones")) : []; } catch (e) { milestones = []; }
+  function nextMilestone(now) {
+    var dayEnd = function (m) { return Date.parse(m.day + "T00:00:00+08:00") + DAY; };
+    for (var i = 0; i < milestones.length; i++) if (now < dayEnd(milestones[i])) return milestones[i];
+    return null;
+  }
+  function placeMilestone(now) {
+    var m = nextMilestone(now);
+    var label = meta && meta.querySelector("[data-milestone-label]");
+    var when = meta && meta.querySelector("[data-milestone-when]");
+    var count = meta && meta.querySelector("[data-teaser-countdown]");
+    if (!m || !label || !when || !count) return;
+    label.textContent = m.label;
+    when.textContent = m.when;
+    count.setAttribute("data-teaser-countdown", m.at);
+  }
+
   function tick() {
     var now = Date.now();
+    placeMilestone(now);
     counters.forEach(function (el) {
       var diff = Date.parse(el.getAttribute("data-teaser-countdown")) - now;
       if (diff <= 0) { el.hidden = true; return; }

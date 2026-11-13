@@ -220,10 +220,13 @@ export async function chooseTeam(ctx) {
     await limit(ctx.db, `team:join:ip:${ctx.ip}`, ctx.config.limits.codesPerAddressHour, HOUR);
     const team = await ctx.db.get("SELECT * FROM teams WHERE code = ?", normCode(body.code));
     if (!team) fail(404, "no_team", "No team has this code. Please check it with your captain.", "没有找到这个队伍码，请和队长核对。", { field: "code" });
-    const { n } = await ctx.db.get("SELECT COUNT(*) AS n FROM participants WHERE team_id = ?", team.id);
-    if (n >= teamMax) fail(409, "team_full", `This team is full (${teamMax} members at most).`, `这个队伍已满（最多 ${teamMax} 人）。`, { field: "code" });
-    await ctx.db.run("UPDATE participants SET team_id = ?, team_choice = 'team', track_pref = '', joined_team_at = ?, updated_at = ? WHERE user_id = ?",
-      team.id, t, t, user.id);
+    /* The size check and the join are one statement, so two people joining
+       at the same moment can't both take the last place. */
+    const joined = await ctx.db.run(
+      `UPDATE participants SET team_id = ?, team_choice = 'team', track_pref = '', joined_team_at = ?, updated_at = ?
+        WHERE user_id = ? AND team_id IS NULL AND (SELECT COUNT(*) FROM participants WHERE team_id = ?) < ?`,
+      team.id, t, t, user.id, team.id, teamMax);
+    if (!joined.changes) fail(409, "team_full", `This team is full (${teamMax} members at most).`, `这个队伍已满（最多 ${teamMax} 人）。`, { field: "code" });
   } else {
     const track = body.track ? oneOf(body.track, [...TRACK_IDS, "any"], { field: "track", label: TEAM_FIELDS.track.label }) : "";
     await ctx.db.run("UPDATE participants SET team_choice = 'none', track_pref = ?, updated_at = ? WHERE user_id = ?", track, t, user.id);

@@ -348,7 +348,7 @@ register_page:
     en: "Register in four steps: sign in, tell us about yourself, choose how you'll team up, and add your project. Your answers are saved as you go, and you can come back and change them until registration closes."
   facts:
     - { zh: "面向所有学校、所有专业的学生开放", en: "Open to students from any school and any major" }
-    - { zh: "每队 1–3 人：可以个人报名、组队报名，也可以在开幕式现场组队", en: "Teams of 1–3: register on your own or as a team, or form a team at Kick-off Day" }
+    - { zh: "每队 1–3 人：可以个人报名、组队报名，也可以先报名，再到组队广场寻找队友", en: "Teams of 1–3: register on your own or as a team, or register first and find teammates on Team-up" }
     - { zh: "每位成员都用自己的邮箱报名，队员凭队长分享的队伍码加入", en: "Each member registers with their own email; teammates join with the code their captain shares" }
   soon:
     zh: "报名系统即将开放。开放后，你可以在这里报名、创建或加入队伍，并随时修改信息。"
@@ -361,8 +361,8 @@ register_page:
     en: "Only the organisers and judges see your details; your teammates see your name and school. To have your details deleted, write to shanghai.dic@nyu.edu."
   # Shown after someone registers.
   next_steps:
-    - { zh: "我们会通过你填写的微信号，邀请你加入参赛者微信群。", en: "We'll add you to the participants' WeChat group using your WeChat ID." }
-    - { zh: "开幕式将于 11 月 9 日举行：介绍各赛道，也可以现场组队。", en: "Kick-off Day is on Nov 9: track briefings, and a chance to form teams on-site." }
+    - { zh: "如果你填写了微信号，我们会邀请你加入参赛者微信群；比赛通知也会发送到你的邮箱。", en: "If you gave a WeChat ID, we'll add you to the participants' WeChat group. Updates also come to your email." }
+    - { zh: "11 月至 12 月有 AI Agent 与 AI 产品开发工作坊，具体时间请关注 DIC 微信公众号。", en: "Workshops on AI agents and AI product development run through November and December; watch the DIC WeChat account for dates." }
     - { zh: "第一阶段作品提交截止日期为 12 月 4 日。", en: "Stage 1 submissions are due on Dec 4." }
 
 teamup_page:

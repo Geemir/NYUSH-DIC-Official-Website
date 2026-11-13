@@ -208,7 +208,7 @@ function teamStep() {
     options: [
       { value: "create", en: "Start a team", zh: "创建队伍", note: { en: "You're the captain. Going solo? A team of one is fine.", zh: "你将成为队长。想一个人参赛？一人成队也可以。" } },
       { value: "join", en: "Join a team", zh: "加入队伍", note: { en: "Your captain gives you a 6-character code.", zh: "需要队长分享的 6 位队伍码。" } },
-      { value: "none", en: "Not yet", zh: "暂不组队", note: { en: "Find teammates on Team-up, or at Kick-off Day.", zh: "可以在组队广场寻找队友，或在开幕式现场组队。" } },
+      { value: "none", en: "Not yet", zh: "暂不组队", note: { en: "Find teammates on Team-up first.", zh: "可以先在组队广场寻找队友。" } },
     ],
     onChange: (v) => { choice = v; draw(); },
   }, choice);
@@ -308,8 +308,8 @@ function nonePanel() {
   const go = h("button.d-btn.d-btn--primary", { type: "submit" }, t(saveLabel()), editing ? null : " →");
   const f = h("form.d-form", { novalidate: true },
     h("div.d-pair.d-note-box", h("p", t({
-      en: "You can create or join a team later, until registration closes. Meanwhile, post a card on Team-up so teams can find you, or form a team on-site at Kick-off Day.",
-      zh: "报名截止前，你随时可以回来创建或加入队伍。在此之前，可以在组队广场发布卡片让队伍找到你，也可以在开幕式现场组队。",
+      en: "You can create or join a team later, until registration closes. Meanwhile, post a card on Team-up so teams can find you.",
+      zh: "报名截止前，你随时可以回来创建或加入队伍。在此之前，可以在组队广场发布卡片，让队伍找到你。",
     }))),
     pref, status, actions(backButton("about"), go));
   f.addEventListener("submit", (e) => {

@@ -61,9 +61,9 @@ export const PROFILE_FIELDS = [
     ],
   },
   {
-    key: "wechat", type: "text", required: true, max: 40,
+    key: "wechat", type: "text", required: false, max: 40,
     label: { en: "WeChat ID", zh: "微信号" },
-    hint: { en: "So we can add you to the participants' WeChat group.", zh: "用于邀请你加入参赛者微信群。" },
+    hint: { en: "If you'd like to join the participants' WeChat group. Without it, we'll reach you by email.", zh: "填写后我们会邀请你加入参赛者微信群；不填写的话，我们会通过邮件联系你。" },
   },
   {
     key: "phone", type: "tel", required: false, max: 30,
