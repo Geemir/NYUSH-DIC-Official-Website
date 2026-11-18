@@ -473,12 +473,13 @@ function newCodeButton(status) {
 
 /* ------------------------------------------------------------- 04 project */
 function projectStep() {
+  const submission = document.getElementById("d-submission").content.cloneNode(true);
   const tm = state.team;
   const head = stepHead({ en: "Your project", zh: "项目信息" },
     { en: "All optional for now: add them when you have them. Everyone in the team can update them later.", zh: "目前均为选填，有了再补充即可。队伍中的每位成员之后都可以修改。" });
   if (!tm) {
     return h("div.d-step", head,
-      h("div.d-pair.d-note-box", h("p", t({ en: "Project details belong to a team. Once you've started or joined one, add them here.", zh: "项目信息属于队伍。创建或加入队伍后，可以在这里填写。" }))),
+      submission, h("div.d-pair.d-note-box", h("p", t({ en: "Project details belong to a team. Once you've started or joined one, add them here.", zh: "项目信息属于队伍。创建或加入队伍后，可以在这里填写。" }))),
       actions(backButton("team"), h("button.d-btn.d-btn--primary", { type: "button", on: { click: () => next("project") } }, t({ en: "Continue", zh: "继续" }), " →")));
   }
   const F = form.team;
@@ -491,7 +492,7 @@ function projectStep() {
   const locked = !state.open.project;
   const status = h("p.d-status", { role: "alert" });
   const save = h("button.d-btn.d-btn--primary", { type: "submit", disabled: locked }, t(saveLabel()), editing ? null : " →");
-  const f = h("form.d-form", { novalidate: true }, head, h("div.d-form__grid", fields),
+  const f = h("form.d-form", { novalidate: true }, head, h("div.d-form__grid", fields), submission,
     locked ? h("p.d-status.d-status--error", t({ en: "Project details are locked now.", zh: "项目信息已锁定。" })) : null,
     status, actions(backButton("team"), save));
   f.addEventListener("submit", (e) => {

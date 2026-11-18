@@ -10,6 +10,9 @@
 # countdown. `when` is only what gets printed.
 
 year: 2026
+submission:
+  url: "https://docs.google.com/forms/d/e/1FAIpQLSfibsnI-zo1nwod1SIBjWXG4flsxTjcau6CECsGxR7-dY45FQ/viewform"
+  label: { en: "Submit Stage I project", zh: "提交第一阶段作品" }
 status: "SYSTEM READY"
 
 # ---------------------------------------------------------------- FILE / 01
