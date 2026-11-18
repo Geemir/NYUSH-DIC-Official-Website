@@ -1,0 +1,31 @@
+---
+title: "DIC 2026 Stage I Submission"
+permalink: /DIC2026/submission/
+layout: dic2026-app
+copy: submission_page
+classes: layout--dic2026
+navigation: dic2026
+masthead_logo: /assets/images/DIC2026/dic-mark-light-96.png
+lang_switch: true
+---
+{% assign d = site.data.dic2026 %}
+{% assign c = d.submission_page %}
+{% assign stage = d.timeline_file.phases.items | first %}
+<div class="d-win d-sub-page">
+  <div class="d-win__body">
+    <h3>{% include dic2026/t.html v=c.deadline_label %}</h3>
+    <time class="d-pair" datetime="{{ d.submission.day }}T{{ d.submission.time }}:00+08:00">{% include dic2026/t.html v=d.submission.deadline %}</time>
+    <p class="d-pair">{% include dic2026/t.html v=c.register_note %}</p>
+    <div class="d-sub-actions">
+      <a class="d-btn d-btn--primary" href="{{ d.submission.url | escape }}" target="_blank" rel="noopener noreferrer">{% include dic2026/t.html v=d.submission.label %} ↗</a>
+      <a class="d-btn d-btn--ghost" href="{{ '/DIC2026/register/' | relative_url }}">{% include dic2026/t.html v=c.register_link %}</a>
+    </div>
+  </div>
+</div>
+<section class="d-sub-page">
+  <h3>{% include dic2026/t.html v=c.requirements %}</h3>
+  <p class="d-pair">{% include dic2026/t.html v=stage.body %}</p>
+  <ul class="d-list">
+    {% for item in stage.deliverables %}<li class="d-pair">{% include dic2026/t.html v=item %}</li>{% endfor %}
+  </ul>
+</section>

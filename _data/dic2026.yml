@@ -362,3 +362,14 @@ admin_page:
   head:
     file: "APP / 03"
     heading: { zh: "组委会后台", en: "ORGANISERS" }
+
+submission_page:
+  head:
+    file: "STAGE I"
+    heading: { en: "Submission", zh: "作品提交" }
+  deadline_label: { en: "Submission deadline", zh: "提交截止时间" }
+  register_note:
+    en: "To complete your submission, each team member must also register on the official DIC website using their own email address."
+    zh: "为完成作品提交，每位队员还须使用自己的邮箱在 DIC 官网报名。"
+  register_link: { en: "Register on the DIC website", zh: "前往 DIC 官网报名" }
+  requirements: { en: "What to submit", zh: "提交要求" }
