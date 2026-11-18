@@ -11,6 +11,9 @@
 
 year: 2026
 submission:
+  day: "2026-12-28"
+  time: "23:59"
+  deadline: { zh: "2026 年 12 月 28 日 23:59（北京时间，UTC+8）", en: "December 28, 2026, 11:59 PM (China Standard Time, UTC+8)" }
   url: "https://docs.google.com/forms/d/e/1FAIpQLSfibsnI-zo1nwod1SIBjWXG4flsxTjcau6CECsGxR7-dY45FQ/viewform"
   label: { en: "Submit Stage I project", zh: "提交第一阶段作品" }
 status: "SYSTEM READY"
@@ -23,8 +26,8 @@ theme_file:
   about:
     label: { zh: "大赛简介", en: "ABOUT THE CHALLENGE" }
     paragraphs:
-      - zh: "上海纽约大学数字创新挑战赛（NYUSHDIC）由学生组织 NYUSH Digital Innovation Community 主办，是一项以技术驱动为核心的创新竞赛。比赛面向上海纽约大学及其他高校的学生开放，鼓励跨学科团队携手合作，运用前沿数字技术，提出应对现实世界挑战的创新方案。"
-        en: "The NYU Shanghai Digital Innovation Challenge (NYUSHDIC) is a tech-driven innovation competition hosted by the student organization NYUSH Digital Innovation Community. It is open to students from NYU Shanghai and other universities, and encourages cross-disciplinary teams to use cutting-edge digital technology to tackle real-world challenges."
+      - zh: "上海纽约大学数字创新挑战赛（NYUSHDIC）由学生组织 NYUSH Digital Innovation Community 主办，是一项以技术驱动为核心的创新竞赛。比赛面向全球参赛者开放，欢迎高中生及大学生参加，鼓励跨学科团队携手合作，运用前沿数字技术，提出应对现实世界挑战的创新方案。"
+        en: "The NYU Shanghai Digital Innovation Challenge (NYUSHDIC) is a tech-driven innovation competition hosted by the student organization NYUSH Digital Innovation Community. It welcomes participants worldwide, including high school and university students,, and encourages cross-disciplinary teams to use cutting-edge digital technology to tackle real-world challenges."
       - zh: "在这个变革的时代，AI能力被放大的同时，新的问题也随之出现。当 AI 成为一个人唯一的队友，我们能否信任它？当智能走出屏幕、进入真实世界，它又将如何改变我们的生活、工作与健康？"
         en: "In this revolutionary era, the amplified capability of AI brings new questions. When AI becomes a person's only teammate, can we trust it? And when intelligence leaves the screen and enters the physical world, how will it change the way we live, work, and stay well?"
 
@@ -183,20 +186,22 @@ timeline_file:
       - num: "01"
         name: { zh: "第一阶段", en: "Stage 1" }
         body:
-          zh: "参赛者可通过个人报名、组队报名组队或kick-off day现场组队，每队1 - 3 名成员，选择一条赛道并发展提案。欢迎跨校、跨专业组队。提交截止日期为开幕式后一个月，提交内容包括："
-          en: "Participants can register individually, as a pre-formed team, or form a team on-site during the kick-off day. Each team must consist of 1 to 3 members, choose a single track, and develop their proposal. Cross-school and cross-disciplinary teams are highly welcome. The submission deadline is one month after the opening ceremony, and the submission package must include:"
+          zh: "每项参赛作品选择一条赛道，由 1–3 人完成。跨赛道参赛须为每项作品单独报名并提交。成员可共同开发和演示，无需指定一人操作。"
+          en: "Enter individually or in a team of up to three. Choose one track per entry. For multiple tracks, register and submit each entry separately. Teammates may develop and present together."
         deliverables:
-          - zh: "演示视频（3 - 5 分钟）"
-            en: "Presentation video (3 - 5 minutes)"
-          - zh: "一份精心设计的提案，展示团队对赛道问题的理解、独特的解决方案及可行性"
-            en: "A well-designed proposal showing the team's understanding of the track's core problem, their unique solution, and its feasibility"
-          - zh: "初步原型或概念验证材料"
-            en: "Preliminary prototype or Proof of Concept (PoC) materials"
+          - zh: "提交 PDF 提案，说明问题、解决方案及实施计划。"
+            en: "Submit a PDF proposal explaining the problem, your solution and your implementation plan."
+          - zh: "提交 3–5 分钟的演示视频，最大 100 MB，推荐 MP4。介绍问题、方案、AI 如何让个人具备团队能力、可行性与进展，以及第二阶段目标。"
+            en: "Submit a 3–5 minute video, up to 100 MB (MP4 recommended). Cover the problem, solution, how AI enables one person to do team-level work, feasibility and progress, and your Stage II goals."
+          - zh: "原型为选交。如提交，请附运行说明或演示材料。"
+            en: "A prototype is optional. If you include one, provide setup instructions or demonstration evidence."
+          - zh: "将提案和视频放入 GitHub 私有仓库，或在 README 中提供评委可直接访问的视频链接。邀请 DIC 官方 GitHub 账号为协作者（账号将由官方渠道公布），再在第一阶段提交表中填写队伍信息、赛道、项目名称及仓库链接。"
+            en: "Place the proposal and video in a private GitHub repository, or link the video in the README so reviewers can open it. Invite the official DIC GitHub account as a collaborator once its username is announced. Complete the Stage I form with your team details, track, project title and repository URL."
       - num: "02"
         name: { zh: "第二阶段", en: "Stage 2" }
         body:
-          zh: "每条赛道排名靠前的队伍将晋级，可以拓展队伍，并有机会深度接入企业赛题、和Track Mentor进行直接交流。晋级团队将在寒假及春季学期继续完善方案，开发结构完整的产品。团队需完成开发计划提交、中期进度检查及最终成果提交，并在 Innovation Day 进行现场展示与评委问答。"
-          en: "Top-ranked teams in each track advance to work closely with real problems from real business, and have deep conversation with track mentors. These teams may expand their members. Over winter break and the spring semester, they refine their solutions into well-structured products. Teams are required to submit a development plan, complete a mid-term progress check, and deliver their final results, followed by an on-site presentation and a Q&A session with the judges on Innovation Day."
+          zh: "晋级队伍将在寒假期间公布。具体公布日期、第二阶段安排及截止时间将通过 DIC 官方渠道通知。"
+          en: "Advancing teams will be announced during winter break. DIC will share the announcement date, Stage II instructions and deadlines through its official channels."
 
   # Each event: "when" is printed in the list view and the detail panel,
   # "short" labels the node in the interactive timeline. Either can be a plain
@@ -224,11 +229,12 @@ timeline_file:
           title: { zh: "工作坊", en: "Workshop Sessions" }
           items:
             - { zh: "AI Agent 及 AI 产品开发基础工作坊", en: "AI Agent and AI products development workshops" }
-        - when: "2026.12.4"
-          short: "12.4"
-          start: "2026-12-04"
+        - when: { zh: "2026 年 12 月 28 日 23:59（北京时间，UTC+8）", en: "December 28, 2026, 11:59 PM (China Standard Time, UTC+8)" }
+          short: "12.28"
+          start: "2026-12-28"
+          time: "23:59"
           title: { zh: "第一阶段截止提交", en: "Phase I Submission Deadline" }
-        - when: "During Winter Holiday"
+        - when: { zh: "寒假期间，具体日期待公布", en: "During winter break, exact date to be announced" }
           short: { zh: "寒假", en: "Winter" }
           title: { zh: "晋级公告发布", en: "Announcement of Advancing Teams" }
           items:
@@ -238,40 +244,10 @@ timeline_file:
     - label: { zh: "第二阶段时间线", en: "Timeline for Stage 2" }
       short: { zh: "第二阶段", en: "Stage 2" }
       events:
-        - when: "2026.12 - 2027.1.15"
-          short: "12–1.15"
-          start: "2026-12-01"
-          end: "2027-01-15"
-          title: { zh: "项目准备期", en: "Project Preparation" }
-          items:
-            - { zh: "团队筹备后续开发", en: "Teams prepare for later development" }
-        - when: "2027.1.16"
-          short: "1.16"
-          start: "2027-01-16"
-          title: { zh: "晋级团队说明会", en: "Finalist Orientation" }
-        - when: "2027.1.23"
-          short: "1.23"
-          start: "2027-01-23"
-          title: { zh: "开发方案提交", en: "Project Plan Submission" }
-          items:
-            - { zh: "提交开发计划、技术方案、预期成果及关键里程碑", en: "Submission of development plan, technical proposal, expected outcomes, and key milestones" }
-        - when: "2027.3.6"
-          short: "3.6"
-          start: "2027-03-06"
-          title: { zh: "MVP自查", en: "Progress Check" }
-        - when: "2027.3.21"
-          short: "3.21"
-          start: "2027-03-21"
-          title: { zh: "最终作品提交", en: "Final Project Submission" }
-          items:
-            - { zh: "提交最终产品、演示视频、文档及其他赛道要求的材料", en: "Submission of the final product, demonstration video, documentation, and any other materials required by the specific track" }
-        - when: { zh: "2027年3月下旬 / 4月上旬", en: "Late March / Early April 2027" }
-          short: { zh: "3月下旬–4月上旬", en: "Late Mar–Early Apr" }
-          start: "2027-03-22"  # date not fixed yet: treated as a range, so no countdown
-          end: "2027-04-10"
-          title: { zh: "决赛暨闭幕式", en: "Finals & Closing Ceremony: Innovation Day" }
-          items:
-            - { zh: "现场产品演示、评委提问、评分与颁奖；宣布各赛道奖项及超级个体奖", en: "On-site product demonstrations, judge questioning, scoring, and the award ceremony; announcement of track awards and special awards." }
+        - when: { zh: "日期待 DIC 官方渠道公布", en: "Dates to be announced through official DIC channels" }
+          short: { zh: "待公布", en: "TBA" }
+          title: { zh: "第二阶段安排与截止时间", en: "Stage II schedule and deadlines" }
+
 
   note: { zh: "时间线可能会发生变动", en: "The timeline is subject to change." }
 
@@ -350,7 +326,7 @@ register_page:
     zh: "四步完成报名：登录，填写个人信息，选择组队方式，补充项目信息。信息会随时保存，报名截止前都可以回来修改。"
     en: "Register in four steps: sign in, tell us about yourself, choose how you'll team up, and add your project. Your answers are saved as you go, and you can come back and change them until registration closes."
   facts:
-    - { zh: "面向所有学校、所有专业的学生开放", en: "Open to students from any school and any major" }
+    - { zh: "面向全球参赛者开放，欢迎各专业的高中生及大学生参加", en: "Open worldwide, including to high school and university students of any major" }
     - { zh: "每队 1–3 人：可以个人报名、组队报名，也可以先报名，再到组队广场寻找队友", en: "Teams of 1–3: register on your own or as a team, or register first and find teammates on Team-up" }
     - { zh: "每位成员都用自己的邮箱报名，队员凭队长分享的队伍码加入", en: "Each member registers with their own email; teammates join with the code their captain shares" }
   soon:
@@ -366,7 +342,7 @@ register_page:
   next_steps:
     - { zh: "如果你填写了微信号，我们会邀请你加入参赛者微信群；比赛通知也会发送到你的邮箱。", en: "If you gave a WeChat ID, we'll add you to the participants' WeChat group. Updates also come to your email." }
     - { zh: "11 月至 12 月有 AI Agent 与 AI 产品开发工作坊，具体时间请关注 DIC 微信公众号。", en: "Workshops on AI agents and AI product development run through November and December; watch the DIC WeChat account for dates." }
-    - { zh: "第一阶段作品提交截止日期为 12 月 4 日。", en: "Stage 1 submissions are due on Dec 4." }
+    - { zh: "请于北京时间 2026 年 12 月 28 日 23:59（UTC+8）前完成第一阶段提交表。", en: "Complete the Stage I form by December 28, 2026, at 11:59 PM China Standard Time (UTC+8)." }
 
 teamup_page:
   head:

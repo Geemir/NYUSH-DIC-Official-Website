@@ -485,7 +485,7 @@ function projectStep() {
   const F = form.team;
   const fields = [
     field({ key: "repoUrl", type: "url", label: F.repo_url.label, max: F.repo_url.max, placeholder: "https://github.com/…", inputmode: "url", wide: true,
-      hint: { en: "GitHub, Gitee, GitLab… Make sure the organisers will be able to open it.", zh: "GitHub、Gitee、GitLab 等均可，请确保组委会可以访问。" } }, tm.repoUrl),
+      hint: { en: "Use a private GitHub repository. Invite the official DIC account as a collaborator once its username is announced.", zh: "请使用 GitHub 私有仓库。DIC 官方账号公布后，请邀请该账号为协作者。" } }, tm.repoUrl),
     field({ key: "projectTitle", type: "text", label: F.project_title.label, max: F.project_title.max, wide: true }, tm.projectTitle),
     field({ key: "projectSummary", type: "textarea", label: F.project_summary.label, max: F.project_summary.max, rows: 3, wide: true }, tm.projectSummary),
   ];

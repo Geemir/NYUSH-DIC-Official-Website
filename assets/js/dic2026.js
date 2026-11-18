@@ -14,6 +14,19 @@
   var page = document.getElementById("d26");
   if (!page) return;
 
+  var notice = page.querySelector(".d-sub-notice");
+  if (notice) {
+    var expiry = notice.getAttribute("data-expires");
+    var key = "dic-stage1-notice-" + expiry;
+    var dismissed = false;
+    try { dismissed = localStorage.getItem(key) === "1"; } catch (_) {}
+    notice.hidden = dismissed || Date.now() >= Date.parse(expiry);
+    notice.querySelector("button").addEventListener("click", function () {
+      notice.hidden = true;
+      try { localStorage.setItem(key, "1"); } catch (_) {}
+    });
+  }
+
   var root = document.documentElement;
   var DAY = 86400000;
   var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;

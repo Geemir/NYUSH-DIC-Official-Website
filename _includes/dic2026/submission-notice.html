@@ -1,0 +1,6 @@
+{%- assign sub = site.data.dic2026.submission -%}
+<aside class="d-sub-notice" aria-labelledby="d-sub-notice-title" data-expires="{{ sub.day }}T{{ sub.time }}:00+08:00" hidden>
+  <button type="button" aria-label="关闭通知 / Dismiss notice">×</button>
+  <strong id="d-sub-notice-title"><span class="l-zh" lang="zh-Hans">第一阶段提交表已开放</span> <span class="l-en" lang="en">Stage I submission form is ready</span></strong>
+  <p><span class="l-zh" lang="zh-Hans">提交截止时间已延至 {{ sub.deadline.zh }}。</span> <span class="l-en" lang="en">The deadline has been extended to {{ sub.deadline.en }}.</span></p>
+</aside>
