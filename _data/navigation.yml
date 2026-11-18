@@ -6,6 +6,8 @@
 main:
   - title: "DIC 2026"
     url: /DIC2026/
+  - title: "Submission"
+    url: /DIC2026/submission/
   - title: "About us"
     url: /AboutUs/
   - title: "Past Events"
@@ -30,5 +32,7 @@ dic2026:
     url: /DIC2026/register/
   - title: "Team-up"
     url: /DIC2026/team-up/
+  - title: "Submission"
+    url: /DIC2026/submission/
   - title: "Contact us"
     url: /ContactUs/
