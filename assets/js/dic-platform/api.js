@@ -139,6 +139,10 @@ export async function stream(path, body, onEvent) {
 /* ----------------------------------------------------------------- session */
 export const session = {
   get user() { return user; },
+  resumeToken() {
+    token = read(TOKEN_KEY);
+    return !!token;
+  },
   onChange(fn) {
     listeners.add(fn);
     return () => listeners.delete(fn);
